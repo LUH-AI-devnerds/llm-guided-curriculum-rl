@@ -25,41 +25,46 @@ jobs:
       with:
         auto-update-conda: true
         python-version: "3.12"
+        activate-environment: "llm-guided-curriculum-rl"
 
     - name: Install dependencies
       run: |
         conda env create -f environment.yml
-        conda activate llm-guided-curriculum-rl
 
     - name: Update environment.yml with cross-platform compatibility
       run: |
-        conda activate llm-guided-curriculum-rl
-        # Export with --from-history to get only explicitly installed packages
-        conda env export --from-history --no-builds > environment.yml.tmp
+        # Use conda run to execute commands in the environment
+        conda run -n llm-guided-curriculum-rl conda list --export | grep -v '^#' | grep -v '^@' | cut -d'=' -f1 | grep -v '^$' > conda_packages.txt
         
-        # Create a clean, cross-platform compatible environment.yml
+        # Get pip packages
+        conda run -n llm-guided-curriculum-rl pip list --format=freeze | grep -v '^#' > pip_packages.txt
+        
+        # Create the new environment.yml content
         echo "name: llm-guided-curriculum-rl" > environment.yml
         echo "channels:" >> environment.yml
         echo "  - conda-forge" >> environment.yml
         echo "  - defaults" >> environment.yml
         echo "dependencies:" >> environment.yml
         
-        # Extract only the package names without versions for conda packages
-        conda list --export | grep -v "^#" | grep -v "^@" | cut -d'=' -f1 | grep -v "^$" | while read package; do
+        # Add conda packages (only names, no versions for cross-platform compatibility)
+        while read package; do
           if [ ! -z "$package" ]; then
             echo "  - $package" >> environment.yml
           fi
-        done
+        done < conda_packages.txt
         
-        # Add pip dependencies if any
-        pip list --format=freeze | grep -v "^#" | while read package; do
-          if [ ! -z "$package" ]; then
-            echo "  - pip:" >> environment.yml
-            echo "    - $package" >> environment.yml
-          fi
-        done
+        # Add pip packages if any
+        if [ -s pip_packages.txt ]; then
+          echo "  - pip:" >> environment.yml
+          while read package; do
+            if [ ! -z "$package" ]; then
+              echo "    - $package" >> environment.yml
+            fi
+          done < pip_packages.txt
+        fi
         
-        rm environment.yml.tmp
+        # Clean up temporary files
+        rm conda_packages.txt pip_packages.txt
 
     - name: Check for changes
       id: check_changes
