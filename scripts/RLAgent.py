@@ -364,16 +364,165 @@ def train(agent, env, episodes):
 
 
 if __name__ == "__main__":
-    # Use all actions for the advanced BlackjackEnv (0: stand, 1: hit, 2: double, 3: split)
-    agent = DQNAgent(action_space=[0, 1, 2, 3])
-    env = BlackjackEnv(curriculum_stage=3)
+    print("🎓 CURRICULUM-BASED MULTI-AGENT REINFORCEMENT LEARNING")
+    print("=" * 70)
+    print("This system uses LLM-guided curriculum learning with multiple agents")
+    print("to progressively learn Blackjack strategies.")
+    print()
 
-    print("Starting training with Neural Network DQN...")
-    print("Actions: 0=Stand, 1=Hit, 2=Double Down, 3=Split")
-    agent.train(env, episodes=1000000)
+    # Set your Google AI API key here
+    API_KEY = input(
+        "Please enter your Google AI API key (or 'demo' for offline mode): "
+    ).strip()
 
-    print("Saving model...")
-    agent.save_model("neural_dqn_agent.pth")
+    if API_KEY.lower() == "demo":
+        print("\n🔧 DEMO MODE: Running with basic curriculum (no LLM)")
+        from curriculum_multi_agent_rl import MultiAgentCurriculumSystem
 
-    print("Evaluating agent...")
-    agent.evaluate(env, episodes=100000)
+        # Create a simple demo system without LLM
+        curriculum_system = DemoCurriculumSystem()
+        final_report = curriculum_system.run_demo_training()
+
+    elif API_KEY == "" or API_KEY == "your_api_key_here":
+        print("⚠️  No API key provided. You can get one from: https://ai.google.dev/")
+        print("Running basic single-agent training instead...")
+
+        # Fallback to basic training
+        agent = DQNAgent(action_space=[0, 1, 2, 3])
+        env = BlackjackEnv(curriculum_stage=3)
+
+        print("\nStarting basic training with Neural Network DQN...")
+        print("Actions: 0=Stand, 1=Hit, 2=Double Down, 3=Split")
+        agent.train(env, episodes=50000)  # Reduced episodes
+
+        print("Saving model...")
+        agent.save_model("basic_dqn_agent.pth")
+
+        print("Evaluating agent...")
+        agent.evaluate(env, episodes=10000)
+
+    else:
+        print(f"\n🚀 STARTING LLM-GUIDED CURRICULUM LEARNING")
+        print("Loading curriculum system...")
+
+        try:
+            from curriculum_multi_agent_rl import MultiAgentCurriculumSystem
+
+            # Initialize multi-agent curriculum system
+            curriculum_system = MultiAgentCurriculumSystem(
+                llm_api_key=API_KEY,
+                num_agents=3,
+                agent_types=["dqn", "tabular", "dqn"],  # Mix of agent types
+            )
+
+            # Train agents through curriculum
+            print("Training agents through LLM-designed curriculum...")
+            final_report = curriculum_system.train_multi_agent_curriculum(
+                total_episodes=40000, eval_episodes=1000
+            )
+
+            # Save trained agents
+            curriculum_system.save_agents()
+
+            print("\n✅ LLM-GUIDED CURRICULUM LEARNING COMPLETE!")
+            print("Check the generated JSON report for detailed results.")
+
+        except ImportError:
+            print("❌ curriculum_multi_agent_rl module not found!")
+            print(
+                "Please ensure curriculum_multi_agent_rl.py exists in the scripts directory."
+            )
+        except Exception as e:
+            print(f"❌ Error during curriculum learning: {e}")
+            print("Falling back to basic training...")
+
+            # Fallback to basic training
+            agent = DQNAgent(action_space=[0, 1, 2, 3])
+            env = BlackjackEnv(curriculum_stage=3)
+            agent.train(env, episodes=50000)
+            agent.save_model("fallback_dqn_agent.pth")
+            agent.evaluate(env, episodes=10000)
+
+
+class DemoCurriculumSystem:
+    """Demo curriculum system that works without LLM for testing purposes."""
+
+    def __init__(self):
+        self.stages = [
+            {"name": "Basic Play", "actions": [0, 1], "threshold": 0.35},
+            {"name": "Strategic Play", "actions": [0, 1], "threshold": 0.40},
+            {"name": "Advanced Betting", "actions": [0, 1, 2], "threshold": 0.42},
+            {"name": "Expert Play", "actions": [0, 1, 2, 3], "threshold": 0.45},
+        ]
+        self.agents = []
+
+        # Create demo agents
+        for i, agent_type in enumerate(["dqn", "tabular"]):
+            if agent_type == "dqn":
+                agent = DQNAgent(action_space=[0, 1, 2, 3])
+            else:
+                agent = QLearningAgent(action_space=[0, 1, 2, 3])
+            agent.agent_id = i
+            agent.agent_type = agent_type
+            self.agents.append(agent)
+
+    def run_demo_training(self):
+        """Run a simplified curriculum training demo."""
+        print("\n📚 DEMO CURRICULUM STAGES:")
+
+        for stage_idx, stage in enumerate(self.stages):
+            print(f"\nStage {stage_idx + 1}: {stage['name']}")
+            print(f"Actions: {stage['actions']}, Threshold: {stage['threshold']}")
+
+            for agent in self.agents:
+                print(f"  Training Agent {agent.agent_id} ({agent.agent_type.upper()})")
+
+                # Create restricted environment
+                env = BlackjackEnv(curriculum_stage=stage_idx + 1)
+
+                # Train for reduced episodes
+                episodes = 5000
+                if agent.agent_type == "dqn":
+                    agent.train(env, episodes=episodes)
+                else:
+                    # Train tabular agent
+                    for episode in range(episodes):
+                        state = env.reset()
+                        done = False
+                        while not done:
+                            # Restrict actions to stage
+                            valid_actions = self._get_stage_actions(
+                                state, stage["actions"]
+                            )
+                            if valid_actions:
+                                action = agent.get_action(state)
+                                if action not in valid_actions:
+                                    action = random.choice(valid_actions)
+                            else:
+                                action = 0  # Stand
+
+                            next_state, reward, done = env.step(action)
+                            agent.update(state, action, reward, next_state)
+                            state = next_state
+                        agent.decay_epsilon()
+
+                # Quick evaluation
+                win_rate = agent.evaluate(env, episodes=1000)
+                print(f"    Win Rate: {win_rate:.2f}%")
+
+        print(f"\n✅ DEMO CURRICULUM COMPLETE!")
+        return {"demo": True, "agents_trained": len(self.agents)}
+
+    def _get_stage_actions(self, state, allowed_actions):
+        """Get valid actions for current stage."""
+        player_sum, dealer_up, has_ace, can_split, can_double, is_blackjack = state
+        valid_actions = [0]  # Stand always valid
+
+        if player_sum < 21 and not is_blackjack and 1 in allowed_actions:
+            valid_actions.append(1)  # Hit
+        if can_double and 2 in allowed_actions:
+            valid_actions.append(2)  # Double
+        if can_split and 3 in allowed_actions:
+            valid_actions.append(3)  # Split
+
+        return [a for a in valid_actions if a in allowed_actions]
