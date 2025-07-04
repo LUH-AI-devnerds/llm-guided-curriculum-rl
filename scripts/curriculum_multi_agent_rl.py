@@ -576,7 +576,7 @@ class CurriculumBlackjackEnv(BlackjackEnv):
 
 if __name__ == "__main__":
     # Set your Google AI API key here
-    API_KEY = "your_api_key_here"  # Replace with actual API key
+    API_KEY = "AIzaSyBwvuY01chOHHeCV22iDkOblQSSrm6RVAU"  # Replace with actual API key
 
     if API_KEY == "your_api_key_here":
         print("⚠️  Please set your Google AI API key in the API_KEY variable")
