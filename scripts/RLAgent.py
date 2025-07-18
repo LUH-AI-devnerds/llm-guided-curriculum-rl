@@ -387,9 +387,9 @@ if __name__ == "__main__":
         print("⚠️  No API key provided. You can get one from: https://ai.google.dev/")
         print("Running basic single-agent training instead...")
 
-        # Fallback to basic training
+        # Fallback to basic training with 8-deck configuration
         agent = DQNAgent(action_space=[0, 1, 2, 3])
-        env = BlackjackEnv(curriculum_stage=3)
+        env = BlackjackEnv(curriculum_stage=3, deck_type="8-deck", penetration=0.75)
 
         print("\nStarting basic training with Neural Network DQN...")
         print("Actions: 0=Stand, 1=Hit, 2=Double Down, 3=Split")
@@ -408,11 +408,13 @@ if __name__ == "__main__":
         try:
             from curriculum_multi_agent_rl import MultiAgentCurriculumSystem
 
-            # Initialize multi-agent curriculum system
+            # Initialize multi-agent curriculum system with 8-deck configuration
             curriculum_system = MultiAgentCurriculumSystem(
                 llm_api_key=API_KEY,
                 num_agents=3,
                 agent_types=["dqn", "tabular", "dqn"],  # Mix of agent types
+                deck_type="8-deck",  # Use 8-deck shoe (casino standard)
+                penetration=0.75,  # Reshuffle at 75% penetration
             )
 
             # Train agents through curriculum
@@ -436,9 +438,9 @@ if __name__ == "__main__":
             print(f"❌ Error during curriculum learning: {e}")
             print("Falling back to basic training...")
 
-            # Fallback to basic training
+            # Fallback to basic training with 8-deck configuration
             agent = DQNAgent(action_space=[0, 1, 2, 3])
-            env = BlackjackEnv(curriculum_stage=3)
+            env = BlackjackEnv(curriculum_stage=3, deck_type="8-deck", penetration=0.75)
             agent.train(env, episodes=50000)
             agent.save_model("fallback_dqn_agent.pth")
             agent.evaluate(env, episodes=10000)
@@ -477,8 +479,10 @@ class DemoCurriculumSystem:
             for agent in self.agents:
                 print(f"  Training Agent {agent.agent_id} ({agent.agent_type.upper()})")
 
-                # Create restricted environment
-                env = BlackjackEnv(curriculum_stage=stage_idx + 1)
+                # Create restricted environment with 8-deck configuration
+                env = BlackjackEnv(
+                    curriculum_stage=stage_idx + 1, deck_type="8-deck", penetration=0.75
+                )
 
                 # Train for reduced episodes
                 episodes = 5000

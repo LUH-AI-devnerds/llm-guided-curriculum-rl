@@ -119,7 +119,7 @@ The LLM continuously adapts the curriculum by:
 
 ```bash
 # Install dependencies
-pip install torch numpy google-generativeai
+pip install torch numpy google-generativeai pygame
 
 # Set environment variables (optional)
 export GOOGLE_AI_API_KEY="your_api_key_here"
@@ -172,9 +172,18 @@ scripts/
 ├── LLM.py                        # LLM interface (Google Gemini)
 ├── comprehensive_comparison.py    # Performance analysis tools
 └── *.pkl, *.pth                  # Saved model files
+
+GUI Application:
+├── blackjack_gui.py              # Professional GUI for agent visualization
 ```
 
 ## 🎮 Usage Examples
+
+### GUI Visualization
+```bash
+# Run the Blackjack RL Agent GUI
+python blackjack_gui.py
+```
 
 ### Basic Training
 ```python

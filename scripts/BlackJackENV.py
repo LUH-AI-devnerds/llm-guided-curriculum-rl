@@ -1,18 +1,123 @@
 import numpy as np
 import random
+from collections import Counter
 
 
 class BlackjackEnv:
     """
-    An advanced Blackjack environment for Reinforcement Learning with full rules.
+    An enhanced Blackjack environment for Reinforcement Learning with full rules.
+    Supports both infinite deck and finite deck (shoe) options.
+
     Actions: 0=stand, 1=hit, 2=double_down, 3=split
+    Deck Options: infinite, 1-deck, 6-deck, 8-deck (casino standard)
     """
 
-    def __init__(self, curriculum_stage=3):
+    def __init__(self, curriculum_stage=3, deck_type="infinite", penetration=0.75):
+        """
+        Initialize the Blackjack environment.
+
+        Args:
+            curriculum_stage (int): Curriculum stage for action constraints
+            deck_type (str): "infinite", "1-deck", "6-deck", or "8-deck"
+            penetration (float): When to reshuffle (0.75 = reshuffle at 75% through deck)
+        """
         self.curriculum_stage = curriculum_stage
         self.action_space = [0, 1, 2, 3]  # 0: stand, 1: hit, 2: double down, 3: split
         self.initial_bet = 1
+        self.deck_type = deck_type
+        self.penetration = penetration
+
+        # Initialize deck
+        self._initialize_deck()
         self.reset()
+
+    def _initialize_deck(self):
+        """Initialize the deck based on deck_type."""
+        if self.deck_type == "infinite":
+            self.deck = None
+            self.cards_remaining = None
+            self.total_cards = None
+            self.shuffle_point = None
+        else:
+            # Parse deck type
+            if self.deck_type == "1-deck":
+                num_decks = 1
+            elif self.deck_type == "6-deck":
+                num_decks = 6
+            elif self.deck_type == "8-deck":
+                num_decks = 8
+            else:
+                raise ValueError(
+                    f"Invalid deck_type: {self.deck_type}. Use 'infinite', '1-deck', '6-deck', or '8-deck'"
+                )
+
+            # Create standard 52-card deck
+            standard_deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # 4 suits
+            self.deck = standard_deck * num_decks
+            self.total_cards = len(self.deck)
+            self.shuffle_point = int(self.total_cards * self.penetration)
+            self._shuffle_deck()
+
+    def _shuffle_deck(self):
+        """Shuffle the deck and reset card counting."""
+        if self.deck is not None:
+            random.shuffle(self.deck)
+            self.cards_remaining = self.deck.copy()
+            self.card_counts = Counter(self.cards_remaining)
+            # print(f"🃏 Shuffled {self.deck_type} deck ({len(self.deck)} cards)")
+
+    def _draw_card(self):
+        """Draw a single card from the deck."""
+        if self.deck_type == "infinite":
+            # Infinite deck: random card every time
+            return random.choice([2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11])
+        else:
+            # Finite deck: draw from remaining cards
+            if len(self.cards_remaining) <= self.shuffle_point:
+                # print(
+                #     f"🔄 Reshuffling {self.deck_type} deck at {len(self.cards_remaining)} cards remaining"
+                # )
+                self._shuffle_deck()
+
+            if not self.cards_remaining:
+                self._shuffle_deck()
+
+            card = self.cards_remaining.pop()
+            self.card_counts[card] -= 1
+            return card
+
+    def get_card_counting_info(self):
+        """Get card counting information for finite decks."""
+        if self.deck_type == "infinite":
+            return {
+                "deck_type": "infinite",
+                "cards_remaining": None,
+                "penetration": None,
+                "running_count": None,
+                "true_count": None,
+            }
+
+        # Calculate running count (Hi-Lo system)
+        running_count = 0
+        for card, count in self.card_counts.items():
+            if card in [2, 3, 4, 5, 6]:
+                running_count += count  # Low cards: +1
+            elif card in [10, 11]:
+                running_count -= count  # High cards: -1
+            # 7, 8, 9 are neutral (0)
+
+        # Calculate true count (running count per deck remaining)
+        decks_remaining = len(self.cards_remaining) / 52
+        true_count = running_count / decks_remaining if decks_remaining > 0 else 0
+
+        return {
+            "deck_type": self.deck_type,
+            "cards_remaining": len(self.cards_remaining),
+            "penetration": len(self.cards_remaining) / self.total_cards,
+            "running_count": running_count,
+            "true_count": true_count,
+            "card_distribution": dict(self.card_counts),
+        }
 
     def reset(self):
         """Resets the game to a new hand."""
@@ -27,10 +132,6 @@ class BlackjackEnv:
         self.can_double = True
         self.game_over = False
         return self._get_state()
-
-    def _draw_card(self):
-        """Draws a single card from an infinite deck."""
-        return random.choice([2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11])
 
     def _can_split(self):
         """Check if current hand can be split."""
@@ -198,3 +299,146 @@ class BlackjackEnv:
 
         self.game_over = True
         return self._get_state(), total_reward, True
+
+    def get_game_info(self):
+        """Get detailed information about the current game state."""
+        info = {
+            "deck_info": self.get_card_counting_info(),
+            "player_hands": self.player_hands,
+            "dealer_hand": self.dealer_hand,
+            "current_hand_idx": self.current_hand_idx,
+            "bet_amounts": self.bet_amounts,
+            "game_over": self.game_over,
+        }
+        return info
+
+    def get_detailed_win_stats(self):
+        """Get detailed win statistics that properly account for double down and split scenarios."""
+        if not self.game_over:
+            return None
+
+        stats = {
+            "total_hands": len(self.player_hands),
+            "total_bet": sum(self.bet_amounts),
+            "hands_won": 0,
+            "hands_lost": 0,
+            "hands_pushed": 0,
+            "double_downs": sum(self.doubled_down),
+            "splits": len(self.player_hands) - 1,  # Original hand + splits
+            "blackjacks": 0,
+            "busts": 0,
+            "hand_details": [],
+        }
+
+        dealer_sum = self._get_hand_sum(self.dealer_hand)
+        dealer_busted = dealer_sum > 21
+        dealer_blackjack = len(self.dealer_hand) == 2 and dealer_sum == 21
+
+        for i, hand in enumerate(self.player_hands):
+            player_sum = self._get_hand_sum(hand)
+            bet = self.bet_amounts[i]
+            is_doubled = self.doubled_down[i]
+
+            hand_detail = {
+                "hand_index": i,
+                "cards": hand.copy(),
+                "sum": player_sum,
+                "bet": bet,
+                "doubled": is_doubled,
+                "result": None,
+                "reward": 0,
+            }
+
+            # Determine hand result
+            if player_sum > 21:  # Bust
+                hand_detail["result"] = "bust"
+                hand_detail["reward"] = -bet
+                stats["busts"] += 1
+                stats["hands_lost"] += 1
+            elif (
+                len(hand) == 2 and player_sum == 21 and not dealer_blackjack
+            ):  # Blackjack
+                hand_detail["result"] = "blackjack"
+                hand_detail["reward"] = bet * 1.5
+                stats["blackjacks"] += 1
+                stats["hands_won"] += 1
+            elif dealer_busted or player_sum > dealer_sum:  # Win
+                hand_detail["result"] = "win"
+                hand_detail["reward"] = bet
+                stats["hands_won"] += 1
+            elif player_sum < dealer_sum:  # Loss
+                hand_detail["result"] = "loss"
+                hand_detail["reward"] = -bet
+                stats["hands_lost"] += 1
+            else:  # Push
+                hand_detail["result"] = "push"
+                hand_detail["reward"] = 0
+                stats["hands_pushed"] += 1
+
+            stats["hand_details"].append(hand_detail)
+
+        # Calculate win rate considering bet amounts
+        total_wagered = sum(self.bet_amounts)
+        total_won = sum(
+            detail["reward"] for detail in stats["hand_details"] if detail["reward"] > 0
+        )
+        total_lost = abs(
+            sum(
+                detail["reward"]
+                for detail in stats["hand_details"]
+                if detail["reward"] < 0
+            )
+        )
+
+        stats["total_won"] = total_won
+        stats["total_lost"] = total_lost
+        stats["net_result"] = total_won - total_lost
+        stats["win_rate_by_hands"] = (
+            stats["hands_won"] / stats["total_hands"] if stats["total_hands"] > 0 else 0
+        )
+        stats["win_rate_by_bets"] = (
+            total_won / total_wagered if total_wagered > 0 else 0
+        )
+
+        return stats
+
+
+# Enhanced BlackjackEnv with finite deck support and card counting
+# Maintains backward compatibility with original BlackjackEnv interface
+
+
+def demo_finite_deck():
+    """Demonstrate the finite deck functionality."""
+    print("🎲 FINITE DECK BLACKJACK DEMO")
+    print("=" * 50)
+
+    # Test different deck types
+    deck_types = ["infinite", "1-deck", "6-deck", "8-deck"]
+
+    for deck_type in deck_types:
+        print(f"\n🃏 Testing {deck_type.upper()} deck:")
+        print("-" * 30)
+
+        env = BlackjackEnv(deck_type=deck_type, penetration=0.75)
+
+        # Play a few hands
+        for hand in range(3):
+            state = env.reset()
+            deck_info = env.get_card_counting_info()
+
+            print(f"Hand {hand + 1}:")
+            print(f"  Player: {env.player_hands[0]}")
+            print(f"  Dealer: [{env.dealer_hand[0]}, ?]")
+            print(f"  Cards remaining: {deck_info['cards_remaining']}")
+            if deck_info["running_count"] is not None:
+                print(f"  Running count: {deck_info['running_count']}")
+                print(f"  True count: {deck_info['true_count']:.2f}")
+
+            # Play one action (hit)
+            state, reward, done = env.step(1)  # Hit
+            print(f"  After hit: {env.player_hands[0]}, Reward: {reward}")
+            print()
+
+
+if __name__ == "__main__":
+    demo_finite_deck()
