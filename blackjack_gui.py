@@ -184,7 +184,7 @@ class BlackjackGUI:
                 print("Creating demo agent...")
                 self.agent = DQNAgent(action_space=[0, 1, 2, 3])
                 # Quick training
-                env = EnhancedBlackjackEnv(deck_type="infinite")
+                env = BlackjackEnv(deck_type="infinite", budget=100)
                 for i in range(500):
                     state = env.reset()
                     done = False
@@ -198,7 +198,7 @@ class BlackjackGUI:
                     if i % 100 == 0:
                         print(f"Training: {i}/500")
 
-            self.env = BlackjackEnv(deck_type="infinite")
+            self.env = BlackjackEnv(deck_type="infinite", budget=100)
             print("Agent loaded successfully!")
             self.state = "playing"
             self.new_game()
@@ -548,6 +548,8 @@ class BlackjackGUI:
                 self.screen.blit(split_surface, (100, 480))
 
             # Draw game info
+            game_info = self.env.get_game_info()
+            budget_info = f"Budget: ${game_info['budget']:.1f}" if 'budget' in game_info else "Budget: $100.0"
             info_texts = [
                 f"Game: {self.current_game}",
                 (
@@ -557,6 +559,7 @@ class BlackjackGUI:
                 ),
                 f"Dealer Sum: {self.dealer_sum if not self.dealer_hidden else '?'}",
                 f"Auto Play: {'ON' if self.auto_play else 'OFF'}",
+                budget_info,
             ]
 
             for i, text in enumerate(info_texts):

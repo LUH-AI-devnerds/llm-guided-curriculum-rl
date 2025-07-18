@@ -12,6 +12,7 @@ from datetime import datetime
 from LLM import LLM
 from BlackJackENV import BlackjackEnv
 from RLAgent import DQNAgent, QLearningAgent
+import argparse
 
 """
 Enhanced Win Counting System
@@ -242,12 +243,14 @@ class MultiAgentCurriculumSystem:
         agent_types=None,
         deck_type="infinite",
         penetration=0.9,
+        budget=100,
     ):
         self.llm_curriculum = LLMGuidedCurriculum(llm_api_key)
         self.num_agents = num_agents
         self.agent_types = agent_types or ["dqn", "tabular", "dqn"]
         self.deck_type = deck_type
         self.penetration = penetration
+        self.budget = budget
 
         # Setup logging directory
         self.setup_logging_directory(deck_type, penetration)
@@ -290,7 +293,9 @@ class MultiAgentCurriculumSystem:
 
         # Create date-based subdirectory
         date_str = datetime.now().strftime("%Y%m%d")
-        self.log_dir = f"logs/logs-{date_str}-{deck_type}-{penetration}"
+        self.log_dir = (
+            f"logs/logs-{date_str}-{deck_type}-{penetration}-budget{self.budget}"
+        )
 
         # Create the directory if it doesn't exist
         if not os.path.exists(self.log_dir):
@@ -318,6 +323,7 @@ class MultiAgentCurriculumSystem:
         print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
         print(f"Curriculum Stages: {len(self.curriculum_stages)}")
         print(f"Total Episodes: {total_episodes}")
+        print(f"Budget per agent: ${self.budget}")
 
         for stage_idx, stage in enumerate(self.curriculum_stages):
             print(f"\n📚 STAGE {stage.stage_id}: {stage.name}")
@@ -334,9 +340,12 @@ class MultiAgentCurriculumSystem:
                         f"\n🤖 Training Agent {agent_idx} ({agent.agent_type.upper()})"
                     )
 
-                    # Create environment for current stage with deck configuration
+                    # Create environment for current stage with deck configuration and budget
                     env = CurriculumBlackjackEnv(
-                        stage, deck_type=self.deck_type, penetration=self.penetration
+                        stage,
+                        deck_type=self.deck_type,
+                        penetration=self.penetration,
+                        budget=self.budget,
                     )
 
                     # Train agent on current stage
@@ -762,7 +771,7 @@ class MultiAgentCurriculumSystem:
             "win_rate": wins / episodes,
             "avg_reward": np.mean(total_rewards),
             "std_reward": np.std(total_rewards),
-            "total_wins": wins,
+            "total_wins": wins,  # Add total wins count
             "poor_actions": poor_actions,
             "action_performance": {
                 action: {
@@ -912,11 +921,14 @@ class MultiAgentCurriculumSystem:
 class CurriculumBlackjackEnv(BlackjackEnv):
     """Extended BlackjackEnv that enforces curriculum stage constraints."""
 
-    def __init__(self, curriculum_stage, deck_type="infinite", penetration=0.75):
+    def __init__(
+        self, curriculum_stage, deck_type="infinite", penetration=0.75, budget=100
+    ):
         super().__init__(
             curriculum_stage=curriculum_stage.stage_id,
             deck_type=deck_type,
             penetration=penetration,
+            budget=budget,
         )
         self.stage = curriculum_stage
 
@@ -931,38 +943,205 @@ class CurriculumBlackjackEnv(BlackjackEnv):
         return super().step(action)
 
 
+class MultiAgentStandardSystem:
+    """Trains multiple RL agents on the full Blackjack environment (no curriculum)."""
+
+    def __init__(
+        self,
+        num_agents=3,
+        agent_types=None,
+        deck_type="infinite",
+        penetration=0.9,
+        budget=100,
+    ):
+        self.num_agents = num_agents
+        self.agent_types = agent_types or ["dqn", "tabular", "dqn"]
+        self.deck_type = deck_type
+        self.penetration = penetration
+        self.budget = budget
+        self.setup_logging_directory(deck_type, penetration)
+        self.agents = []
+        for i, agent_type in enumerate(self.agent_types):
+            if agent_type == "dqn":
+                agent = DQNAgent(action_space=[0, 1, 2, 3])
+            else:
+                agent = QLearningAgent(action_space=[0, 1, 2, 3])
+            agent.agent_id = i
+            agent.agent_type = agent_type
+            self.agents.append(agent)
+        self.global_performance_log = []
+
+    def setup_logging_directory(self, deck_type, penetration):
+        if not os.path.exists("logs"):
+            os.makedirs("logs")
+        date_str = datetime.now().strftime("%Y%m%d")
+        self.log_dir = f"logs/logs-{date_str}-standard-{deck_type}-{penetration}-no-curriculum-budget{self.budget}"
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+        self.eval_log_dir = os.path.join(self.log_dir, "evaluation")
+        self.training_log_dir = os.path.join(self.log_dir, "training")
+        self.report_log_dir = os.path.join(self.log_dir, "reports")
+        for subdir in [self.eval_log_dir, self.training_log_dir, self.report_log_dir]:
+            if not os.path.exists(subdir):
+                os.makedirs(subdir)
+        print(f"📁 Logging directory setup: {self.log_dir}")
+
+    def train(self, total_episodes=50000, eval_episodes=1000):
+        print(f"\n🤖 STANDARD MULTI-AGENT RL TRAINING")
+        print("=" * 60)
+        print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
+        print(f"Total Episodes: {total_episodes}")
+        print(f"Budget per agent: ${self.budget}")
+        for agent_idx, agent in enumerate(self.agents):
+            print(f"\nTraining Agent {agent_idx} ({agent.agent_type.upper()})")
+            env = BlackjackEnv(
+                deck_type=self.deck_type,
+                penetration=self.penetration,
+                budget=self.budget,
+            )
+            episode_rewards = []
+            wins = 0
+            for episode in range(total_episodes):
+                state = env.reset()
+                done = False
+                total_reward = 0
+                while not done:
+                    action = agent.get_action(state)
+                    next_state, reward, done = env.step(action)
+                    if hasattr(agent, "remember"):
+                        agent.remember(state, action, reward, next_state, done)
+                        agent.replay()
+                    else:
+                        agent.update(state, action, reward, next_state)
+                    state = next_state
+                    total_reward += reward
+                episode_rewards.append(total_reward)
+                detailed_stats = env.get_detailed_win_stats()
+                if detailed_stats:
+                    for hand_detail in detailed_stats["hand_details"]:
+                        if hand_detail["result"] in ("win", "blackjack"):
+                            bet_multiplier = 2 if hand_detail["doubled"] else 1
+                            wins += bet_multiplier
+                agent.decay_epsilon()
+                if episode % 1000 == 0:
+                    budget_info = env.get_game_info()
+                    print(
+                        f"  Episode {episode}: Win Rate: {(wins/(episode+1))*100:.1f}%, Epsilon: {agent.epsilon:.4f}, Budget: ${budget_info['budget']:.1f}"
+                    )
+            # Save agent model
+            models_dir = os.path.join(self.log_dir, "models")
+            if not os.path.exists(models_dir):
+                os.makedirs(models_dir)
+            filename = f"standard_agent_{agent.agent_type}_{agent_idx}"
+            if agent.agent_type == "dqn":
+                model_path = os.path.join(models_dir, f"{filename}.pth")
+                agent.save_model(model_path)
+            else:
+                model_path = os.path.join(models_dir, f"{filename}.pkl")
+                agent.save_model(model_path)
+            print(f"Saved {filename} to {model_path}")
+            # Evaluate agent
+            eval_results = self.evaluate(agent, env, eval_episodes)
+            print(
+                f"  Final Win Rate: {eval_results['win_rate']*100:.2f}% | Avg Reward: {eval_results['avg_reward']:.2f}"
+            )
+        print("\n✅ STANDARD TRAINING COMPLETE!")
+        print(f"📁 All logs and models saved to: {self.log_dir}")
+
+    def evaluate(self, agent, env, episodes):
+        original_epsilon = agent.epsilon
+        agent.epsilon = 0.0
+        total_rewards = []
+        wins = 0
+        for _ in range(episodes):
+            state = env.reset()
+            done = False
+            episode_reward = 0
+            while not done:
+                action = agent.get_action(state)
+                state, reward, done = env.step(action)
+                episode_reward += reward
+            total_rewards.append(episode_reward)
+            detailed_stats = env.get_detailed_win_stats()
+            if detailed_stats:
+                for hand_detail in detailed_stats["hand_details"]:
+                    if hand_detail["result"] in ("win", "blackjack"):
+                        bet_multiplier = 2 if hand_detail["doubled"] else 1
+                        wins += bet_multiplier
+        agent.epsilon = original_epsilon
+        return {"win_rate": wins / episodes, "avg_reward": np.mean(total_rewards)}
+
+
 if __name__ == "__main__":
-    # Set your Google AI API key here
-    API_KEY = os.getenv("GOOGLE_AI_API_KEY")  # Replace with actual API key
-
-    if API_KEY == "your_api_key_here":
-        print("⚠️  Please set your Google AI API key in the API_KEY variable")
-        print("You can get an API key from: https://ai.google.dev/")
-        exit(1)
-
-    print("🚀 STARTING MULTI-AGENT CURRICULUM LEARNING")
-    print("=" * 60)
-
-    # Initialize multi-agent curriculum system with 8-deck configuration
-    curriculum_system = MultiAgentCurriculumSystem(
-        llm_api_key=API_KEY,
-        num_agents=2,
-        agent_types=["dqn", "tabular"],  # Mix of agent types
-        deck_type="infinite",  # Use 8-deck shoe (casino standard)
-        penetration=0.9,  # Reshuffle at 75% penetration
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--no-curriculum",
+        action="store_true",
+        help="Run standard RL without curriculum",
     )
-
-    # Train agents through curriculum
-    final_report = curriculum_system.train_multi_agent_curriculum(
-        total_episodes=100000, eval_episodes=10000  # Reduced for demo
+    parser.add_argument("--num-agents", type=int, default=2, help="Number of agents")
+    parser.add_argument(
+        "--agent-types",
+        nargs="*",
+        default=["dqn", "tabular"],
+        help="List of agent types (dqn/tabular)",
     )
+    parser.add_argument(
+        "--deck-type",
+        type=str,
+        default="infinite",
+        help="Deck type (infinite, 1-deck, 6-deck, 8-deck)",
+    )
+    parser.add_argument(
+        "--penetration",
+        type=float,
+        default=0.9,
+        help="Deck penetration for reshuffling",
+    )
+    parser.add_argument(
+        "--budget", type=int, default=100, help="Starting budget for each agent"
+    )
+    parser.add_argument(
+        "--episodes", type=int, default=100000, help="Total training episodes"
+    )
+    parser.add_argument(
+        "--eval-episodes", type=int, default=1000, help="Evaluation episodes"
+    )
+    args = parser.parse_args()
 
-    # Save trained agents
-    curriculum_system.save_agents()
+    API_KEY = os.getenv("GOOGLE_AI_API_KEY")
 
-    # Create run summary
-    curriculum_system.create_run_summary()
-
-    print("\n✅ CURRICULUM LEARNING COMPLETE!")
-    print(f"📁 All logs and models saved to: {curriculum_system.log_dir}")
-    print("Check the generated JSON report for detailed results.")
+    if args.no_curriculum:
+        print("\n🚀 STARTING STANDARD MULTI-AGENT RL TRAINING")
+        system = MultiAgentStandardSystem(
+            num_agents=args.num_agents,
+            agent_types=args.agent_types,
+            deck_type=args.deck_type,
+            penetration=args.penetration,
+            budget=args.budget,
+        )
+        system.train(total_episodes=args.episodes, eval_episodes=args.eval_episodes)
+    else:
+        if API_KEY == "your_api_key_here" or not API_KEY:
+            print(
+                "⚠️  Please set your Google AI API key in the API_KEY variable or environment"
+            )
+            print("You can get an API key from: https://ai.google.dev/")
+            exit(1)
+        print("\n🚀 STARTING MULTI-AGENT CURRICULUM LEARNING")
+        curriculum_system = MultiAgentCurriculumSystem(
+            llm_api_key=API_KEY,
+            num_agents=args.num_agents,
+            agent_types=args.agent_types,
+            deck_type=args.deck_type,
+            penetration=args.penetration,
+            budget=args.budget,
+        )
+        final_report = curriculum_system.train_multi_agent_curriculum(
+            total_episodes=args.episodes, eval_episodes=args.eval_episodes
+        )
+        curriculum_system.save_agents()
+        curriculum_system.create_run_summary()
+        print("\n✅ CURRICULUM LEARNING COMPLETE!")
+        print(f"📁 All logs and models saved to: {curriculum_system.log_dir}")
+        print("Check the generated JSON report for detailed results.")

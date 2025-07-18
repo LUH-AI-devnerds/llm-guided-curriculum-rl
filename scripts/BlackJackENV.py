@@ -12,7 +12,9 @@ class BlackjackEnv:
     Deck Options: infinite, 1-deck, 6-deck, 8-deck (casino standard)
     """
 
-    def __init__(self, curriculum_stage=3, deck_type="infinite", penetration=0.75):
+    def __init__(
+        self, curriculum_stage=3, deck_type="infinite", penetration=0.75, budget=100
+    ):
         """
         Initialize the Blackjack environment.
 
@@ -20,12 +22,18 @@ class BlackjackEnv:
             curriculum_stage (int): Curriculum stage for action constraints
             deck_type (str): "infinite", "1-deck", "6-deck", or "8-deck"
             penetration (float): When to reshuffle (0.75 = reshuffle at 75% through deck)
+            budget (int): Starting budget for the agent (default: 100)
         """
         self.curriculum_stage = curriculum_stage
         self.action_space = [0, 1, 2, 3]  # 0: stand, 1: hit, 2: double down, 3: split
         self.initial_bet = 1
         self.deck_type = deck_type
         self.penetration = penetration
+        self.initial_budget = budget
+        self.budget = budget
+        self.total_winnings = 0
+        self.total_losses = 0
+        self.games_played = 0
 
         # Initialize deck
         self._initialize_deck()
@@ -131,6 +139,7 @@ class BlackjackEnv:
         self.can_split = self._can_split()
         self.can_double = True
         self.game_over = False
+        self.games_played += 1
         return self._get_state()
 
     def _can_split(self):
@@ -179,9 +188,27 @@ class BlackjackEnv:
                 player_sum = self._get_hand_sum(last_hand)
                 dealer_up_card = self.dealer_hand[0]
                 has_usable_ace = 11 in last_hand and self._get_hand_sum(last_hand) <= 21
-                return (player_sum, dealer_up_card, has_usable_ace, False, False, False)
+                return (
+                    player_sum,
+                    dealer_up_card,
+                    has_usable_ace,
+                    False,
+                    False,
+                    False,
+                    self.budget,
+                    self.games_played,
+                )
             else:
-                return (0, 0, False, False, False, False)
+                return (
+                    0,
+                    0,
+                    False,
+                    False,
+                    False,
+                    False,
+                    self.budget,
+                    self.games_played,
+                )
 
         current_hand = self.player_hands[self.current_hand_idx]
         player_sum = self._get_hand_sum(current_hand)
@@ -202,6 +229,8 @@ class BlackjackEnv:
             can_split,
             can_double,
             is_blackjack,
+            self.budget,
+            self.games_played,
         )
 
     def step(self, action):
@@ -264,6 +293,54 @@ class BlackjackEnv:
             self.can_double = True
             return self._get_state(), 0, False
 
+    def _calculate_dynamic_reward(self, base_reward, bet_amount):
+        """
+        Calculate dynamic reward based on budget status and performance.
+
+        Args:
+            base_reward (float): Base reward from game outcome
+            bet_amount (float): Amount bet on this hand
+
+        Returns:
+            float: Scaled reward based on budget and performance
+        """
+        # Budget-based scaling factors
+        budget_ratio = self.budget / self.initial_budget
+
+        # Performance-based scaling
+        if self.games_played > 1:
+            win_rate = (
+                self.total_winnings / (self.total_winnings + self.total_losses)
+                if (self.total_winnings + self.total_losses) > 0
+                else 0.5
+            )
+        else:
+            win_rate = 0.5
+
+        # Dynamic reward scaling
+        if base_reward > 0:  # Winning
+            # Higher rewards when budget is low (comeback bonus)
+            budget_bonus = max(1.0, (1.0 - budget_ratio) * 2.0)
+            # Higher rewards for consistent winning
+            performance_bonus = 1.0 + (win_rate - 0.5) * 0.5
+            scaled_reward = base_reward * budget_bonus * performance_bonus
+
+        elif base_reward < 0:  # Losing
+            # Higher penalties when budget is low (risk of going broke)
+            budget_penalty = max(1.0, (1.0 - budget_ratio) * 3.0)
+            # Higher penalties for poor performance
+            performance_penalty = 1.0 + (0.5 - win_rate) * 0.5
+            scaled_reward = base_reward * budget_penalty * performance_penalty
+
+        else:  # Push
+            scaled_reward = 0.0
+
+        # Severe penalty for going broke
+        if self.budget <= 0:
+            scaled_reward -= 50.0  # Heavy penalty for bankruptcy
+
+        return scaled_reward
+
     def _play_dealer_and_calculate_rewards(self):
         """Play dealer's turn and calculate final rewards."""
         dealer_sum = self._get_hand_sum(self.dealer_hand)
@@ -284,18 +361,28 @@ class BlackjackEnv:
 
             if player_sum > 21:  # Player busted
                 hand_reward = -bet
+                self.total_losses += bet
+                self.budget -= bet
             elif (
                 len(hand) == 2 and player_sum == 21 and not dealer_blackjack
             ):  # Player blackjack
                 hand_reward = bet * 1.5  # Blackjack pays 3:2
+                self.total_winnings += hand_reward
+                self.budget += hand_reward
             elif dealer_busted or player_sum > dealer_sum:
                 hand_reward = bet
+                self.total_winnings += hand_reward
+                self.budget += hand_reward
             elif player_sum < dealer_sum:
                 hand_reward = -bet
+                self.total_losses += bet
+                self.budget -= bet
             else:  # Push
                 hand_reward = 0
 
-            total_reward += hand_reward
+            # Apply dynamic reward scaling
+            scaled_reward = self._calculate_dynamic_reward(hand_reward, bet)
+            total_reward += scaled_reward
 
         self.game_over = True
         return self._get_state(), total_reward, True
@@ -309,6 +396,14 @@ class BlackjackEnv:
             "current_hand_idx": self.current_hand_idx,
             "bet_amounts": self.bet_amounts,
             "game_over": self.game_over,
+            "budget": self.budget,
+            "initial_budget": self.initial_budget,
+            "total_winnings": self.total_winnings,
+            "total_losses": self.total_losses,
+            "games_played": self.games_played,
+            "budget_ratio": (
+                self.budget / self.initial_budget if self.initial_budget > 0 else 0
+            ),
         }
         return info
 

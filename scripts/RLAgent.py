@@ -45,8 +45,8 @@ class DQNAgent:
         self.batch_size = batch_size
         self.target_update = target_update
 
-        # Neural networks
-        self.input_size = 6  # State size: (player_sum, dealer_up, has_ace, can_split, can_double, is_blackjack)
+        # Neural networks - updated for new state format
+        self.input_size = 8  # State size: (player_sum, dealer_up, has_ace, can_split, can_double, is_blackjack, budget, games_played)
         self.output_size = len(action_space)
 
         self.q_network = DQNNetwork(self.input_size, self.output_size)
@@ -61,8 +61,10 @@ class DQNAgent:
         """Convert state tuple to tensor."""
         if len(state) == 3:  # Old state format
             player_sum, dealer_up, has_ace = state
-            return torch.FloatTensor([player_sum, dealer_up, has_ace, 0, 0, 0])
-        else:
+            return torch.FloatTensor([player_sum, dealer_up, has_ace, 0, 0, 0, 100, 1])
+        elif len(state) == 6:  # Previous state format
+            return torch.FloatTensor(list(state) + [100, 1])  # Default budget and games
+        else:  # New state format with budget and games_played
             return torch.FloatTensor(state)
 
     def get_action(self, state):
@@ -92,14 +94,28 @@ class DQNAgent:
         ):  # Old state format (player_sum, dealer_up_card, has_usable_ace)
             return [0, 1]  # Only stand and hit for backward compatibility
 
-        (
-            player_sum,
-            dealer_up_card,
-            has_usable_ace,
-            can_split,
-            can_double,
-            is_blackjack,
-        ) = state
+        # Handle different state formats
+        if len(state) == 6:
+            (
+                player_sum,
+                dealer_up_card,
+                has_usable_ace,
+                can_split,
+                can_double,
+                is_blackjack,
+            ) = state
+        else:  # New format with budget and games_played
+            (
+                player_sum,
+                dealer_up_card,
+                has_usable_ace,
+                can_split,
+                can_double,
+                is_blackjack,
+                budget,
+                games_played,
+            ) = state
+
         valid_actions = [0]  # Stand is always valid
 
         if player_sum < 21 and not is_blackjack:
@@ -257,14 +273,28 @@ class QLearningAgent:
         ):  # Old state format (player_sum, dealer_up_card, has_usable_ace)
             return [0, 1]  # Only stand and hit for backward compatibility
 
-        (
-            player_sum,
-            dealer_up_card,
-            has_usable_ace,
-            can_split,
-            can_double,
-            is_blackjack,
-        ) = state
+        # Handle different state formats
+        if len(state) == 6:
+            (
+                player_sum,
+                dealer_up_card,
+                has_usable_ace,
+                can_split,
+                can_double,
+                is_blackjack,
+            ) = state
+        else:  # New format with budget and games_played
+            (
+                player_sum,
+                dealer_up_card,
+                has_usable_ace,
+                can_split,
+                can_double,
+                is_blackjack,
+                budget,
+                games_played,
+            ) = state
+
         valid_actions = [0]  # Stand is always valid
 
         if player_sum < 21 and not is_blackjack:

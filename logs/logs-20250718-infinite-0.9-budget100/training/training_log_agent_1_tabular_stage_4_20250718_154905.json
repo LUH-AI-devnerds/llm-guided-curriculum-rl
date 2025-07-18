@@ -1,0 +1,301 @@
+{
+  "agent_id": 1,
+  "agent_type": "tabular",
+  "stage_id": 4,
+  "stage_name": "Full Blackjack (Hit, Stand, Double, Split)",
+  "total_episodes": 2500,
+  "timestamp": "2025-07-18T15:49:05.623899",
+  "logged_episodes": [
+    {
+      "episode": 0,
+      "actions": [
+        0
+      ],
+      "states": [
+        {
+          "player_sum": 21,
+          "dealer_up": 10,
+          "has_ace": true,
+          "can_split": false,
+          "can_double": true,
+          "is_blackjack": true
+        }
+      ],
+      "rewards": [
+        1.875
+      ],
+      "game_info": [
+        {
+          "player_hands": [
+            [
+              10,
+              11
+            ]
+          ],
+          "dealer_hand": [
+            10,
+            9
+          ],
+          "current_hand_idx": 1,
+          "bet_amounts": [
+            1
+          ],
+          "game_over": true
+        }
+      ],
+      "epsilon": 0.01,
+      "final_result": {
+        "episode_wins": 1,
+        "net_result": 1.5,
+        "total_hands": 1,
+        "hands_won": 1,
+        "hands_lost": 0,
+        "double_downs": 0,
+        "splits": 0
+      },
+      "final_game_state": {
+        "player_hands": [
+          [
+            10,
+            11
+          ]
+        ],
+        "dealer_hand": [
+          10,
+          9
+        ],
+        "bet_amounts": [
+          1
+        ],
+        "detailed_stats": {
+          "total_hands": 1,
+          "total_bet": 1,
+          "hands_won": 1,
+          "hands_lost": 0,
+          "hands_pushed": 0,
+          "double_downs": 0,
+          "splits": 0,
+          "blackjacks": 1,
+          "busts": 0,
+          "hand_details": [
+            {
+              "hand_index": 0,
+              "cards": [
+                10,
+                11
+              ],
+              "sum": 21,
+              "bet": 1,
+              "doubled": false,
+              "result": "blackjack",
+              "reward": 1.5
+            }
+          ],
+          "total_won": 1.5,
+          "total_lost": 0,
+          "net_result": 1.5,
+          "win_rate_by_hands": 1.0,
+          "win_rate_by_bets": 1.5
+        }
+      }
+    },
+    {
+      "episode": 1000,
+      "actions": [
+        0
+      ],
+      "states": [
+        {
+          "player_sum": 13,
+          "dealer_up": 10,
+          "has_ace": false,
+          "can_split": false,
+          "can_double": true,
+          "is_blackjack": false
+        }
+      ],
+      "rewards": [
+        -46.465472972972975
+      ],
+      "game_info": [
+        {
+          "player_hands": [
+            [
+              3,
+              10
+            ]
+          ],
+          "dealer_hand": [
+            10,
+            2,
+            10
+          ],
+          "current_hand_idx": 1,
+          "bet_amounts": [
+            1
+          ],
+          "game_over": true
+        }
+      ],
+      "epsilon": 0.01,
+      "final_result": {
+        "episode_wins": 1,
+        "net_result": 1,
+        "total_hands": 1,
+        "hands_won": 1,
+        "hands_lost": 0,
+        "double_downs": 0,
+        "splits": 0
+      },
+      "final_game_state": {
+        "player_hands": [
+          [
+            3,
+            10
+          ]
+        ],
+        "dealer_hand": [
+          10,
+          2,
+          10
+        ],
+        "bet_amounts": [
+          1
+        ],
+        "detailed_stats": {
+          "total_hands": 1,
+          "total_bet": 1,
+          "hands_won": 1,
+          "hands_lost": 0,
+          "hands_pushed": 0,
+          "double_downs": 0,
+          "splits": 0,
+          "blackjacks": 0,
+          "busts": 0,
+          "hand_details": [
+            {
+              "hand_index": 0,
+              "cards": [
+                3,
+                10
+              ],
+              "sum": 13,
+              "bet": 1,
+              "doubled": false,
+              "result": "win",
+              "reward": 1
+            }
+          ],
+          "total_won": 1,
+          "total_lost": 0,
+          "net_result": 1,
+          "win_rate_by_hands": 1.0,
+          "win_rate_by_bets": 1.0
+        }
+      }
+    },
+    {
+      "episode": 2000,
+      "actions": [
+        0
+      ],
+      "states": [
+        {
+          "player_sum": 16,
+          "dealer_up": 4,
+          "has_ace": true,
+          "can_split": false,
+          "can_double": true,
+          "is_blackjack": false
+        }
+      ],
+      "rewards": [
+        -43.0220735444331
+      ],
+      "game_info": [
+        {
+          "player_hands": [
+            [
+              11,
+              5
+            ]
+          ],
+          "dealer_hand": [
+            4,
+            11,
+            8,
+            10
+          ],
+          "current_hand_idx": 1,
+          "bet_amounts": [
+            1
+          ],
+          "game_over": true
+        }
+      ],
+      "epsilon": 0.01,
+      "final_result": {
+        "episode_wins": 1,
+        "net_result": 1,
+        "total_hands": 1,
+        "hands_won": 1,
+        "hands_lost": 0,
+        "double_downs": 0,
+        "splits": 0
+      },
+      "final_game_state": {
+        "player_hands": [
+          [
+            11,
+            5
+          ]
+        ],
+        "dealer_hand": [
+          4,
+          11,
+          8,
+          10
+        ],
+        "bet_amounts": [
+          1
+        ],
+        "detailed_stats": {
+          "total_hands": 1,
+          "total_bet": 1,
+          "hands_won": 1,
+          "hands_lost": 0,
+          "hands_pushed": 0,
+          "double_downs": 0,
+          "splits": 0,
+          "blackjacks": 0,
+          "busts": 0,
+          "hand_details": [
+            {
+              "hand_index": 0,
+              "cards": [
+                11,
+                5
+              ],
+              "sum": 16,
+              "bet": 1,
+              "doubled": false,
+              "result": "win",
+              "reward": 1
+            }
+          ],
+          "total_won": 1,
+          "total_lost": 0,
+          "net_result": 1,
+          "win_rate_by_hands": 1.0,
+          "win_rate_by_bets": 1.0
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total_wins": 939,
+    "win_rate": 0.3756,
+    "avg_reward": -39.3054306206115,
+    "std_reward": 24.080884620333233
+  }
+}
