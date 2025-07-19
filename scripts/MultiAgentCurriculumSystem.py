@@ -36,6 +36,9 @@ class CurriculumBlackjackEnv(BlackjackEnv):
         # Check if action is allowed in current curriculum stage
         if action not in self.stage.available_actions:
             # Force to stand if action not allowed
+            print(
+                f"⚠️  Curriculum constraint: Action {action} not allowed in stage {self.stage.stage_id}. Forcing stand."
+            )
             action = 0
 
         return super().step(action)
@@ -166,6 +169,18 @@ class MultiAgentCurriculumSystem:
                     # Set curriculum stage for the agent
                     agent.set_curriculum_stage(stage)
 
+                    # Load strategies from previous stages if available
+                    if stage.stage_id > 1 and hasattr(agent, "stage_models"):
+                        self._load_previous_stage_strategies(agent, stage)
+
+                    # Validate agent curriculum stage awareness
+                    print(
+                        f"  🔍 Agent {agent_idx} curriculum stage set to: {agent.curriculum_stage.stage_id if agent.curriculum_stage else 'None'}"
+                    )
+                    print(
+                        f"  🔍 Available actions for agent: {agent.curriculum_stage.available_actions if agent.curriculum_stage else 'None'}"
+                    )
+
                     # Train agent on current stage
                     stage_episodes = total_episodes // len(self.curriculum_stages)
                     agent_performance = self._train_agent_on_stage(
@@ -187,6 +202,11 @@ class MultiAgentCurriculumSystem:
                     if recommendations.get("advance_stage", False):
                         agent.current_stage += 1
                         print(f"✅ Agent {agent_idx} advanced to next stage!")
+
+                        # Preserve learned strategies when advancing stages
+                        self._preserve_learned_strategies(
+                            agent, stage, agent_performance
+                        )
                     else:
                         print(
                             f"🔄 Agent {agent_idx} needs more training on current stage"
@@ -204,6 +224,69 @@ class MultiAgentCurriculumSystem:
             )
 
         return self._generate_final_report()
+
+        # Generate stage comparison summary
+        self._generate_stage_comparison_summary()
+
+        return self._generate_final_report()
+
+    def _validate_curriculum_constraints(
+        self, agent, stage, action, context="training"
+    ):
+        """Validate and log curriculum constraint violations."""
+        if action not in stage.available_actions:
+            print(
+                f"⚠️  {context.upper()}: Agent {agent.agent_id} ({agent.agent_type}) "
+                f"tried action {action} in stage {stage.stage_id} '{stage.name}' "
+                f"(available: {stage.available_actions})"
+            )
+            return False
+        return True
+
+    def _analyze_stage_performance(self, agent, stage, episode_rewards, wins, episodes):
+        """Analyze performance patterns for curriculum stage debugging."""
+        print(
+            f"\n📊 STAGE {stage.stage_id} ANALYSIS for Agent {agent.agent_id} ({agent.agent_type}):"
+        )
+        print(f"  Stage: {stage.name}")
+        print(f"  Available Actions: {stage.available_actions}")
+        print(f"  Success Threshold: {stage.success_threshold}")
+        print(f"  Win Rate: {wins/episodes:.4f}")
+        print(f"  Average Reward: {np.mean(episode_rewards):.4f}")
+        print(f"  Reward Std: {np.std(episode_rewards):.4f}")
+
+        # Analyze reward distribution
+        positive_rewards = [r for r in episode_rewards if r > 0]
+        negative_rewards = [r for r in episode_rewards if r < 0]
+        zero_rewards = [r for r in episode_rewards if r == 0]
+
+        print(
+            f"  Positive Rewards: {len(positive_rewards)} ({len(positive_rewards)/len(episode_rewards)*100:.1f}%)"
+        )
+        print(
+            f"  Negative Rewards: {len(negative_rewards)} ({len(negative_rewards)/len(episode_rewards)*100:.1f}%)"
+        )
+        print(
+            f"  Zero Rewards: {len(zero_rewards)} ({len(zero_rewards)/len(episode_rewards)*100:.1f}%)"
+        )
+
+        if positive_rewards:
+            print(f"  Avg Positive Reward: {np.mean(positive_rewards):.4f}")
+        if negative_rewards:
+            print(f"  Avg Negative Reward: {np.mean(negative_rewards):.4f}")
+
+        # Stage-specific insights
+        if stage.stage_id == 3:
+            print(
+                f"  🔍 Stage 3 (Double Available): Agents should be learning double strategy"
+            )
+        elif stage.stage_id == 4:
+            print(
+                f"  🔍 Stage 4 (All Actions): Agents now have splits - may affect double usage patterns"
+            )
+            print(
+                f"  🔍 Expected: Double usage might decrease as agents explore splits"
+            )
 
     def _train_agent_on_stage(self, agent, env, stage, episodes, eval_episodes):
         """Train a single agent on a curriculum stage."""
@@ -227,6 +310,13 @@ class MultiAgentCurriculumSystem:
             "total_episodes": episodes,
             "timestamp": datetime.now().isoformat(),
             "logged_episodes": [],
+            "action_usage_summary": {0: 0, 1: 0, 2: 0, 3: 0},  # Track action usage
+            "action_rewards_summary": {
+                0: [],
+                1: [],
+                2: [],
+                3: [],
+            },  # Track action rewards
         }
 
         for episode in range(episodes):
@@ -250,7 +340,19 @@ class MultiAgentCurriculumSystem:
 
             while not done:
                 action = agent.get_action(state)
+
+                # Validate curriculum constraints
+                self._validate_curriculum_constraints(agent, stage, action, "training")
+
+                # Track action usage and rewards
+                if action in stage.available_actions:
+                    training_log["action_usage_summary"][action] += 1
+
                 next_state, reward, done = env.step(action)
+
+                # Track action rewards
+                if action in stage.available_actions:
+                    training_log["action_rewards_summary"][action].append(reward)
 
                 # Log state and action if this episode is being logged
                 if should_log_episode:
@@ -368,7 +470,20 @@ class MultiAgentCurriculumSystem:
             "win_rate": wins / episodes,
             "avg_reward": np.mean(episode_rewards),
             "std_reward": np.std(episode_rewards),
+            "action_usage": training_log["action_usage_summary"],
+            "action_performance": {
+                action: {
+                    "count": len(rewards),
+                    "avg_reward": np.mean(rewards) if rewards else 0,
+                    "std_reward": np.std(rewards) if rewards else 0,
+                }
+                for action, rewards in training_log["action_rewards_summary"].items()
+                if rewards
+            },
         }
+
+        # Analyze stage performance for debugging
+        self._analyze_stage_performance(agent, stage, episode_rewards, wins, episodes)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         training_filename = os.path.join(
@@ -381,7 +496,7 @@ class MultiAgentCurriculumSystem:
         print(f"  📊 Training log saved to: {training_filename}")
 
         # Evaluation phase
-        evaluation_results = self._evaluate_agent(agent, env, eval_episodes)
+        evaluation_results = self._evaluate_agent(agent, env, eval_episodes, stage)
         end_time = time.time()
         time_taken = end_time - start_time
         print(f"Time taken: {time_taken:.2f} seconds")
@@ -472,7 +587,79 @@ class MultiAgentCurriculumSystem:
 
         print(f"  🎯 Focusing on actions: {recommended_actions}")
 
-    def _evaluate_agent(self, agent, env, episodes):
+    def _preserve_learned_strategies(self, agent, stage, agent_performance):
+        """Preserve learned strategies from the previous stage to the new stage."""
+        print(
+            f"  💾 Preserving learned strategies for Agent {agent.agent_id} (Stage {stage.stage_id})"
+        )
+
+        # Create models directory if it doesn't exist
+        models_dir = os.path.join(self.log_dir, "models")
+        if not os.path.exists(models_dir):
+            os.makedirs(models_dir)
+
+        # Save current stage model
+        if agent.agent_type == "dqn":
+            model_path = os.path.join(
+                models_dir, f"agent_{agent.agent_id}_stage_{stage.stage_id}.pth"
+            )
+            agent.save_model(model_path)
+            print(f"    DQN model saved to: {model_path}")
+        else:  # tabular
+            model_path = os.path.join(
+                models_dir, f"agent_{agent.agent_id}_stage_{stage.stage_id}.pkl"
+            )
+            agent.save_model(model_path)
+            print(f"    Q-table saved to: {model_path}")
+
+        # Store stage performance for reference
+        agent.stage_models = getattr(agent, "stage_models", {})
+        agent.stage_models[stage.stage_id] = {
+            "model_path": model_path,
+            "performance": agent_performance,
+            "available_actions": stage.available_actions,
+        }
+
+    def _load_previous_stage_strategies(self, agent, stage):
+        """Load and merge strategies from previous stages to the current agent."""
+        print(
+            f"  💾 Loading strategies from previous stages for Agent {agent.agent_id} (Stage {stage.stage_id})"
+        )
+        previous_stage_id = stage.stage_id - 1
+        if previous_stage_id in agent.stage_models:
+            previous_stage_data = agent.stage_models[previous_stage_id]
+            print(f"    Loading strategies from Stage {previous_stage_id}")
+            print(f"    Available Actions: {previous_stage_data['available_actions']}")
+
+            # Load the model
+            model_path = previous_stage_data["model_path"]
+            if agent.agent_type == "dqn":
+                agent.load_model(model_path)
+                print(f"    DQN model loaded from: {model_path}")
+            else:  # tabular
+                agent.load_model(model_path)
+                print(f"    Q-table loaded from: {model_path}")
+
+            # Merge available actions
+            current_available_actions = set(stage.available_actions)
+            previous_available_actions = set(previous_stage_data["available_actions"])
+            new_available_actions = list(
+                current_available_actions.union(previous_available_actions)
+            )
+            agent.action_space = new_available_actions
+            print(f"    Merged available actions: {new_available_actions}")
+
+            # Update action space for the agent's RL model
+            if hasattr(agent, "action_space"):
+                agent.action_space = new_available_actions
+                print(f"    Agent action_space updated to: {agent.action_space}")
+
+            # Update action_space attribute for the agent's RL model
+            if hasattr(agent, "action_space"):
+                agent.action_space = new_available_actions
+                print(f"    Agent action_space updated to: {agent.action_space}")
+
+    def _evaluate_agent(self, agent, env, episodes, stage=None):
         """Evaluate agent performance and identify weak actions."""
 
         original_epsilon = agent.epsilon
@@ -497,6 +684,7 @@ class MultiAgentCurriculumSystem:
         # Detailed evaluation logging
         evaluation_log = {
             "agent_id": agent.agent_id,
+            "stage_id": stage.stage_id if stage else None,
             "agent_type": agent.agent_type,
             "evaluation_episodes": episodes,
             "timestamp": datetime.now().isoformat(),
@@ -523,6 +711,12 @@ class MultiAgentCurriculumSystem:
             while not done:
                 action = agent.get_action(state)
                 episode_actions.append(action)
+
+                # Validate curriculum constraints during evaluation
+                if stage:
+                    self._validate_curriculum_constraints(
+                        agent, stage, action, "evaluation"
+                    )
 
                 # Create state key for statistics
                 player_sum = state[0]
@@ -752,6 +946,68 @@ class MultiAgentCurriculumSystem:
                 if v
             },
         }
+
+    def _generate_stage_comparison_summary(self):
+        """Generate a summary comparing Stage 3 vs Stage 4 performance."""
+        print(f"\n📊 STAGE 3 vs STAGE 4 COMPARISON SUMMARY")
+        print("=" * 60)
+
+        # Find Stage 3 and Stage 4 results
+        stage3_results = None
+        stage4_results = None
+
+        for stage_log in self.global_performance_log:
+            if stage_log["stage"]["stage_id"] == 3:
+                stage3_results = stage_log
+            elif stage_log["stage"]["stage_id"] == 4:
+                stage4_results = stage_log
+
+        if stage3_results and stage4_results:
+            print(f"🔍 Stage 3: {stage3_results['stage']['name']}")
+            print(
+                f"  Available Actions: {stage3_results['stage']['available_actions']}"
+            )
+            print(
+                f"  Success Threshold: {stage3_results['stage']['success_threshold']}"
+            )
+
+            print(f"\n🔍 Stage 4: {stage4_results['stage']['name']}")
+            print(
+                f"  Available Actions: {stage4_results['stage']['available_actions']}"
+            )
+            print(
+                f"  Success Threshold: {stage4_results['stage']['success_threshold']}"
+            )
+
+            print(f"\n📈 Performance Comparison:")
+            for agent_key in stage3_results["results"]:
+                if agent_key in stage4_results["results"]:
+                    agent3 = stage3_results["results"][agent_key]
+                    agent4 = stage4_results["results"][agent_key]
+
+                    print(f"\n  {agent_key.upper()}:")
+                    print(f"    Stage 3 Win Rate: {agent3['win_rate']:.4f}")
+                    print(f"    Stage 4 Win Rate: {agent4['win_rate']:.4f}")
+                    print(
+                        f"    Win Rate Change: {agent4['win_rate'] - agent3['win_rate']:+.4f}"
+                    )
+
+                    print(f"    Stage 3 Avg Reward: {agent3['avg_reward']:.4f}")
+                    print(f"    Stage 4 Avg Reward: {agent4['avg_reward']:.4f}")
+                    print(
+                        f"    Reward Change: {agent4['avg_reward'] - agent3['avg_reward']:+.4f}"
+                    )
+
+                    print(f"    Stage 3 Poor Actions: {agent3.get('poor_actions', [])}")
+                    print(f"    Stage 4 Poor Actions: {agent4.get('poor_actions', [])}")
+
+        print(f"\n💡 Key Insights:")
+        print(f"  1. Stage 4 has ALL actions available (including double)")
+        print(
+            f"  2. Higher average rewards in Stage 4 are expected due to more options"
+        )
+        print(f"  3. Double usage patterns may change due to split availability")
+        print(f"  4. This is normal curriculum learning behavior")
 
     def _generate_final_report(self):
         """Generate comprehensive training report."""
