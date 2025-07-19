@@ -1,0 +1,237 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T17:26:27.484462"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn basic strategy of when to hit or stand. The agent should learn to hit on low totals and stand on high totals relative to the dealer's upcard. Focus on understanding the immediate reward signal and the probability of busting.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Hit/Stand with Dealer Awareness",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Continue Hit/Stand learning, but now explicitly focus on the dealer's upcard and its influence on optimal action. The agent should learn the 'basic strategy' table for hit/stand based on the player's total and dealer's upcard. More exploration is needed to discover optimal actions for each scenario.",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Double Down Introduction",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent should learn when doubling down is advantageous (typically on hard 11, or hard 10 vs. low dealer upcards). This stage requires the agent to evaluate not just the immediate card, but the expectation of future cards to determine whether to double or not.",
+      "difficulty": 3,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Blackjack Strategy",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Implement all actions including splitting pairs. This stage requires the agent to learn the complete basic strategy. Splitting pairs introduces a longer-term planning aspect. The agent must learn the value of splitting potentially strong hands to maximize expected return against various dealer upcards.",
+      "difficulty": 5,
+      "success_threshold": 0.45
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 3,
+      "final_win_rate": 0.47443,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 2,
+      "final_win_rate": 0.39728,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic strategy of when to hit or stand. The agent should learn to hit on low totals and stand on high totals relative to the dealer's upcard. Focus on understanding the immediate reward signal and the probability of busting.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42731,
+          "avg_reward": -0.030367854735144712,
+          "total_wins": 104953,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 242.67481398582458
+        },
+        "agent_1": {
+          "win_rate": 0.39026,
+          "avg_reward": -0.12903318519647336,
+          "total_wins": 97737,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.297276020050049
+        }
+      },
+      "timestamp": "2025-07-19T17:11:45.516509"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Hit/Stand with Dealer Awareness",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Continue Hit/Stand learning, but now explicitly focus on the dealer's upcard and its influence on optimal action. The agent should learn the 'basic strategy' table for hit/stand based on the player's total and dealer's upcard. More exploration is needed to discover optimal actions for each scenario.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43068,
+          "avg_reward": -0.024635460561827884,
+          "total_wins": 105772,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 250.2321481704712
+        },
+        "agent_1": {
+          "win_rate": 0.4023,
+          "avg_reward": -0.10128740314401846,
+          "total_wins": 98831,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.436961650848389
+        }
+      },
+      "timestamp": "2025-07-19T17:16:07.516755"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Double Down Introduction",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn when doubling down is advantageous (typically on hard 11, or hard 10 vs. low dealer upcards). This stage requires the agent to evaluate not just the immediate card, but the expectation of future cards to determine whether to double or not.",
+        "difficulty": 3,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44844,
+          "avg_reward": -0.021412215895917103,
+          "total_wins": 113127,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 250.08818984031677
+        },
+        "agent_1": {
+          "win_rate": 0.40429,
+          "avg_reward": -0.1270500215562119,
+          "total_wins": 100223,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 8.333986043930054
+        }
+      },
+      "timestamp": "2025-07-19T17:20:29.131024"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Blackjack Strategy",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Implement all actions including splitting pairs. This stage requires the agent to learn the complete basic strategy. Splitting pairs introduces a longer-term planning aspect. The agent must learn the value of splitting potentially strong hands to maximize expected return against various dealer upcards.",
+        "difficulty": 5,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.47443,
+          "avg_reward": -0.05549491786249464,
+          "total_wins": 115705,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 345.6514108181
+        },
+        "agent_1": {
+          "win_rate": 0.39728,
+          "avg_reward": -0.14912623089264496,
+          "total_wins": 99717,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 8.315692901611328
+        }
+      },
+      "timestamp": "2025-07-19T17:26:27.484385"
+    }
+  ]
+}

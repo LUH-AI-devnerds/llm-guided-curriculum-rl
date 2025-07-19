@@ -36,12 +36,11 @@ def get_evaluation_logs_from_summary(summary_data, log_dir):
         "evaluation_logs", ""
     )
 
-    # If eval_log_dir is relative, make it absolute using log_dir
-    if not os.path.isabs(eval_log_dir):
-        eval_log_dir = os.path.join(log_dir, eval_log_dir)
+    # Use the log_dir directly since it's already the correct base path
+    eval_log_dir = os.path.join(log_dir, "evaluation")
 
     # Get list of evaluation log files
-    eval_log_files = summary_data.get("files_generated", {}).get("evaluation_logs", [])
+    eval_log_files = summary_data.get("files_generated", {}).get("evaluation", [])
 
     for log_file in eval_log_files:
         log_path = os.path.join(eval_log_dir, log_file)
