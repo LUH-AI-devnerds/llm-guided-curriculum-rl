@@ -13,7 +13,13 @@ class BlackjackEnv:
     """
 
     def __init__(
-        self, curriculum_stage=3, deck_type="infinite", penetration=0.75, budget=100
+        self,
+        curriculum_stage=3,
+        deck_type="infinite",
+        penetration=0.75,
+        budget=100,
+        use_dynamic_rewards=True,
+        reward_type="simple",
     ):
         """
         Initialize the Blackjack environment.
@@ -23,6 +29,8 @@ class BlackjackEnv:
             deck_type (str): "infinite", "1-deck", "6-deck", or "8-deck"
             penetration (float): When to reshuffle (0.75 = reshuffle at 75% through deck)
             budget (int): Starting budget for the agent (default: 100)
+            use_dynamic_rewards (bool): Whether to use dynamic reward scaling (default: True)
+            reward_type (str): Reward scheme - "simple", "conservative_dynamic", "win_focused", "balanced"
         """
         self.curriculum_stage = curriculum_stage
         self.action_space = [0, 1, 2, 3]  # 0: stand, 1: hit, 2: double down, 3: split
@@ -34,6 +42,8 @@ class BlackjackEnv:
         self.total_winnings = 0
         self.total_losses = 0
         self.games_played = 0
+        self.use_dynamic_rewards = use_dynamic_rewards
+        self.reward_type = reward_type
 
         # Initialize deck
         self._initialize_deck()
@@ -50,8 +60,8 @@ class BlackjackEnv:
             # Parse deck type
             if self.deck_type == "1-deck":
                 num_decks = 1
-            elif self.deck_type == "6-deck":
-                num_decks = 6
+            elif self.deck_type == "4-deck":
+                num_decks = 4
             elif self.deck_type == "8-deck":
                 num_decks = 8
             else:
@@ -304,6 +314,24 @@ class BlackjackEnv:
         Returns:
             float: Scaled reward based on budget and performance
         """
+        # If dynamic rewards are disabled, return base reward
+        if not self.use_dynamic_rewards:
+            return base_reward
+
+        # Choose reward scheme
+        if self.reward_type == "simple":
+            return base_reward
+        elif self.reward_type == "conservative_dynamic":
+            return self._conservative_dynamic_reward(base_reward, bet_amount)
+        elif self.reward_type == "win_focused":
+            return self._win_focused_reward(base_reward, bet_amount)
+        elif self.reward_type == "balanced":
+            return self._balanced_reward(base_reward, bet_amount)
+        else:
+            return base_reward
+
+    def _conservative_dynamic_reward(self, base_reward, bet_amount):
+        """Very conservative dynamic reward scaling."""
         # Budget-based scaling factors
         budget_ratio = self.budget / self.initial_budget
 
@@ -317,29 +345,52 @@ class BlackjackEnv:
         else:
             win_rate = 0.5
 
-        # Dynamic reward scaling
+        # Very conservative scaling
         if base_reward > 0:  # Winning
-            # Higher rewards when budget is low (comeback bonus)
-            budget_bonus = max(1.0, (1.0 - budget_ratio) * 2.0)
-            # Higher rewards for consistent winning
-            performance_bonus = 1.0 + (win_rate - 0.5) * 0.5
+            # Minimal bonus when budget is low
+            budget_bonus = 1.0 + (1.0 - budget_ratio) * 0.05  # Max 1.05x bonus
+            # Minimal bonus for consistent winning
+            performance_bonus = 1.0 + (win_rate - 0.5) * 0.02  # Max 1.01x bonus
             scaled_reward = base_reward * budget_bonus * performance_bonus
 
         elif base_reward < 0:  # Losing
-            # Higher penalties when budget is low (risk of going broke)
-            budget_penalty = max(1.0, (1.0 - budget_ratio) * 3.0)
-            # Higher penalties for poor performance
-            performance_penalty = 1.0 + (0.5 - win_rate) * 0.5
+            # Minimal penalty when budget is low
+            budget_penalty = 1.0 + (1.0 - budget_ratio) * 0.1  # Max 1.1x penalty
+            # Minimal penalty for poor performance
+            performance_penalty = 1.0 + (0.5 - win_rate) * 0.02  # Max 1.01x penalty
             scaled_reward = base_reward * budget_penalty * performance_penalty
 
         else:  # Push
             scaled_reward = 0.0
 
-        # Severe penalty for going broke
+        # Very small penalty for going broke
         if self.budget <= 0:
-            scaled_reward -= 50.0  # Heavy penalty for bankruptcy
+            scaled_reward -= 1.0
+
+        # Ensure rewards don't become too extreme
+        scaled_reward = max(-5.0, min(5.0, scaled_reward))
 
         return scaled_reward
+
+    def _win_focused_reward(self, base_reward, bet_amount):
+        """Reward scheme focused on winning with minimal penalties."""
+        if base_reward > 0:  # Winning
+            # Give consistent positive rewards for wins
+            return base_reward * 1.1  # 10% bonus for wins
+        elif base_reward < 0:  # Losing
+            # Minimal penalty for losses
+            return base_reward * 0.9  # 10% reduction for losses
+        else:  # Push
+            return 0.1  # Small positive reward for pushes
+
+    def _balanced_reward(self, base_reward, bet_amount):
+        """Balanced reward scheme with normalized values."""
+        if base_reward > 0:  # Winning
+            return 1.0  # Standard positive reward
+        elif base_reward < 0:  # Losing
+            return -1.0  # Standard negative reward
+        else:  # Push
+            return 0.0  # Neutral for pushes
 
     def _play_dealer_and_calculate_rewards(self):
         """Play dealer's turn and calculate final rewards."""

@@ -13,7 +13,7 @@ from LLM import LLM
 from BlackJackENV import BlackjackEnv
 from RLAgent import DQNAgent, QLearningAgent
 import argparse
-
+import time
 """
 Enhanced Win Counting System
 
@@ -243,7 +243,9 @@ class MultiAgentCurriculumSystem:
         agent_types=None,
         deck_type="infinite",
         penetration=0.9,
-        budget=100,
+        budget=10000,
+        use_dynamic_rewards=True,
+        reward_type="simple",
     ):
         self.llm_curriculum = LLMGuidedCurriculum(llm_api_key)
         self.num_agents = num_agents
@@ -251,6 +253,8 @@ class MultiAgentCurriculumSystem:
         self.deck_type = deck_type
         self.penetration = penetration
         self.budget = budget
+        self.use_dynamic_rewards = use_dynamic_rewards
+        self.reward_type = reward_type
 
         # Setup logging directory
         self.setup_logging_directory(deck_type, penetration)
@@ -259,20 +263,20 @@ class MultiAgentCurriculumSystem:
         self.agents = []
         for i, agent_type in enumerate(self.agent_types):
             if agent_type == "dqn":
-                # TODO: why we are using DQNAgent?
                 agent = DQNAgent(
                     action_space=[0, 1, 2, 3],
                     learning_rate=0.001,
                     exploration_rate=1.0,
-                    exploration_decay=0.9995,
+                    exploration_decay=0.9999,  # Faster decay for better learning
+                    memory_size=50000,  # Larger memory
+                    batch_size=64,  # Larger batch size
                 )
             else:  # tabular
-                # TODO: why we are using QLearningAgent?
                 agent = QLearningAgent(
                     action_space=[0, 1, 2, 3],
-                    learning_rate=0.01,
+                    learning_rate=0.1,  # Higher learning rate
                     exploration_rate=1.0,
-                    exploration_decay=0.999,
+                    exploration_decay=0.9999,  # Faster decay
                 )
 
             agent.agent_id = i
@@ -293,9 +297,8 @@ class MultiAgentCurriculumSystem:
 
         # Create date-based subdirectory
         date_str = datetime.now().strftime("%Y%m%d")
-        self.log_dir = (
-            f"logs/logs-{date_str}-{deck_type}-{penetration}-budget{self.budget}"
-        )
+        reward_type = "dynamic" if self.use_dynamic_rewards else "simple"
+        self.log_dir = f"logs/logs-{date_str}-{deck_type}-{penetration}-budget{self.budget}-{self.reward_type}"
 
         # Create the directory if it doesn't exist
         if not os.path.exists(self.log_dir):
@@ -324,6 +327,8 @@ class MultiAgentCurriculumSystem:
         print(f"Curriculum Stages: {len(self.curriculum_stages)}")
         print(f"Total Episodes: {total_episodes}")
         print(f"Budget per agent: ${self.budget}")
+        print(f"Dynamic Rewards: {'ON' if self.use_dynamic_rewards else 'OFF'}")
+        print(f"Reward Type: {self.reward_type}")
 
         for stage_idx, stage in enumerate(self.curriculum_stages):
             print(f"\n📚 STAGE {stage.stage_id}: {stage.name}")
@@ -346,7 +351,12 @@ class MultiAgentCurriculumSystem:
                         deck_type=self.deck_type,
                         penetration=self.penetration,
                         budget=self.budget,
+                        use_dynamic_rewards=self.use_dynamic_rewards,
+                        reward_type=self.reward_type,
                     )
+
+                    # Set curriculum stage for the agent
+                    agent.set_curriculum_stage(stage)
 
                     # Train agent on current stage
                     stage_episodes = total_episodes // len(self.curriculum_stages)
@@ -389,11 +399,16 @@ class MultiAgentCurriculumSystem:
 
     def _train_agent_on_stage(self, agent, env, stage, episodes, eval_episodes):
         """Train a single agent on a curriculum stage."""
-
+        start_time = time.time()
         episode_rewards = []
         wins = 0
         window_wins = 0  # Track wins for current 1000-episode window
         window_start = 0  # Track start of current window
+
+        # Calculate logging interval based on total episodes across all stages
+        # This ensures consistent logging frequency regardless of stage division
+        total_episodes_across_stages = episodes * len(self.curriculum_stages)
+        every_n_episodes_to_log = total_episodes_across_stages // 100
 
         # Training episode logging (log every 1000th episode for efficiency)
         training_log = {
@@ -411,8 +426,7 @@ class MultiAgentCurriculumSystem:
             done = False
             total_reward = 0
 
-            # Log every 1000th episode for training analysis
-            should_log_episode = episode % 1000 == 0
+            should_log_episode = episode % every_n_episodes_to_log == 0
             episode_log = None
 
             if should_log_episode:
@@ -488,7 +502,7 @@ class MultiAgentCurriculumSystem:
                     window_wins += episode_wins
 
                 # Log detailed stats occasionally for debugging
-                if episode % 5000 == 0 and detailed_stats["total_hands"] > 1:
+                if should_log_episode and detailed_stats["total_hands"] > 1:
                     print(
                         f"    Episode {episode} - Hands: {detailed_stats['total_hands']}, "
                         f"Won: {detailed_stats['hands_won']}, "
@@ -522,13 +536,18 @@ class MultiAgentCurriculumSystem:
 
             agent.decay_epsilon()
 
-            if episode % 1000 == 0:
+            if should_log_episode:
                 # Calculate win rate for current 1000-episode window
                 window_episodes = episode - window_start + 1
                 recent_win_rate = (window_wins / window_episodes) * 100
+
+                # Get budget information
+                budget_info = env.get_game_info()
+                budget = budget_info.get("budget", 0)
+
                 print(
                     f"  Episode {episode}: Win Rate: {recent_win_rate:.1f}%, "
-                    f"Total Wins: {wins}, Epsilon: {agent.epsilon:.4f}"
+                    f"Total Wins: {wins}, Epsilon: {agent.epsilon:.4f}, Budget: ${budget:.1f}"
                 )
 
                 # Reset window counters for next 1000 episodes
@@ -555,7 +574,9 @@ class MultiAgentCurriculumSystem:
 
         # Evaluation phase
         evaluation_results = self._evaluate_agent(agent, env, eval_episodes)
-
+        end_time = time.time()
+        time_taken = end_time - start_time
+        print(f"Time taken: {time_taken:.2f} seconds")
         return {
             "win_rate": evaluation_results["win_rate"],
             "avg_reward": evaluation_results["avg_reward"],
@@ -564,6 +585,7 @@ class MultiAgentCurriculumSystem:
             "stage_id": stage.stage_id,
             "agent_type": agent.agent_type,
             "poor_actions": evaluation_results.get("poor_actions", []),
+            "time_taken": time_taken,
         }
 
     def _get_llm_guided_action(self, agent, state, stage):
@@ -652,6 +674,18 @@ class MultiAgentCurriculumSystem:
         wins = 0
         action_rewards = {0: [], 1: [], 2: [], 3: []}
 
+        # Enhanced statistics tracking
+        state_action_stats = {}  # Track actions per state
+        state_win_stats = {}  # Track wins per state
+        state_reward_stats = {}  # Track rewards per state
+        game_outcomes = {
+            "wins": 0,
+            "losses": 0,
+            "busts": 0,
+            "pushes": 0,
+            "blackjacks": 0,
+        }
+
         # Detailed evaluation logging
         evaluation_log = {
             "agent_id": agent.agent_id,
@@ -682,6 +716,23 @@ class MultiAgentCurriculumSystem:
                 action = agent.get_action(state)
                 episode_actions.append(action)
 
+                # Create state key for statistics
+                player_sum = state[0]
+                dealer_up = state[1]
+                has_ace = state[2]
+                state_key = f"P{player_sum}_D{dealer_up}_A{has_ace}"
+
+                # Track state-action statistics
+                if state_key not in state_action_stats:
+                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0}
+                state_action_stats[state_key][action] += 1
+
+                # Track state-reward statistics
+                if state_key not in state_reward_stats:
+                    state_reward_stats[state_key] = []
+                if state_key not in state_win_stats:
+                    state_win_stats[state_key] = {"wins": 0, "total": 0}
+
                 # Log state and action
                 episode_log["states"].append(
                     {
@@ -711,6 +762,9 @@ class MultiAgentCurriculumSystem:
                 episode_reward += reward
                 episode_log["rewards"].append(reward)
 
+                # Track state rewards
+                state_reward_stats[state_key].append(reward)
+
             total_rewards.append(episode_reward)
 
             # Get detailed win stats for this episode
@@ -729,6 +783,26 @@ class MultiAgentCurriculumSystem:
 
                 if episode_wins > 0:
                     wins += episode_wins
+
+                # Track game outcomes
+                for hand_detail in detailed_stats["hand_details"]:
+                    result = hand_detail["result"]
+                    if result == "win":
+                        game_outcomes["wins"] += 1
+                    elif result == "lose":
+                        game_outcomes["losses"] += 1
+                    elif result == "blackjack":
+                        game_outcomes["blackjacks"] += 1
+                    elif result == "push":
+                        game_outcomes["pushes"] += 1
+                    elif result == "bust":
+                        game_outcomes["busts"] += 1
+
+                # Track state win statistics
+                for state_key in state_win_stats:
+                    state_win_stats[state_key]["total"] += 1
+                    if episode_wins > 0:
+                        state_win_stats[state_key]["wins"] += 1
 
                 # Log detailed stats and final game state
                 episode_log["detailed_stats"] = detailed_stats
@@ -766,6 +840,55 @@ class MultiAgentCurriculumSystem:
             if rewards and np.mean(rewards) < -0.2:  # Threshold for poor performance
                 poor_actions.append(action)
 
+        # Calculate game outcome percentages
+        total_hands = sum(game_outcomes.values())
+        game_outcome_percentages = {}
+        if total_hands > 0:
+            game_outcome_percentages = {
+                "win_percent": (game_outcomes["wins"] / total_hands) * 100,
+                "lose_percent": (game_outcomes["losses"] / total_hands) * 100,
+                "bust_percent": (game_outcomes["busts"] / total_hands) * 100,
+                "push_percent": (game_outcomes["pushes"] / total_hands) * 100,
+                "blackjack_percent": (game_outcomes["blackjacks"] / total_hands) * 100,
+                "net_wins_percent": (
+                    (
+                        game_outcomes["wins"]
+                        + game_outcomes["blackjacks"]
+                        - game_outcomes["losses"]
+                        - game_outcomes["busts"]
+                    )
+                    / total_hands
+                )
+                * 100,
+            }
+
+        # Create strategy table data
+        strategy_table = {}
+        for state_key, action_counts in state_action_stats.items():
+            total_actions = sum(action_counts.values())
+            if total_actions > 0:
+                strategy_table[state_key] = {
+                    "stand_percent": (action_counts[0] / total_actions) * 100,
+                    "hit_percent": (action_counts[1] / total_actions) * 100,
+                    "double_percent": (action_counts[2] / total_actions) * 100,
+                    "split_percent": (action_counts[3] / total_actions) * 100,
+                    "total_actions": total_actions,
+                    "win_rate": (
+                        (
+                            state_win_stats[state_key]["wins"]
+                            / state_win_stats[state_key]["total"]
+                        )
+                        * 100
+                        if state_win_stats[state_key]["total"] > 0
+                        else 0
+                    ),
+                    "avg_reward": (
+                        np.mean(state_reward_stats[state_key])
+                        if state_reward_stats[state_key]
+                        else 0
+                    ),
+                }
+
         # Save evaluation log to JSON file
         evaluation_log["summary"] = {
             "win_rate": wins / episodes,
@@ -780,6 +903,16 @@ class MultiAgentCurriculumSystem:
                     "std_reward": np.std(rewards) if rewards else 0,
                 }
                 for action, rewards in action_rewards.items()
+            },
+            "game_outcomes": game_outcomes,
+            "game_outcome_percentages": game_outcome_percentages,
+            "strategy_table": strategy_table,
+            "state_action_stats": state_action_stats,
+            "state_win_stats": state_win_stats,
+            "state_reward_stats": {
+                k: {"avg": np.mean(v), "std": np.std(v), "count": len(v)}
+                for k, v in state_reward_stats.items()
+                if v
             },
         }
 
@@ -800,6 +933,16 @@ class MultiAgentCurriculumSystem:
             "std_reward": np.std(total_rewards),
             "total_wins": wins,  # Add total wins count
             "poor_actions": poor_actions,
+            "game_outcomes": game_outcomes,
+            "game_outcome_percentages": game_outcome_percentages,
+            "strategy_table": strategy_table,
+            "state_action_stats": state_action_stats,
+            "state_win_stats": state_win_stats,
+            "state_reward_stats": {
+                k: {"avg": np.mean(v), "std": np.std(v), "count": len(v)}
+                for k, v in state_reward_stats.items()
+                if v
+            },
         }
 
     def _generate_final_report(self):
@@ -882,6 +1025,8 @@ class MultiAgentCurriculumSystem:
                 "deck_type": self.deck_type,
                 "penetration": self.penetration,
                 "curriculum_stages": len(self.curriculum_stages),
+                "use_dynamic_rewards": self.use_dynamic_rewards,
+                "reward_type": self.reward_type,
             },
             "directory_structure": {
                 "evaluation_logs": self.eval_log_dir,
@@ -922,13 +1067,21 @@ class CurriculumBlackjackEnv(BlackjackEnv):
     """Extended BlackjackEnv that enforces curriculum stage constraints."""
 
     def __init__(
-        self, curriculum_stage, deck_type="infinite", penetration=0.75, budget=100
+        self,
+        curriculum_stage,
+        deck_type="infinite",
+        penetration=0.75,
+        budget=100,
+        use_dynamic_rewards=True,
+        reward_type="simple",
     ):
         super().__init__(
             curriculum_stage=curriculum_stage.stage_id,
             deck_type=deck_type,
             penetration=penetration,
             budget=budget,
+            use_dynamic_rewards=use_dynamic_rewards,
+            reward_type=reward_type,
         )
         self.stage = curriculum_stage
 
@@ -953,19 +1106,35 @@ class MultiAgentStandardSystem:
         deck_type="infinite",
         penetration=0.9,
         budget=100,
+        use_dynamic_rewards=True,
+        reward_type="simple",
     ):
         self.num_agents = num_agents
         self.agent_types = agent_types or ["dqn", "tabular", "dqn"]
         self.deck_type = deck_type
         self.penetration = penetration
         self.budget = budget
+        self.use_dynamic_rewards = use_dynamic_rewards
+        self.reward_type = reward_type
         self.setup_logging_directory(deck_type, penetration)
         self.agents = []
         for i, agent_type in enumerate(self.agent_types):
             if agent_type == "dqn":
-                agent = DQNAgent(action_space=[0, 1, 2, 3])
+                agent = DQNAgent(
+                    action_space=[0, 1, 2, 3],
+                    learning_rate=0.001,
+                    exploration_rate=1.0,
+                    exploration_decay=0.9999,
+                    memory_size=50000,
+                    batch_size=64,
+                )
             else:
-                agent = QLearningAgent(action_space=[0, 1, 2, 3])
+                agent = QLearningAgent(
+                    action_space=[0, 1, 2, 3],
+                    learning_rate=0.1,
+                    exploration_rate=1.0,
+                    exploration_decay=0.9999,
+                )
             agent.agent_id = i
             agent.agent_type = agent_type
             self.agents.append(agent)
@@ -975,7 +1144,7 @@ class MultiAgentStandardSystem:
         if not os.path.exists("logs"):
             os.makedirs("logs")
         date_str = datetime.now().strftime("%Y%m%d")
-        self.log_dir = f"logs/logs-{date_str}-standard-{deck_type}-{penetration}-no-curriculum-budget{self.budget}"
+        self.log_dir = f"logs/logs-{date_str}-standard-{deck_type}-{penetration}-no-curriculum-budget{self.budget}-{self.reward_type}"
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
         self.eval_log_dir = os.path.join(self.log_dir, "evaluation")
@@ -987,20 +1156,26 @@ class MultiAgentStandardSystem:
         print(f"📁 Logging directory setup: {self.log_dir}")
 
     def train(self, total_episodes=50000, eval_episodes=1000):
+        start_time = time.time()
         print(f"\n🤖 STANDARD MULTI-AGENT RL TRAINING")
         print("=" * 60)
         print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
         print(f"Total Episodes: {total_episodes}")
         print(f"Budget per agent: ${self.budget}")
+        print(f"Dynamic Rewards: {'ON' if self.use_dynamic_rewards else 'OFF'}")
+        print(f"Reward Type: {self.reward_type}")
         for agent_idx, agent in enumerate(self.agents):
             print(f"\nTraining Agent {agent_idx} ({agent.agent_type.upper()})")
             env = BlackjackEnv(
                 deck_type=self.deck_type,
                 penetration=self.penetration,
                 budget=self.budget,
+                use_dynamic_rewards=self.use_dynamic_rewards,
+                reward_type=self.reward_type,
             )
             episode_rewards = []
             wins = 0
+            every_n_episodes_to_log = max(1, total_episodes // 100)
             for episode in range(total_episodes):
                 state = env.reset()
                 done = False
@@ -1023,7 +1198,7 @@ class MultiAgentStandardSystem:
                             bet_multiplier = 2 if hand_detail["doubled"] else 1
                             wins += bet_multiplier
                 agent.decay_epsilon()
-                if episode % 1000 == 0:
+                if episode % every_n_episodes_to_log == 0:
                     budget_info = env.get_game_info()
                     print(
                         f"  Episode {episode}: Win Rate: {(wins/(episode+1))*100:.1f}%, Epsilon: {agent.epsilon:.4f}, Budget: ${budget_info['budget']:.1f}"
@@ -1045,6 +1220,41 @@ class MultiAgentStandardSystem:
             print(
                 f"  Final Win Rate: {eval_results['win_rate']*100:.2f}% | Avg Reward: {eval_results['avg_reward']:.2f}"
             )
+            end_time = time.time()
+            time_taken = end_time - start_time
+            print(f"Time taken: {time_taken:.2f} seconds")
+            # Save evaluation log with enhanced statistics
+            evaluation_log = {
+                "agent_id": agent.agent_id,
+                "agent_type": agent.agent_type,
+                "evaluation_episodes": eval_episodes,
+                "timestamp": datetime.now().isoformat(),
+                "summary": {
+                    "win_rate": eval_results["win_rate"],
+                    "avg_reward": eval_results["avg_reward"],
+                    "action_performance": eval_results["action_performance"],
+                    "game_outcomes": eval_results["game_outcomes"],
+                    "game_outcome_percentages": eval_results[
+                        "game_outcome_percentages"
+                    ],
+                    "strategy_table": eval_results["strategy_table"],
+                    "state_action_stats": eval_results["state_action_stats"],
+                    "state_win_stats": eval_results["state_win_stats"],
+                    "state_reward_stats": eval_results["state_reward_stats"],
+                    "time_taken": time_taken,
+                },
+            }
+
+            # Save to file with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = os.path.join(
+                self.eval_log_dir,
+                f"evaluation_log_agent_{agent.agent_id}_{agent.agent_type}_{timestamp}.json",
+            )
+            with open(filename, "w") as f:
+                json.dump(evaluation_log, f, indent=2)
+
+            print(f"  📊 Evaluation log saved to: {filename}")
         print("\n✅ STANDARD TRAINING COMPLETE!")
         print(f"📁 All logs and models saved to: {self.log_dir}")
 
@@ -1053,23 +1263,162 @@ class MultiAgentStandardSystem:
         agent.epsilon = 0.0
         total_rewards = []
         wins = 0
+        action_rewards = {0: [], 1: [], 2: [], 3: []}
+
+        # Enhanced statistics tracking
+        state_action_stats = {}  # Track actions per state
+        state_win_stats = {}  # Track wins per state
+        state_reward_stats = {}  # Track rewards per state
+        game_outcomes = {
+            "wins": 0,
+            "losses": 0,
+            "busts": 0,
+            "pushes": 0,
+            "blackjacks": 0,
+        }
+
         for _ in range(episodes):
             state = env.reset()
             done = False
             episode_reward = 0
+            episode_actions = []
+            episode_wins = 0
+
             while not done:
                 action = agent.get_action(state)
+                episode_actions.append(action)
+
+                # Create state key for statistics
+                player_sum = state[0]
+                dealer_up = state[1]
+                has_ace = state[2]
+                state_key = f"P{player_sum}_D{dealer_up}_A{has_ace}"
+
+                # Track state-action statistics
+                if state_key not in state_action_stats:
+                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0}
+                state_action_stats[state_key][action] += 1
+
+                # Track state-reward statistics
+                if state_key not in state_reward_stats:
+                    state_reward_stats[state_key] = []
+                if state_key not in state_win_stats:
+                    state_win_stats[state_key] = {"wins": 0, "total": 0}
+
                 state, reward, done = env.step(action)
                 episode_reward += reward
+
+                # Track state rewards
+                state_reward_stats[state_key].append(reward)
+
             total_rewards.append(episode_reward)
+
+            # Track action performance
+            for action in episode_actions:
+                action_rewards[action].append(episode_reward)
+
             detailed_stats = env.get_detailed_win_stats()
             if detailed_stats:
                 for hand_detail in detailed_stats["hand_details"]:
                     if hand_detail["result"] in ("win", "blackjack"):
                         bet_multiplier = 2 if hand_detail["doubled"] else 1
                         wins += bet_multiplier
+                        episode_wins += bet_multiplier
+
+                # Track game outcomes
+                for hand_detail in detailed_stats["hand_details"]:
+                    result = hand_detail["result"]
+                    if result == "win":
+                        game_outcomes["wins"] += 1
+                    elif result == "lose":
+                        game_outcomes["losses"] += 1
+                    elif result == "blackjack":
+                        game_outcomes["blackjacks"] += 1
+                    elif result == "push":
+                        game_outcomes["pushes"] += 1
+                    elif result == "bust":
+                        game_outcomes["busts"] += 1
+
+                # Track state win statistics
+                for state_key in state_win_stats:
+                    state_win_stats[state_key]["total"] += 1
+                    if episode_wins > 0:
+                        state_win_stats[state_key]["wins"] += 1
+
         agent.epsilon = original_epsilon
-        return {"win_rate": wins / episodes, "avg_reward": np.mean(total_rewards)}
+
+        # Calculate game outcome percentages
+        total_hands = sum(game_outcomes.values())
+        game_outcome_percentages = {}
+        if total_hands > 0:
+            game_outcome_percentages = {
+                "win_percent": (game_outcomes["wins"] / total_hands) * 100,
+                "lose_percent": (game_outcomes["losses"] / total_hands) * 100,
+                "bust_percent": (game_outcomes["busts"] / total_hands) * 100,
+                "push_percent": (game_outcomes["pushes"] / total_hands) * 100,
+                "blackjack_percent": (game_outcomes["blackjacks"] / total_hands) * 100,
+                "net_wins_percent": (
+                    (
+                        game_outcomes["wins"]
+                        + game_outcomes["blackjacks"]
+                        - game_outcomes["losses"]
+                        - game_outcomes["busts"]
+                    )
+                    / total_hands
+                )
+                * 100,
+            }
+
+        # Create strategy table data
+        strategy_table = {}
+        for state_key, action_counts in state_action_stats.items():
+            total_actions = sum(action_counts.values())
+            if total_actions > 0:
+                strategy_table[state_key] = {
+                    "stand_percent": (action_counts[0] / total_actions) * 100,
+                    "hit_percent": (action_counts[1] / total_actions) * 100,
+                    "double_percent": (action_counts[2] / total_actions) * 100,
+                    "split_percent": (action_counts[3] / total_actions) * 100,
+                    "total_actions": total_actions,
+                    "win_rate": (
+                        (
+                            state_win_stats[state_key]["wins"]
+                            / state_win_stats[state_key]["total"]
+                        )
+                        * 100
+                        if state_win_stats[state_key]["total"] > 0
+                        else 0
+                    ),
+                    "avg_reward": (
+                        np.mean(state_reward_stats[state_key])
+                        if state_reward_stats[state_key]
+                        else 0
+                    ),
+                }
+
+        # Add action performance to return
+        return {
+            "win_rate": wins / episodes,
+            "avg_reward": np.mean(total_rewards),
+            "action_performance": {
+                action: {
+                    "count": len(rewards),
+                    "avg_reward": np.mean(rewards) if rewards else 0,
+                    "std_reward": np.std(rewards) if rewards else 0,
+                }
+                for action, rewards in action_rewards.items()
+            },
+            "game_outcomes": game_outcomes,
+            "game_outcome_percentages": game_outcome_percentages,
+            "strategy_table": strategy_table,
+            "state_action_stats": state_action_stats,
+            "state_win_stats": state_win_stats,
+            "state_reward_stats": {
+                k: {"avg": np.mean(v), "std": np.std(v), "count": len(v)}
+                for k, v in state_reward_stats.items()
+                if v
+            },
+        }
 
 
 if __name__ == "__main__":
@@ -1099,7 +1448,19 @@ if __name__ == "__main__":
         help="Deck penetration for reshuffling",
     )
     parser.add_argument(
-        "--budget", type=int, default=100, help="Starting budget for each agent"
+        "--budget", type=int, default=10000, help="Starting budget for each agent"
+    )
+    parser.add_argument(
+        "--no-dynamic-rewards",
+        action="store_true",
+        help="Disable dynamic reward scaling (use simple rewards)",
+    )
+    parser.add_argument(
+        "--reward-type",
+        type=str,
+        default="simple",
+        choices=["simple", "conservative_dynamic", "win_focused", "balanced"],
+        help="Reward scheme to use",
     )
     parser.add_argument(
         "--episodes", type=int, default=100000, help="Total training episodes"
@@ -1119,6 +1480,8 @@ if __name__ == "__main__":
             deck_type=args.deck_type,
             penetration=args.penetration,
             budget=args.budget,
+            use_dynamic_rewards=not args.no_dynamic_rewards,
+            reward_type=args.reward_type,
         )
         system.train(total_episodes=args.episodes, eval_episodes=args.eval_episodes)
     else:
@@ -1136,6 +1499,8 @@ if __name__ == "__main__":
             deck_type=args.deck_type,
             penetration=args.penetration,
             budget=args.budget,
+            use_dynamic_rewards=not args.no_dynamic_rewards,
+            reward_type=args.reward_type,
         )
         final_report = curriculum_system.train_multi_agent_curriculum(
             total_episodes=args.episodes, eval_episodes=args.eval_episodes
