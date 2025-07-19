@@ -1,0 +1,6782 @@
+{
+  "agent_id": 0,
+  "stage_id": 4,
+  "agent_type": "dqn",
+  "evaluation_episodes": 100000,
+  "timestamp": "2025-07-19T19:02:13.012260",
+  "episodes": [],
+  "summary": {
+    "win_rate": 0.48138,
+    "avg_reward": 0.013146000000000024,
+    "std_reward": 1.167982227041148,
+    "total_wins": 48138,
+    "poor_actions": [
+      1
+    ],
+    "action_performance": {
+      "0": {
+        "count": 78790,
+        "avg_reward": 0.5490734864830562,
+        "std_reward": 1.3917177794065687
+      },
+      "1": {
+        "count": 121118,
+        "avg_reward": -0.21497217589458215,
+        "std_reward": 1.1699863248201354
+      },
+      "2": {
+        "count": 637,
+        "avg_reward": 0.7863422291993721,
+        "std_reward": 1.9673537188949175
+      },
+      "3": {
+        "count": 20694,
+        "avg_reward": 0.3012008311587901,
+        "std_reward": 2.1645022977874104
+      }
+    },
+    "game_outcomes": {
+      "wins": 40393,
+      "losses": 0,
+      "busts": 41267,
+      "pushes": 10148,
+      "blackjacks": 7360
+    },
+    "game_outcome_percentages": {
+      "win_percent": 40.731889319135206,
+      "lose_percent": 0.0,
+      "bust_percent": 41.61322200709907,
+      "push_percent": 10.233139722491126,
+      "blackjack_percent": 7.421748951274605,
+      "net_wins_percent": 6.540416263310746
+    },
+    "strategy_table": {
+      "P15_D2_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 348,
+        "win_rate": 41.896,
+        "avg_reward": -0.2451149425287356
+      },
+      "P14_D2_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 356,
+        "win_rate": 41.896,
+        "avg_reward": -0.18764044943820224
+      },
+      "P16_D2_ATrue": {
+        "stand_percent": 69.09620991253644,
+        "hit_percent": 30.903790087463555,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 343,
+        "win_rate": 41.896,
+        "avg_reward": -0.1256559766763848
+      },
+      "P19_D3_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1114,
+        "win_rate": 41.89641896418964,
+        "avg_reward": 0.43101436265709164
+      },
+      "P13_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1063,
+        "win_rate": 41.896837936758736,
+        "avg_reward": -0.2913452492944497
+      },
+      "P10_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 90.8675799086758,
+        "double_percent": 0.0,
+        "split_percent": 9.1324200913242,
+        "total_actions": 438,
+        "win_rate": 41.89725691770753,
+        "avg_reward": 0.0
+      },
+      "P12_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.6542750929368,
+        "double_percent": 0.0,
+        "split_percent": 3.3457249070631967,
+        "total_actions": 1076,
+        "win_rate": 41.89725691770753,
+        "avg_reward": -0.21565985130111526
+      },
+      "P11_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1984,
+        "win_rate": 41.89767590703628,
+        "avg_reward": 0.0
+      },
+      "P21_D10_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 2654,
+        "win_rate": 41.89767590703628,
+        "avg_reward": 0.8501883948756592
+      },
+      "P11_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 14.059405940594061,
+        "double_percent": 85.94059405940594,
+        "split_percent": 0.0,
+        "total_actions": 505,
+        "win_rate": 41.89709485474274,
+        "avg_reward": 0.6748514851485148
+      },
+      "P20_D4_AFalse": {
+        "stand_percent": 33.109156751163994,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 66.890843248836,
+        "total_actions": 1933,
+        "win_rate": 41.89651379082745,
+        "avg_reward": 0.21810657009829282
+      },
+      "P16_D4_AFalse": {
+        "stand_percent": 96.41943734015345,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.580562659846547,
+        "total_actions": 1173,
+        "win_rate": 41.89651379082745,
+        "avg_reward": -0.06641091219096332
+      },
+      "P21_D4_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 730,
+        "win_rate": 41.89651379082745,
+        "avg_reward": 1.2627397260273976
+      },
+      "P10_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 88.12664907651715,
+        "double_percent": 0.0,
+        "split_percent": 11.87335092348285,
+        "total_actions": 379,
+        "win_rate": 41.895932715290066,
+        "avg_reward": 0.0
+      },
+      "P12_D6_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 76.47058823529412,
+        "double_percent": 0.0,
+        "split_percent": 23.52941176470588,
+        "total_actions": 153,
+        "win_rate": 41.89535162813025,
+        "avg_reward": -0.1588235294117647
+      },
+      "P18_D6_ATrue": {
+        "stand_percent": 63.059701492537314,
+        "hit_percent": 36.940298507462686,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 268,
+        "win_rate": 41.89535162813025,
+        "avg_reward": 0.35335820895522396
+      },
+      "P17_D6_ATrue": {
+        "stand_percent": 67.66917293233082,
+        "hit_percent": 32.33082706766917,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 266,
+        "win_rate": 41.89535162813025,
+        "avg_reward": 0.1240601503759399
+      },
+      "P15_D6_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 321,
+        "win_rate": 41.89535162813025,
+        "avg_reward": -0.25669781931464175
+      },
+      "P19_D6_ATrue": {
+        "stand_percent": 59.27272727272728,
+        "hit_percent": 40.72727272727273,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 275,
+        "win_rate": 41.89535162813025,
+        "avg_reward": 0.35636363636363644
+      },
+      "P12_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.11071343354809,
+        "double_percent": 0.0,
+        "split_percent": 3.8892865664519207,
+        "total_actions": 4191,
+        "win_rate": 41.89477052934764,
+        "avg_reward": -0.21302791696492482
+      },
+      "P15_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 4466,
+        "win_rate": 41.89477052934764,
+        "avg_reward": -0.4013546798029557
+      },
+      "P20_D10_AFalse": {
+        "stand_percent": 41.8009721156306,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 58.1990278843694,
+        "total_actions": 7818,
+        "win_rate": 41.89477052934764,
+        "avg_reward": 0.171770273727296
+      },
+      "P20_D8_AFalse": {
+        "stand_percent": 40.279787747226244,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 59.72021225277376,
+        "total_actions": 2073,
+        "win_rate": 41.895189518951895,
+        "avg_reward": 0.2642305836951278
+      },
+      "P12_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.1789375582479,
+        "double_percent": 0.0,
+        "split_percent": 3.8210624417520966,
+        "total_actions": 1073,
+        "win_rate": 41.895189518951895,
+        "avg_reward": -0.23005591798695246
+      },
+      "P18_D8_AFalse": {
+        "stand_percent": 96.7833491012299,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.216650898770104,
+        "total_actions": 1057,
+        "win_rate": 41.895189518951895,
+        "avg_reward": 0.1253074739829707
+      },
+      "P13_D8_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 286,
+        "win_rate": 41.895189518951895,
+        "avg_reward": -0.22465034965034966
+      },
+      "P20_D8_ATrue": {
+        "stand_percent": 68.36734693877551,
+        "hit_percent": 31.63265306122449,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 294,
+        "win_rate": 41.895189518951895,
+        "avg_reward": 0.56921768707483
+      },
+      "P21_D8_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 762,
+        "win_rate": 41.895189518951895,
+        "avg_reward": 1.2403543307086615
+      },
+      "P18_D2_AFalse": {
+        "stand_percent": 96.21016365202412,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.7898363479758825,
+        "total_actions": 1161,
+        "win_rate": 41.89460840692476,
+        "avg_reward": 0.21726959517657193
+      },
+      "P20_D9_AFalse": {
+        "stand_percent": 39.2278360343184,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 60.7721639656816,
+        "total_actions": 2098,
+        "win_rate": 41.895027403288395,
+        "avg_reward": 0.2826978074356531
+      },
+      "P21_D9_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 830,
+        "win_rate": 41.895027403288395,
+        "avg_reward": 1.216987951807229
+      },
+      "P14_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.1492537313433,
+        "double_percent": 0.0,
+        "split_percent": 4.850746268656716,
+        "total_actions": 1072,
+        "win_rate": 41.895027403288395,
+        "avg_reward": -0.3212686567164179
+      },
+      "P20_D3_AFalse": {
+        "stand_percent": 34.355509355509355,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 65.64449064449065,
+        "total_actions": 1924,
+        "win_rate": 41.89444627801614,
+        "avg_reward": 0.2054573804573805
+      },
+      "P14_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.94959495949595,
+        "double_percent": 0.0,
+        "split_percent": 4.05040504050405,
+        "total_actions": 1111,
+        "win_rate": 41.89444627801614,
+        "avg_reward": -0.31435643564356436
+      },
+      "P17_D3_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1228,
+        "win_rate": 41.89444627801614,
+        "avg_reward": 0.07390065146579808
+      },
+      "P16_D3_AFalse": {
+        "stand_percent": 61.50481189851269,
+        "hit_percent": 34.2082239720035,
+        "double_percent": 0.0,
+        "split_percent": 4.286964129483815,
+        "total_actions": 1143,
+        "win_rate": 41.89444627801614,
+        "avg_reward": -0.15511811023622046
+      },
+      "P15_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1125,
+        "win_rate": 41.89486528113936,
+        "avg_reward": -0.3938666666666667
+      },
+      "P16_D3_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 359,
+        "win_rate": 41.89486528113936,
+        "avg_reward": -0.2961002785515321
+      },
+      "P8_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 81.49606299212599,
+        "double_percent": 0.0,
+        "split_percent": 18.503937007874015,
+        "total_actions": 254,
+        "win_rate": 41.89570331253,
+        "avg_reward": 0.0
+      },
+      "P14_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 94.33771486349848,
+        "double_percent": 0.0,
+        "split_percent": 5.6622851365015165,
+        "total_actions": 989,
+        "win_rate": 41.89570331253,
+        "avg_reward": -0.30611729019211326
+      },
+      "P7_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 213,
+        "win_rate": 41.89570331253,
+        "avg_reward": 0.0
+      },
+      "P15_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1049,
+        "win_rate": 41.89570331253,
+        "avg_reward": -0.3775023832221163
+      },
+      "P17_D5_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1137,
+        "win_rate": 41.89570331253,
+        "avg_reward": 0.12357080035180301
+      },
+      "P14_D8_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 283,
+        "win_rate": 41.89454101738313,
+        "avg_reward": -0.2095406360424028
+      },
+      "P12_D8_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 76.92307692307693,
+        "double_percent": 0.0,
+        "split_percent": 23.076923076923077,
+        "total_actions": 156,
+        "win_rate": 41.89454101738313,
+        "avg_reward": -0.1958333333333333
+      },
+      "P17_D8_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 381,
+        "win_rate": 41.89454101738313,
+        "avg_reward": -0.3377952755905512
+      },
+      "P11_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 484,
+        "win_rate": 41.89395985237195,
+        "avg_reward": 0.0
+      },
+      "P13_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1028,
+        "win_rate": 41.89437887577515,
+        "avg_reward": -0.2851653696498055
+      },
+      "P15_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1059,
+        "win_rate": 41.89437887577515,
+        "avg_reward": -0.37124645892351277
+      },
+      "P17_D6_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1157,
+        "win_rate": 41.89479790756059,
+        "avg_reward": 0.13504753673293005
+      },
+      "P14_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.87786960514234,
+        "double_percent": 0.0,
+        "split_percent": 3.1221303948576673,
+        "total_actions": 1089,
+        "win_rate": 41.8952169477285,
+        "avg_reward": -0.34366391184573003
+      },
+      "P21_D2_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 562,
+        "win_rate": 41.8952169477285,
+        "avg_reward": 0.87144128113879
+      },
+      "P15_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1152,
+        "win_rate": 41.89463576622624,
+        "avg_reward": -0.3978732638888889
+      },
+      "P21_D10_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 3082,
+        "win_rate": 41.895054813155156,
+        "avg_reward": 1.1242375081116158
+      },
+      "P10_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 89.11917098445595,
+        "double_percent": 0.0,
+        "split_percent": 10.880829015544041,
+        "total_actions": 386,
+        "win_rate": 41.8944736184046,
+        "avg_reward": 0.0
+      },
+      "P20_D6_AFalse": {
+        "stand_percent": 35.16657852987837,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 64.83342147012164,
+        "total_actions": 1891,
+        "win_rate": 41.8944736184046,
+        "avg_reward": 0.251004759386568
+      },
+      "P9_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 338,
+        "win_rate": 41.89389241202713,
+        "avg_reward": 0.0
+      },
+      "P13_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1057,
+        "win_rate": 41.89389241202713,
+        "avg_reward": -0.2614474929044466
+      },
+      "P16_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.4941569282137,
+        "double_percent": 0.0,
+        "split_percent": 3.5058430717863103,
+        "total_actions": 1198,
+        "win_rate": 41.89389241202713,
+        "avg_reward": -0.4101836393989983
+      },
+      "P17_D9_AFalse": {
+        "stand_percent": 44.53312051077415,
+        "hit_percent": 55.46687948922586,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1253,
+        "win_rate": 41.89431146409531,
+        "avg_reward": -0.38104549082202716
+      },
+      "P21_D9_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 637,
+        "win_rate": 41.89431146409531,
+        "avg_reward": 0.9031397174254316
+      },
+      "P12_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 94.40069991251093,
+        "double_percent": 0.0,
+        "split_percent": 5.599300087489064,
+        "total_actions": 1143,
+        "win_rate": 41.89373024446845,
+        "avg_reward": -0.2116360454943132
+      },
+      "P15_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1221,
+        "win_rate": 41.89373024446845,
+        "avg_reward": -0.4314086814086814
+      },
+      "P19_D11_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1352,
+        "win_rate": 41.89373024446845,
+        "avg_reward": -0.05029585798816566
+      },
+      "P15_D10_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1381,
+        "win_rate": 41.89414930329796,
+        "avg_reward": -0.27020275162925417
+      },
+      "P14_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.87069372345447,
+        "double_percent": 0.0,
+        "split_percent": 4.129306276545541,
+        "total_actions": 4238,
+        "win_rate": 41.893568070421125,
+        "avg_reward": -0.3304978763567721
+      },
+      "P20_D2_AFalse": {
+        "stand_percent": 37.70413064361191,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 62.29586935638809,
+        "total_actions": 2082,
+        "win_rate": 41.893987136012164,
+        "avg_reward": 0.22533621517771377
+      },
+      "P18_D4_AFalse": {
+        "stand_percent": 96.7885816235504,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.2114183764495987,
+        "total_actions": 1121,
+        "win_rate": 41.89340588988476,
+        "avg_reward": 0.2347903657448707
+      },
+      "P19_D4_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1128,
+        "win_rate": 41.89340588988476,
+        "avg_reward": 0.42681737588652485
+      },
+      "P19_D8_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1315,
+        "win_rate": 41.8928246321286,
+        "avg_reward": 0.6093916349809886
+      },
+      "P6_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 75.67567567567568,
+        "double_percent": 0.0,
+        "split_percent": 24.324324324324326,
+        "total_actions": 148,
+        "win_rate": 41.89366278197369,
+        "avg_reward": 0.0
+      },
+      "P20_D11_AFalse": {
+        "stand_percent": 40.93090211132437,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 59.06909788867563,
+        "total_actions": 2084,
+        "win_rate": 41.89408186947301,
+        "avg_reward": 0.03404510556621883
+      },
+      "P17_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1243,
+        "win_rate": 41.89408186947301,
+        "avg_reward": -0.5607803700724054
+      },
+      "P21_D11_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 733,
+        "win_rate": 41.89408186947301,
+        "avg_reward": 0.7422919508867667
+      },
+      "P16_D5_ATrue": {
+        "stand_percent": 68.91025641025641,
+        "hit_percent": 31.08974358974359,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 312,
+        "win_rate": 41.89350059522023,
+        "avg_reward": -0.07035256410256407
+      },
+      "P18_D5_ATrue": {
+        "stand_percent": 58.91472868217055,
+        "hit_percent": 41.08527131782946,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 258,
+        "win_rate": 41.89350059522023,
+        "avg_reward": 0.21802325581395351
+      },
+      "P17_D2_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1231,
+        "win_rate": 41.89291930933755,
+        "avg_reward": -0.011941510966693719
+      },
+      "P7_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 248,
+        "win_rate": 41.89333840197677,
+        "avg_reward": 0.0
+      },
+      "P14_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 94.98607242339833,
+        "double_percent": 0.0,
+        "split_percent": 5.013927576601671,
+        "total_actions": 1077,
+        "win_rate": 41.89333840197677,
+        "avg_reward": -0.3564066852367688
+      },
+      "P19_D10_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 4967,
+        "win_rate": 41.8937575030012,
+        "avg_reward": 0.07346486812965577
+      },
+      "P19_D7_ATrue": {
+        "stand_percent": 61.16838487972509,
+        "hit_percent": 38.83161512027492,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 291,
+        "win_rate": 41.893595310030214,
+        "avg_reward": 0.43797250859106523
+      },
+      "P15_D7_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 345,
+        "win_rate": 41.893595310030214,
+        "avg_reward": -0.25768115942028985
+      },
+      "P19_D9_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1135,
+        "win_rate": 41.894433550762336,
+        "avg_reward": 0.2570484581497797
+      },
+      "P9_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1381,
+        "win_rate": 41.89469050453713,
+        "avg_reward": 0.0
+      },
+      "P20_D10_ATrue": {
+        "stand_percent": 66.49175412293853,
+        "hit_percent": 33.50824587706147,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1334,
+        "win_rate": 41.89469050453713,
+        "avg_reward": 0.3359820089955023
+      },
+      "P18_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 377,
+        "win_rate": 41.89410917240276,
+        "avg_reward": -0.390053050397878
+      },
+      "P7_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 219,
+        "win_rate": 41.89452831887625,
+        "avg_reward": 0.0
+      },
+      "P16_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 324,
+        "win_rate": 41.89494747373687,
+        "avg_reward": -0.30324074074074076
+      },
+      "P9_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 332,
+        "win_rate": 41.89536663698486,
+        "avg_reward": 0.0
+      },
+      "P19_D2_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1159,
+        "win_rate": 41.89536663698486,
+        "avg_reward": 0.4484900776531493
+      },
+      "P16_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.17777777777778,
+        "double_percent": 0.0,
+        "split_percent": 3.822222222222222,
+        "total_actions": 1125,
+        "win_rate": 41.89478528834994,
+        "avg_reward": -0.43600000000000005
+      },
+      "P14_D10_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1277,
+        "win_rate": 41.89404172294762,
+        "avg_reward": -0.2403288958496476
+      },
+      "P13_D10_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1165,
+        "win_rate": 41.89404172294762,
+        "avg_reward": -0.19201716738197425
+      },
+      "P19_D10_ATrue": {
+        "stand_percent": 66.17760617760618,
+        "hit_percent": 33.82239382239382,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1295,
+        "win_rate": 41.89404172294762,
+        "avg_reward": 0.03131274131274133
+      },
+      "P16_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 98.80843263061412,
+        "double_percent": 0.0,
+        "split_percent": 1.1915673693858846,
+        "total_actions": 1091,
+        "win_rate": 41.893460337789165,
+        "avg_reward": -0.44725022914757107
+      },
+      "P6_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 63.77952755905512,
+        "double_percent": 0.0,
+        "split_percent": 36.22047244094488,
+        "total_actions": 127,
+        "win_rate": 41.89287894099637,
+        "avg_reward": 0.0
+      },
+      "P21_D8_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 578,
+        "win_rate": 41.89287894099637,
+        "avg_reward": 0.9326989619377161
+      },
+      "P16_D8_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 388,
+        "win_rate": 41.89287894099637,
+        "avg_reward": -0.2524484536082474
+      },
+      "P12_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.95435684647303,
+        "double_percent": 0.0,
+        "split_percent": 4.045643153526971,
+        "total_actions": 964,
+        "win_rate": 41.89229753256889,
+        "avg_reward": -0.23718879668049794
+      },
+      "P14_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.28942486085343,
+        "double_percent": 0.0,
+        "split_percent": 3.710575139146568,
+        "total_actions": 1078,
+        "win_rate": 41.891553847847184,
+        "avg_reward": -0.3038497217068646
+      },
+      "P15_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1078,
+        "win_rate": 41.891553847847184,
+        "avg_reward": -0.40389610389610386
+      },
+      "P16_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.74325228641536,
+        "double_percent": 0.0,
+        "split_percent": 3.2567477135846534,
+        "total_actions": 4483,
+        "win_rate": 41.890972402889794,
+        "avg_reward": -0.4557773812179345
+      },
+      "P10_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 89.74956319161328,
+        "double_percent": 0.0,
+        "split_percent": 10.25043680838672,
+        "total_actions": 1717,
+        "win_rate": 41.891391576693316,
+        "avg_reward": 0.0
+      },
+      "P8_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 86.74242424242425,
+        "double_percent": 0.0,
+        "split_percent": 13.257575757575758,
+        "total_actions": 264,
+        "win_rate": 41.89181075888569,
+        "avg_reward": 0.0
+      },
+      "P21_D11_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 667,
+        "win_rate": 41.89181075888569,
+        "avg_reward": 0.6326086956521739
+      },
+      "P12_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.72093023255815,
+        "double_percent": 0.0,
+        "split_percent": 4.279069767441861,
+        "total_actions": 1075,
+        "win_rate": 41.89122929904438,
+        "avg_reward": -0.20976744186046511
+      },
+      "P11_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 488,
+        "win_rate": 41.89164848800208,
+        "avg_reward": 0.0
+      },
+      "P14_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.94339622641509,
+        "double_percent": 0.0,
+        "split_percent": 4.056603773584905,
+        "total_actions": 1060,
+        "win_rate": 41.89164848800208,
+        "avg_reward": -0.3227358490566038
+      },
+      "P10_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 92.45742092457421,
+        "double_percent": 0.0,
+        "split_percent": 7.542579075425791,
+        "total_actions": 411,
+        "win_rate": 41.89248689108594,
+        "avg_reward": 0.0
+      },
+      "P21_D5_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 751,
+        "win_rate": 41.89248689108594,
+        "avg_reward": 1.2511984021304927
+      },
+      "P18_D10_AFalse": {
+        "stand_percent": 96.58304498269896,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.4169550173010386,
+        "total_actions": 4624,
+        "win_rate": 41.892906105212596,
+        "avg_reward": -0.11811202422145325
+      },
+      "P17_D8_AFalse": {
+        "stand_percent": 44.71074380165289,
+        "hit_percent": 55.289256198347104,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1210,
+        "win_rate": 41.89232462723907,
+        "avg_reward": -0.35103305785123967
+      },
+      "P18_D7_AFalse": {
+        "stand_percent": 96.84466019417476,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.1553398058252426,
+        "total_actions": 1236,
+        "win_rate": 41.89258158455672,
+        "avg_reward": 0.5048139158576053
+      },
+      "P16_D4_ATrue": {
+        "stand_percent": 68.98550724637681,
+        "hit_percent": 31.01449275362319,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 345,
+        "win_rate": 41.89300082060725,
+        "avg_reward": -0.0010144927536231616
+      },
+      "P15_D4_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 244,
+        "win_rate": 41.89300082060725,
+        "avg_reward": -0.3038934426229508
+      },
+      "P12_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.56840077071291,
+        "double_percent": 0.0,
+        "split_percent": 4.431599229287091,
+        "total_actions": 1038,
+        "win_rate": 41.89183779672551,
+        "avg_reward": -0.2214354527938343
+      },
+      "P13_D5_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 269,
+        "win_rate": 41.89183779672551,
+        "avg_reward": -0.20780669144981412
+      },
+      "P20_D5_AFalse": {
+        "stand_percent": 33.56382978723404,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 66.43617021276596,
+        "total_actions": 1880,
+        "win_rate": 41.8922570379192,
+        "avg_reward": 0.21063829787234045
+      },
+      "P19_D5_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1013,
+        "win_rate": 41.8922570379192,
+        "avg_reward": 0.44763079960513324
+      },
+      "P9_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 341,
+        "win_rate": 41.89209475485634,
+        "avg_reward": 0.0
+      },
+      "P21_D4_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 467,
+        "win_rate": 41.89209475485634,
+        "avg_reward": 0.8965738758029977
+      },
+      "P17_D7_ATrue": {
+        "stand_percent": 71.01827676240208,
+        "hit_percent": 28.98172323759791,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 383,
+        "win_rate": 41.891513210568455,
+        "avg_reward": 0.02049608355091386
+      },
+      "P13_D7_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 305,
+        "win_rate": 41.891513210568455,
+        "avg_reward": -0.22098360655737706
+      },
+      "P18_D7_ATrue": {
+        "stand_percent": 67.58893280632411,
+        "hit_percent": 32.41106719367589,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 253,
+        "win_rate": 41.891513210568455,
+        "avg_reward": 0.3256916996047431
+      },
+      "P17_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 4771,
+        "win_rate": 41.8903500870714,
+        "avg_reward": -0.5206036470341647
+      },
+      "P15_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1119,
+        "win_rate": 41.88960616524046,
+        "avg_reward": -0.41340482573726545
+      },
+      "P5_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 108,
+        "win_rate": 41.88944381612003,
+        "avg_reward": 0.0
+      },
+      "P15_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1134,
+        "win_rate": 41.88944381612003,
+        "avg_reward": -0.38390652557319227
+      },
+      "P12_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.73863636363636,
+        "double_percent": 0.0,
+        "split_percent": 4.261363636363636,
+        "total_actions": 1056,
+        "win_rate": 41.889700730657594,
+        "avg_reward": -0.22107007575757578
+      },
+      "P12_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 97.38219895287958,
+        "double_percent": 0.0,
+        "split_percent": 2.6178010471204187,
+        "total_actions": 1146,
+        "win_rate": 41.89012000920838,
+        "avg_reward": -0.21304537521815006
+      },
+      "P6_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 74.32432432432432,
+        "double_percent": 0.0,
+        "split_percent": 25.675675675675674,
+        "total_actions": 148,
+        "win_rate": 41.89053929615246,
+        "avg_reward": 0.0
+      },
+      "P9_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 314,
+        "win_rate": 41.89053929615246,
+        "avg_reward": 0.0
+      },
+      "P8_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 89.65517241379311,
+        "double_percent": 0.0,
+        "split_percent": 10.344827586206897,
+        "total_actions": 261,
+        "win_rate": 41.89079625644362,
+        "avg_reward": 0.0
+      },
+      "P19_D7_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1208,
+        "win_rate": 41.89021460602178,
+        "avg_reward": 0.6020281456953642
+      },
+      "P4_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 42,
+        "win_rate": 41.88963294395563,
+        "avg_reward": 0.0
+      },
+      "P12_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 95.18963922294172,
+        "double_percent": 0.0,
+        "split_percent": 4.810360777058279,
+        "total_actions": 1081,
+        "win_rate": 41.88963294395563,
+        "avg_reward": -0.21045328399629973
+      },
+      "P17_D7_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1164,
+        "win_rate": 41.88963294395563,
+        "avg_reward": 0.015721649484536113
+      },
+      "P16_D5_AFalse": {
+        "stand_percent": 96.35879218472468,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.641207815275311,
+        "total_actions": 1126,
+        "win_rate": 41.890052251206185,
+        "avg_reward": 0.009680284191829522
+      },
+      "P16_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.61876584953508,
+        "double_percent": 0.0,
+        "split_percent": 3.38123415046492,
+        "total_actions": 1183,
+        "win_rate": 41.889470575870114,
+        "avg_reward": -0.43672865595942517
+      },
+      "P13_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 4237,
+        "win_rate": 41.88830719026216,
+        "avg_reward": -0.2987019117299976
+      },
+      "P16_D6_ATrue": {
+        "stand_percent": 69.187675070028,
+        "hit_percent": 30.81232492997199,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 357,
+        "win_rate": 41.88872650103105,
+        "avg_reward": 0.062044817927170905
+      },
+      "P21_D5_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 343,
+        "win_rate": 41.88814478913281,
+        "avg_reward": 0.9096209912536443
+      },
+      "P10_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 88.66995073891626,
+        "double_percent": 0.0,
+        "split_percent": 11.330049261083744,
+        "total_actions": 406,
+        "win_rate": 41.88756306558821,
+        "avg_reward": 0.0
+      },
+      "P13_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1034,
+        "win_rate": 41.88581782507283,
+        "avg_reward": -0.31223404255319154
+      },
+      "P18_D11_AFalse": {
+        "stand_percent": 96.39780736100235,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.6021926389976504,
+        "total_actions": 1277,
+        "win_rate": 41.88581782507283,
+        "avg_reward": -0.2721221613155834
+      },
+      "P5_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 114,
+        "win_rate": 41.885236054939334,
+        "avg_reward": 0.0
+      },
+      "P21_D3_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 759,
+        "win_rate": 41.885655364347144,
+        "avg_reward": 1.2533596837944665
+      },
+      "P14_D9_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 345,
+        "win_rate": 41.88507358093903,
+        "avg_reward": -0.2672463768115942
+      },
+      "P21_D7_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 768,
+        "win_rate": 41.887427164053584,
+        "avg_reward": 1.2278645833333333
+      },
+      "P8_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 85.28301886792453,
+        "double_percent": 0.0,
+        "split_percent": 14.716981132075471,
+        "total_actions": 265,
+        "win_rate": 41.886101043272795,
+        "avg_reward": 0.0
+      },
+      "P18_D9_AFalse": {
+        "stand_percent": 97.22222222222221,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 2.7777777777777777,
+        "total_actions": 1188,
+        "win_rate": 41.886101043272795,
+        "avg_reward": -0.06527777777777777
+      },
+      "P17_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 323,
+        "win_rate": 41.88635794743429,
+        "avg_reward": -0.3456656346749226
+      },
+      "P18_D6_AFalse": {
+        "stand_percent": 96.60869565217392,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.3913043478260874,
+        "total_actions": 1150,
+        "win_rate": 41.886777339447704,
+        "avg_reward": 0.3700434782608696
+      },
+      "P18_D10_ATrue": {
+        "stand_percent": 73.53300733496333,
+        "hit_percent": 26.466992665036678,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1636,
+        "win_rate": 41.887453689796736,
+        "avg_reward": -0.09046454767726161
+      },
+      "P9_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 349,
+        "win_rate": 41.88787311377905,
+        "avg_reward": 0.0
+      },
+      "P13_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1081,
+        "win_rate": 41.887710655171375,
+        "avg_reward": -0.29454209065679926
+      },
+      "P21_D6_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 498,
+        "win_rate": 41.887710655171375,
+        "avg_reward": 0.8730923694779116
+      },
+      "P7_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 215,
+        "win_rate": 41.88796763598494,
+        "avg_reward": 0.0
+      },
+      "P18_D2_ATrue": {
+        "stand_percent": 60.0,
+        "hit_percent": 40.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 250,
+        "win_rate": 41.88796763598494,
+        "avg_reward": 0.1448
+      },
+      "P19_D6_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1139,
+        "win_rate": 41.888644101742436,
+        "avg_reward": 0.5232221246707639
+      },
+      "P15_D9_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 341,
+        "win_rate": 41.886898264518265,
+        "avg_reward": -0.21730205278592374
+      },
+      "P14_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 270,
+        "win_rate": 41.88731773754206,
+        "avg_reward": -0.21592592592592594
+      },
+      "P13_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 284,
+        "win_rate": 41.88731773754206,
+        "avg_reward": -0.2211267605633803
+      },
+      "P7_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 938,
+        "win_rate": 41.8877372189675,
+        "avg_reward": 0.0
+      },
+      "P13_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 926,
+        "win_rate": 41.88715524666012,
+        "avg_reward": -0.2701943844492441
+      },
+      "P15_D3_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 289,
+        "win_rate": 41.88818332966087,
+        "avg_reward": -0.3083044982698962
+      },
+      "P20_D3_ATrue": {
+        "stand_percent": 65.56291390728477,
+        "hit_percent": 34.437086092715234,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 302,
+        "win_rate": 41.88818332966087,
+        "avg_reward": 0.5026490066225165
+      },
+      "P5_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 441,
+        "win_rate": 41.88860287857693,
+        "avg_reward": 0.0
+      },
+      "P21_D2_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 769,
+        "win_rate": 41.88827789296553,
+        "avg_reward": 1.1914174252275684
+      },
+      "P5_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 127,
+        "win_rate": 41.8892116598217,
+        "avg_reward": 0.0
+      },
+      "P13_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1070,
+        "win_rate": 41.8896312694708,
+        "avg_reward": -0.3202336448598131
+      },
+      "P15_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1163,
+        "win_rate": 41.8904705139892,
+        "avg_reward": -0.3815563198624248
+      },
+      "P14_D7_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 333,
+        "win_rate": 41.89014555763701,
+        "avg_reward": -0.21141141141141143
+      },
+      "P19_D9_ATrue": {
+        "stand_percent": 64.50511945392492,
+        "hit_percent": 35.49488054607509,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 293,
+        "win_rate": 41.890565206066796,
+        "avg_reward": 0.26331058020477816
+      },
+      "P16_D9_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 361,
+        "win_rate": 41.890565206066796,
+        "avg_reward": -0.3272853185595568
+      },
+      "P10_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 404,
+        "win_rate": 41.89040272490483,
+        "avg_reward": 0.0
+      },
+      "P16_D10_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1517,
+        "win_rate": 41.89065990763097,
+        "avg_reward": -0.30510876730388925
+      },
+      "P13_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 996,
+        "win_rate": 41.890754618683125,
+        "avg_reward": -0.27866465863453815
+      },
+      "P10_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 89.87012987012987,
+        "double_percent": 0.0,
+        "split_percent": 10.129870129870131,
+        "total_actions": 385,
+        "win_rate": 41.891594028654445,
+        "avg_reward": 0.0
+      },
+      "P17_D9_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 363,
+        "win_rate": 41.89446470800433,
+        "avg_reward": -0.353030303030303
+      },
+      "P18_D5_AFalse": {
+        "stand_percent": 96.7487684729064,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 3.251231527093596,
+        "total_actions": 1015,
+        "win_rate": 41.89472207469462,
+        "avg_reward": 0.2899014778325123
+      },
+      "P17_D2_ATrue": {
+        "stand_percent": 65.74923547400611,
+        "hit_percent": 34.25076452599388,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 327,
+        "win_rate": 41.89449210294235,
+        "avg_reward": 0.003822629969418985
+      },
+      "P16_D6_AFalse": {
+        "stand_percent": 59.88805970149254,
+        "hit_percent": 36.38059701492538,
+        "double_percent": 0.0,
+        "split_percent": 3.731343283582089,
+        "total_actions": 1072,
+        "win_rate": 41.89316496291842,
+        "avg_reward": -0.15550373134328357
+      },
+      "P21_D6_ATrue": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 792,
+        "win_rate": 41.89316496291842,
+        "avg_reward": 1.2119318181818182
+      },
+      "P13_D4_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 59.65665236051502,
+        "double_percent": 40.343347639484975,
+        "split_percent": 0.0,
+        "total_actions": 233,
+        "win_rate": 41.894681981277685,
+        "avg_reward": 0.1789699570815451
+      },
+      "P18_D4_ATrue": {
+        "stand_percent": 58.87096774193549,
+        "hit_percent": 41.12903225806452,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 248,
+        "win_rate": 41.894681981277685,
+        "avg_reward": 0.17883064516129035
+      },
+      "P13_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1079,
+        "win_rate": 41.894681981277685,
+        "avg_reward": -0.3060704355885079
+      },
+      "P11_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 533,
+        "win_rate": 41.89839411375529,
+        "avg_reward": 0.0
+      },
+      "P11_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 538,
+        "win_rate": 41.89848926849318,
+        "avg_reward": 0.0
+      },
+      "P17_D4_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1191,
+        "win_rate": 41.89767702996702,
+        "avg_reward": 0.03534844668345931
+      },
+      "P17_D4_ATrue": {
+        "stand_percent": 52.879581151832454,
+        "hit_percent": 47.12041884816754,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 191,
+        "win_rate": 41.89767702996702,
+        "avg_reward": -0.056282722513088995
+      },
+      "P12_D4_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 71.53284671532847,
+        "double_percent": 0.0,
+        "split_percent": 28.467153284671532,
+        "total_actions": 137,
+        "win_rate": 41.89767702996702,
+        "avg_reward": -0.17737226277372264
+      },
+      "P8_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 82.93795620437956,
+        "double_percent": 0.0,
+        "split_percent": 17.062043795620436,
+        "total_actions": 1096,
+        "win_rate": 41.89709450381985,
+        "avg_reward": 0.0
+      },
+      "P8_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 85.3061224489796,
+        "double_percent": 0.0,
+        "split_percent": 14.69387755102041,
+        "total_actions": 245,
+        "win_rate": 41.89751456271743,
+        "avg_reward": 0.0
+      },
+      "P13_D2_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 251,
+        "win_rate": 41.896186971735666,
+        "avg_reward": -0.1711155378486056
+      },
+      "P19_D2_ATrue": {
+        "stand_percent": 61.31147540983607,
+        "hit_percent": 38.68852459016394,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 305,
+        "win_rate": 41.896186971735666,
+        "avg_reward": 0.33622950819672137
+      },
+      "P17_D10_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 1526,
+        "win_rate": 41.89660704259244,
+        "avg_reward": -0.3383355176933159
+      },
+      "P9_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 374,
+        "win_rate": 41.895536905012584,
+        "avg_reward": 0.0
+      },
+      "P9_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 358,
+        "win_rate": 41.897054841912095,
+        "avg_reward": 0.0
+      },
+      "P8_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 87.64044943820225,
+        "double_percent": 0.0,
+        "split_percent": 12.359550561797752,
+        "total_actions": 267,
+        "win_rate": 41.89831528279181,
+        "avg_reward": 0.0
+      },
+      "P15_D8_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 338,
+        "win_rate": 41.89831528279181,
+        "avg_reward": -0.2448224852071006
+      },
+      "P21_D7_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 608,
+        "win_rate": 41.8988585986239,
+        "avg_reward": 0.9046875
+      },
+      "P18_D3_AFalse": {
+        "stand_percent": 97.22222222222221,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 2.7777777777777777,
+        "total_actions": 1116,
+        "win_rate": 41.89795079089642,
+        "avg_reward": 0.2941308243727599
+      },
+      "P5_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 114,
+        "win_rate": 41.89736799871609,
+        "avg_reward": 0.0
+      },
+      "P14_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.19732785200411,
+        "double_percent": 0.0,
+        "split_percent": 3.802672147995889,
+        "total_actions": 973,
+        "win_rate": 41.89778825417523,
+        "avg_reward": -0.339568345323741
+      },
+      "P11_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 496,
+        "win_rate": 41.89730060488118,
+        "avg_reward": 0.0
+      },
+      "P6_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 73.14285714285714,
+        "double_percent": 0.0,
+        "split_percent": 26.857142857142858,
+        "total_actions": 175,
+        "win_rate": 41.896717759409356,
+        "avg_reward": 0.0
+      },
+      "P8_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 84.38661710037175,
+        "double_percent": 0.0,
+        "split_percent": 15.613382899628252,
+        "total_actions": 269,
+        "win_rate": 41.896717759409356,
+        "avg_reward": 0.0
+      },
+      "P20_D7_AFalse": {
+        "stand_percent": 36.236766121270456,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 63.76323387872955,
+        "total_actions": 2078,
+        "win_rate": 41.89555203338483,
+        "avg_reward": 0.24386429258902792
+      },
+      "P12_D2_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 64.77987421383648,
+        "double_percent": 0.0,
+        "split_percent": 35.22012578616352,
+        "total_actions": 159,
+        "win_rate": 41.89496915283142,
+        "avg_reward": -0.13333333333333336
+      },
+      "P9_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 348,
+        "win_rate": 41.894318649237036,
+        "avg_reward": 0.0
+      },
+      "P12_D5_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 68.18181818181817,
+        "double_percent": 0.0,
+        "split_percent": 31.818181818181817,
+        "total_actions": 110,
+        "win_rate": 41.89499663900956,
+        "avg_reward": -0.294090909090909
+      },
+      "P11_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 447,
+        "win_rate": 41.894929063070656,
+        "avg_reward": 0.0
+      },
+      "P21_D3_AFalse": {
+        "stand_percent": 100.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 513,
+        "win_rate": 41.89502413180682,
+        "avg_reward": 0.9134502923976606
+      },
+      "P4_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 2.0408163265306123,
+        "double_percent": 0.0,
+        "split_percent": 97.95918367346938,
+        "total_actions": 49,
+        "win_rate": 41.89427843223825,
+        "avg_reward": 0.0
+      },
+      "P19_D4_ATrue": {
+        "stand_percent": 55.27426160337553,
+        "hit_percent": 44.72573839662447,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 237,
+        "win_rate": 41.89362769693929,
+        "avg_reward": 0.2940928270042194
+      },
+      "P20_D2_ATrue": {
+        "stand_percent": 65.68265682656826,
+        "hit_percent": 34.31734317343174,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 271,
+        "win_rate": 41.89330229010697,
+        "avg_reward": 0.45553505535055355
+      },
+      "P14_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 97.05340699815838,
+        "double_percent": 0.0,
+        "split_percent": 2.9465930018416207,
+        "total_actions": 1086,
+        "win_rate": 41.89372271564052,
+        "avg_reward": -0.31915285451197056
+      },
+      "P5_D5_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 116,
+        "win_rate": 41.89313957689374,
+        "avg_reward": 0.0
+      },
+      "P8_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 85.5595667870036,
+        "double_percent": 0.0,
+        "split_percent": 14.440433212996389,
+        "total_actions": 277,
+        "win_rate": 41.891742695693196,
+        "avg_reward": 0.0
+      },
+      "P6_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 76.62337662337663,
+        "double_percent": 0.0,
+        "split_percent": 23.376623376623375,
+        "total_actions": 154,
+        "win_rate": 41.892163160430385,
+        "avg_reward": 0.0
+      },
+      "P18_D3_ATrue": {
+        "stand_percent": 57.87545787545788,
+        "hit_percent": 42.124542124542124,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 273,
+        "win_rate": 41.893519633823175,
+        "avg_reward": 0.1913919413919414
+      },
+      "P7_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 224,
+        "win_rate": 41.893289163278624,
+        "avg_reward": 0.0
+      },
+      "P16_D7_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 359,
+        "win_rate": 41.89130849472406,
+        "avg_reward": -0.3256267409470752
+      },
+      "P14_D5_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 291,
+        "win_rate": 41.891661227973295,
+        "avg_reward": -0.19965635738831614
+      },
+      "P12_D10_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 73.97881996974282,
+        "double_percent": 0.0,
+        "split_percent": 26.021180030257185,
+        "total_actions": 661,
+        "win_rate": 41.89217684684051,
+        "avg_reward": -0.1819213313161876
+      },
+      "P11_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 491,
+        "win_rate": 41.890290443096454,
+        "avg_reward": 0.0
+      },
+      "P19_D3_ATrue": {
+        "stand_percent": 57.64192139737992,
+        "hit_percent": 42.35807860262008,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 229,
+        "win_rate": 41.890738155264714,
+        "avg_reward": 0.21310043668122275
+      },
+      "P17_D3_ATrue": {
+        "stand_percent": 63.63636363636363,
+        "hit_percent": 36.36363636363637,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 319,
+        "win_rate": 41.890738155264714,
+        "avg_reward": 0.054388714733542336
+      },
+      "P20_D6_ATrue": {
+        "stand_percent": 63.1578947368421,
+        "hit_percent": 36.84210526315789,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 304,
+        "win_rate": 41.890833115696005,
+        "avg_reward": 0.5018092105263158
+      },
+      "P7_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 242,
+        "win_rate": 41.891606810990005,
+        "avg_reward": 0.0
+      },
+      "P8_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 86.89655172413792,
+        "double_percent": 0.0,
+        "split_percent": 13.10344827586207,
+        "total_actions": 290,
+        "win_rate": 41.89299171062547,
+        "avg_reward": 0.0
+      },
+      "P15_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 315,
+        "win_rate": 41.89402389637535,
+        "avg_reward": -0.2896825396825397
+      },
+      "P19_D11_ATrue": {
+        "stand_percent": 68.72727272727272,
+        "hit_percent": 31.272727272727273,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 275,
+        "win_rate": 41.89402389637535,
+        "avg_reward": -0.03254545454545454
+      },
+      "P20_D4_ATrue": {
+        "stand_percent": 58.40336134453782,
+        "hit_percent": 41.596638655462186,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 238,
+        "win_rate": 41.89444489106842,
+        "avg_reward": 0.4737394957983193
+      },
+      "P18_D9_ATrue": {
+        "stand_percent": 67.1309192200557,
+        "hit_percent": 32.86908077994429,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 359,
+        "win_rate": 41.89606134611712,
+        "avg_reward": -0.013091922005571018
+      },
+      "P6_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 71.12781954887218,
+        "double_percent": 0.0,
+        "split_percent": 28.87218045112782,
+        "total_actions": 665,
+        "win_rate": 41.896089014865964,
+        "avg_reward": 0.0
+      },
+      "P9_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 322,
+        "win_rate": 41.90103669143598,
+        "avg_reward": 0.0
+      },
+      "P13_D9_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 280,
+        "win_rate": 41.89912113106611,
+        "avg_reward": -0.2242857142857143
+      },
+      "P12_D3_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 66.38655462184873,
+        "double_percent": 0.0,
+        "split_percent": 33.61344537815126,
+        "total_actions": 119,
+        "win_rate": 41.8998008889604,
+        "avg_reward": -0.16470588235294115
+      },
+      "P14_D4_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 277,
+        "win_rate": 41.898986241853734,
+        "avg_reward": -0.23357400722021662
+      },
+      "P13_D3_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 57.58754863813229,
+        "double_percent": 42.4124513618677,
+        "split_percent": 0.0,
+        "total_actions": 257,
+        "win_rate": 41.89943572154216,
+        "avg_reward": -0.08657587548638132
+      },
+      "P6_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 81.94444444444444,
+        "double_percent": 0.0,
+        "split_percent": 18.055555555555554,
+        "total_actions": 144,
+        "win_rate": 41.895956781118905,
+        "avg_reward": 0.0
+      },
+      "P10_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 89.94845360824742,
+        "double_percent": 0.0,
+        "split_percent": 10.051546391752577,
+        "total_actions": 388,
+        "win_rate": 41.89663671941809,
+        "avg_reward": 0.0
+      },
+      "P10_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 90.02557544757033,
+        "double_percent": 0.0,
+        "split_percent": 9.974424552429667,
+        "total_actions": 391,
+        "win_rate": 41.89689518482001,
+        "avg_reward": 0.0
+      },
+      "P7_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 181,
+        "win_rate": 41.89673213135866,
+        "avg_reward": 0.0
+      },
+      "P5_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 120,
+        "win_rate": 41.895821385090606,
+        "avg_reward": 0.0
+      },
+      "P16_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 96.4655172413793,
+        "double_percent": 0.0,
+        "split_percent": 3.53448275862069,
+        "total_actions": 1160,
+        "win_rate": 41.896596832296886,
+        "avg_reward": -0.458146551724138
+      },
+      "P14_D6_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 314,
+        "win_rate": 41.8970342480923,
+        "avg_reward": -0.23121019108280252
+      },
+      "P18_D8_ATrue": {
+        "stand_percent": 75.35816618911176,
+        "hit_percent": 24.641833810888254,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 349,
+        "win_rate": 41.89670794321957,
+        "avg_reward": 0.15114613180515762
+      },
+      "P14_D3_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 278,
+        "win_rate": 41.89867042707494,
+        "avg_reward": -0.2543165467625899
+      },
+      "P7_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 215,
+        "win_rate": 41.89808519425055,
+        "avg_reward": 0.0
+      },
+      "P15_D5_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 312,
+        "win_rate": 41.901979549690225,
+        "avg_reward": -0.2669871794871795
+      },
+      "P5_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 91,
+        "win_rate": 41.89430377832229,
+        "avg_reward": 0.0
+      },
+      "P19_D5_ATrue": {
+        "stand_percent": 59.83606557377049,
+        "hit_percent": 40.16393442622951,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 244,
+        "win_rate": 41.89435888125712,
+        "avg_reward": 0.28258196721311485
+      },
+      "P6_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 68.93939393939394,
+        "double_percent": 0.0,
+        "split_percent": 31.060606060606062,
+        "total_actions": 132,
+        "win_rate": 41.89681810378778,
+        "avg_reward": 0.0
+      },
+      "P7_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 217,
+        "win_rate": 41.887837059637704,
+        "avg_reward": 0.0
+      },
+      "P20_D7_ATrue": {
+        "stand_percent": 65.33333333333333,
+        "hit_percent": 34.66666666666667,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 300,
+        "win_rate": 41.886007012155076,
+        "avg_reward": 0.5236666666666667
+      },
+      "P12_D7_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 76.76056338028168,
+        "double_percent": 0.0,
+        "split_percent": 23.239436619718308,
+        "total_actions": 142,
+        "win_rate": 41.88567906473875,
+        "avg_reward": -0.22183098591549297
+      },
+      "P11_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 501,
+        "win_rate": 41.88035051900666,
+        "avg_reward": 0.0
+      },
+      "P12_D9_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 81.48148148148148,
+        "double_percent": 0.0,
+        "split_percent": 18.51851851851852,
+        "total_actions": 162,
+        "win_rate": 41.88035051900666,
+        "avg_reward": -0.22716049382716047
+      },
+      "P12_D11_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 77.6978417266187,
+        "double_percent": 0.0,
+        "split_percent": 22.302158273381295,
+        "total_actions": 139,
+        "win_rate": 41.88118011040786,
+        "avg_reward": -0.1679856115107914
+      },
+      "P20_D11_ATrue": {
+        "stand_percent": 70.6896551724138,
+        "hit_percent": 29.310344827586203,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 290,
+        "win_rate": 41.882200621061465,
+        "avg_reward": 0.09931034482758622
+      },
+      "P6_D7_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 76.38888888888889,
+        "double_percent": 0.0,
+        "split_percent": 23.61111111111111,
+        "total_actions": 144,
+        "win_rate": 41.88187216136113,
+        "avg_reward": 0.0
+      },
+      "P20_D9_ATrue": {
+        "stand_percent": 71.1340206185567,
+        "hit_percent": 28.865979381443296,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 291,
+        "win_rate": 41.88271948369868,
+        "avg_reward": 0.5749140893470791
+      },
+      "P6_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 63.44827586206897,
+        "double_percent": 0.0,
+        "split_percent": 36.55172413793103,
+        "total_actions": 145,
+        "win_rate": 41.88151898734177,
+        "avg_reward": 0.0
+      },
+      "P19_D8_ATrue": {
+        "stand_percent": 71.98443579766537,
+        "hit_percent": 28.01556420233463,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 257,
+        "win_rate": 41.86510953640907,
+        "avg_reward": 0.4875486381322957
+      },
+      "P5_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 119,
+        "win_rate": 41.86754321889457,
+        "avg_reward": 0.0
+      },
+      "P4_D10_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 148,
+        "win_rate": 41.866577366455594,
+        "avg_reward": 0.0
+      },
+      "P4_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 25,
+        "win_rate": 41.86686153315268,
+        "avg_reward": 0.0
+      },
+      "P20_D5_ATrue": {
+        "stand_percent": 62.31343283582089,
+        "hit_percent": 37.6865671641791,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 268,
+        "win_rate": 41.855621926937296,
+        "avg_reward": 0.4628731343283582
+      },
+      "P4_D8_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 39,
+        "win_rate": 41.84493341762342,
+        "avg_reward": 0.0
+      },
+      "P17_D5_ATrue": {
+        "stand_percent": 60.26785714285714,
+        "hit_percent": 39.732142857142854,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 224,
+        "win_rate": 41.84597499541107,
+        "avg_reward": 0.012946428571428591
+      },
+      "P13_D6_ATrue": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 350,
+        "win_rate": 41.844145246838025,
+        "avg_reward": -0.171
+      },
+      "P5_D2_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 100.0,
+        "double_percent": 0.0,
+        "split_percent": 0.0,
+        "total_actions": 89,
+        "win_rate": 41.84022285941693,
+        "avg_reward": 0.0
+      },
+      "P4_D3_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 44,
+        "win_rate": 41.84064980917978,
+        "avg_reward": 0.0
+      },
+      "P4_D11_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 49,
+        "win_rate": 41.846352883193696,
+        "avg_reward": 0.0
+      },
+      "P4_D6_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 56,
+        "win_rate": 41.83664023204863,
+        "avg_reward": 0.0
+      },
+      "P4_D9_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 52,
+        "win_rate": 41.846361185983824,
+        "avg_reward": 0.0
+      },
+      "P4_D4_AFalse": {
+        "stand_percent": 0.0,
+        "hit_percent": 0.0,
+        "double_percent": 0.0,
+        "split_percent": 100.0,
+        "total_actions": 46,
+        "win_rate": 41.87636761487965,
+        "avg_reward": 0.0
+      }
+    },
+    "state_action_stats": {
+      "P15_D2_ATrue": {
+        "0": 0,
+        "1": 348,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D2_ATrue": {
+        "0": 0,
+        "1": 356,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D2_ATrue": {
+        "0": 237,
+        "1": 106,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D3_AFalse": {
+        "0": 1114,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D9_AFalse": {
+        "0": 0,
+        "1": 1063,
+        "2": 0,
+        "3": 0
+      },
+      "P10_D9_AFalse": {
+        "0": 0,
+        "1": 398,
+        "2": 0,
+        "3": 40
+      },
+      "P12_D9_AFalse": {
+        "0": 0,
+        "1": 1040,
+        "2": 0,
+        "3": 36
+      },
+      "P11_D10_AFalse": {
+        "0": 0,
+        "1": 1984,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D10_AFalse": {
+        "0": 2654,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P11_D5_AFalse": {
+        "0": 0,
+        "1": 71,
+        "2": 434,
+        "3": 0
+      },
+      "P20_D4_AFalse": {
+        "0": 640,
+        "1": 0,
+        "2": 0,
+        "3": 1293
+      },
+      "P16_D4_AFalse": {
+        "0": 1131,
+        "1": 0,
+        "2": 0,
+        "3": 42
+      },
+      "P21_D4_ATrue": {
+        "0": 730,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P10_D4_AFalse": {
+        "0": 0,
+        "1": 334,
+        "2": 0,
+        "3": 45
+      },
+      "P12_D6_ATrue": {
+        "0": 0,
+        "1": 117,
+        "2": 0,
+        "3": 36
+      },
+      "P18_D6_ATrue": {
+        "0": 169,
+        "1": 99,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D6_ATrue": {
+        "0": 180,
+        "1": 86,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D6_ATrue": {
+        "0": 0,
+        "1": 321,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D6_ATrue": {
+        "0": 163,
+        "1": 112,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D10_AFalse": {
+        "0": 0,
+        "1": 4028,
+        "2": 0,
+        "3": 163
+      },
+      "P15_D10_AFalse": {
+        "0": 0,
+        "1": 4466,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D10_AFalse": {
+        "0": 3268,
+        "1": 0,
+        "2": 0,
+        "3": 4550
+      },
+      "P20_D8_AFalse": {
+        "0": 835,
+        "1": 0,
+        "2": 0,
+        "3": 1238
+      },
+      "P12_D8_AFalse": {
+        "0": 0,
+        "1": 1032,
+        "2": 0,
+        "3": 41
+      },
+      "P18_D8_AFalse": {
+        "0": 1023,
+        "1": 0,
+        "2": 0,
+        "3": 34
+      },
+      "P13_D8_ATrue": {
+        "0": 0,
+        "1": 286,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D8_ATrue": {
+        "0": 201,
+        "1": 93,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D8_ATrue": {
+        "0": 762,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D2_AFalse": {
+        "0": 1117,
+        "1": 0,
+        "2": 0,
+        "3": 44
+      },
+      "P20_D9_AFalse": {
+        "0": 823,
+        "1": 0,
+        "2": 0,
+        "3": 1275
+      },
+      "P21_D9_ATrue": {
+        "0": 830,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D9_AFalse": {
+        "0": 0,
+        "1": 1020,
+        "2": 0,
+        "3": 52
+      },
+      "P20_D3_AFalse": {
+        "0": 661,
+        "1": 0,
+        "2": 0,
+        "3": 1263
+      },
+      "P14_D3_AFalse": {
+        "0": 0,
+        "1": 1066,
+        "2": 0,
+        "3": 45
+      },
+      "P17_D3_AFalse": {
+        "0": 1228,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D3_AFalse": {
+        "0": 703,
+        "1": 391,
+        "2": 0,
+        "3": 49
+      },
+      "P15_D3_AFalse": {
+        "0": 0,
+        "1": 1125,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D3_ATrue": {
+        "0": 0,
+        "1": 359,
+        "2": 0,
+        "3": 0
+      },
+      "P8_D5_AFalse": {
+        "0": 0,
+        "1": 207,
+        "2": 0,
+        "3": 47
+      },
+      "P14_D5_AFalse": {
+        "0": 0,
+        "1": 933,
+        "2": 0,
+        "3": 56
+      },
+      "P7_D5_AFalse": {
+        "0": 0,
+        "1": 213,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D5_AFalse": {
+        "0": 0,
+        "1": 1049,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D5_AFalse": {
+        "0": 1137,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D8_ATrue": {
+        "0": 0,
+        "1": 283,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D8_ATrue": {
+        "0": 0,
+        "1": 120,
+        "2": 0,
+        "3": 36
+      },
+      "P17_D8_ATrue": {
+        "0": 0,
+        "1": 381,
+        "2": 0,
+        "3": 0
+      },
+      "P11_D3_AFalse": {
+        "0": 0,
+        "1": 484,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D2_AFalse": {
+        "0": 0,
+        "1": 1028,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D2_AFalse": {
+        "0": 0,
+        "1": 1059,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D6_AFalse": {
+        "0": 1157,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D2_AFalse": {
+        "0": 0,
+        "1": 1055,
+        "2": 0,
+        "3": 34
+      },
+      "P21_D2_AFalse": {
+        "0": 562,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D4_AFalse": {
+        "0": 0,
+        "1": 1152,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D10_ATrue": {
+        "0": 3082,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P10_D6_AFalse": {
+        "0": 0,
+        "1": 344,
+        "2": 0,
+        "3": 42
+      },
+      "P20_D6_AFalse": {
+        "0": 665,
+        "1": 0,
+        "2": 0,
+        "3": 1226
+      },
+      "P9_D7_AFalse": {
+        "0": 0,
+        "1": 338,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D7_AFalse": {
+        "0": 0,
+        "1": 1057,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D7_AFalse": {
+        "0": 0,
+        "1": 1156,
+        "2": 0,
+        "3": 42
+      },
+      "P17_D9_AFalse": {
+        "0": 558,
+        "1": 695,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D9_AFalse": {
+        "0": 637,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D11_AFalse": {
+        "0": 0,
+        "1": 1079,
+        "2": 0,
+        "3": 64
+      },
+      "P15_D11_AFalse": {
+        "0": 0,
+        "1": 1221,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D11_AFalse": {
+        "0": 1352,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D10_ATrue": {
+        "0": 0,
+        "1": 1381,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D10_AFalse": {
+        "0": 0,
+        "1": 4063,
+        "2": 0,
+        "3": 175
+      },
+      "P20_D2_AFalse": {
+        "0": 785,
+        "1": 0,
+        "2": 0,
+        "3": 1297
+      },
+      "P18_D4_AFalse": {
+        "0": 1085,
+        "1": 0,
+        "2": 0,
+        "3": 36
+      },
+      "P19_D4_AFalse": {
+        "0": 1128,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D8_AFalse": {
+        "0": 1315,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P6_D9_AFalse": {
+        "0": 0,
+        "1": 112,
+        "2": 0,
+        "3": 36
+      },
+      "P20_D11_AFalse": {
+        "0": 853,
+        "1": 0,
+        "2": 0,
+        "3": 1231
+      },
+      "P17_D11_AFalse": {
+        "0": 0,
+        "1": 1243,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D11_ATrue": {
+        "0": 733,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D5_ATrue": {
+        "0": 215,
+        "1": 97,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D5_ATrue": {
+        "0": 152,
+        "1": 106,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D2_AFalse": {
+        "0": 1231,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D11_AFalse": {
+        "0": 0,
+        "1": 248,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D11_AFalse": {
+        "0": 0,
+        "1": 1023,
+        "2": 0,
+        "3": 54
+      },
+      "P19_D10_AFalse": {
+        "0": 4967,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D7_ATrue": {
+        "0": 178,
+        "1": 113,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D7_ATrue": {
+        "0": 0,
+        "1": 345,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D9_AFalse": {
+        "0": 1135,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P9_D10_AFalse": {
+        "0": 0,
+        "1": 1381,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D10_ATrue": {
+        "0": 887,
+        "1": 447,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D11_ATrue": {
+        "0": 0,
+        "1": 377,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D9_AFalse": {
+        "0": 0,
+        "1": 219,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D11_ATrue": {
+        "0": 0,
+        "1": 324,
+        "2": 0,
+        "3": 0
+      },
+      "P9_D2_AFalse": {
+        "0": 0,
+        "1": 332,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D2_AFalse": {
+        "0": 1159,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D2_AFalse": {
+        "0": 0,
+        "1": 1082,
+        "2": 0,
+        "3": 43
+      },
+      "P14_D10_ATrue": {
+        "0": 0,
+        "1": 1277,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D10_ATrue": {
+        "0": 0,
+        "1": 1165,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D10_ATrue": {
+        "0": 857,
+        "1": 438,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D8_AFalse": {
+        "0": 0,
+        "1": 1078,
+        "2": 0,
+        "3": 13
+      },
+      "P6_D8_AFalse": {
+        "0": 0,
+        "1": 81,
+        "2": 0,
+        "3": 46
+      },
+      "P21_D8_AFalse": {
+        "0": 578,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D8_ATrue": {
+        "0": 0,
+        "1": 388,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D2_AFalse": {
+        "0": 0,
+        "1": 925,
+        "2": 0,
+        "3": 39
+      },
+      "P14_D8_AFalse": {
+        "0": 0,
+        "1": 1038,
+        "2": 0,
+        "3": 40
+      },
+      "P15_D8_AFalse": {
+        "0": 0,
+        "1": 1078,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D10_AFalse": {
+        "0": 0,
+        "1": 4337,
+        "2": 0,
+        "3": 146
+      },
+      "P10_D10_AFalse": {
+        "0": 0,
+        "1": 1541,
+        "2": 0,
+        "3": 176
+      },
+      "P8_D11_AFalse": {
+        "0": 0,
+        "1": 229,
+        "2": 0,
+        "3": 35
+      },
+      "P21_D11_AFalse": {
+        "0": 667,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D4_AFalse": {
+        "0": 0,
+        "1": 1029,
+        "2": 0,
+        "3": 46
+      },
+      "P11_D6_AFalse": {
+        "0": 0,
+        "1": 488,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D6_AFalse": {
+        "0": 0,
+        "1": 1017,
+        "2": 0,
+        "3": 43
+      },
+      "P10_D5_AFalse": {
+        "0": 0,
+        "1": 380,
+        "2": 0,
+        "3": 31
+      },
+      "P21_D5_ATrue": {
+        "0": 751,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D10_AFalse": {
+        "0": 4466,
+        "1": 0,
+        "2": 0,
+        "3": 158
+      },
+      "P17_D8_AFalse": {
+        "0": 541,
+        "1": 669,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D7_AFalse": {
+        "0": 1197,
+        "1": 0,
+        "2": 0,
+        "3": 39
+      },
+      "P16_D4_ATrue": {
+        "0": 238,
+        "1": 107,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D4_ATrue": {
+        "0": 0,
+        "1": 244,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D5_AFalse": {
+        "0": 0,
+        "1": 992,
+        "2": 0,
+        "3": 46
+      },
+      "P13_D5_ATrue": {
+        "0": 0,
+        "1": 269,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D5_AFalse": {
+        "0": 631,
+        "1": 0,
+        "2": 0,
+        "3": 1249
+      },
+      "P19_D5_AFalse": {
+        "0": 1013,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P9_D4_AFalse": {
+        "0": 0,
+        "1": 341,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D4_AFalse": {
+        "0": 467,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D7_ATrue": {
+        "0": 272,
+        "1": 111,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D7_ATrue": {
+        "0": 0,
+        "1": 305,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D7_ATrue": {
+        "0": 171,
+        "1": 82,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D10_AFalse": {
+        "0": 0,
+        "1": 4771,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D6_AFalse": {
+        "0": 0,
+        "1": 1119,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D7_AFalse": {
+        "0": 0,
+        "1": 108,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D7_AFalse": {
+        "0": 0,
+        "1": 1134,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D3_AFalse": {
+        "0": 0,
+        "1": 1011,
+        "2": 0,
+        "3": 45
+      },
+      "P12_D6_AFalse": {
+        "0": 0,
+        "1": 1116,
+        "2": 0,
+        "3": 30
+      },
+      "P6_D5_AFalse": {
+        "0": 0,
+        "1": 110,
+        "2": 0,
+        "3": 38
+      },
+      "P9_D5_AFalse": {
+        "0": 0,
+        "1": 314,
+        "2": 0,
+        "3": 0
+      },
+      "P8_D4_AFalse": {
+        "0": 0,
+        "1": 234,
+        "2": 0,
+        "3": 27
+      },
+      "P19_D7_AFalse": {
+        "0": 1208,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P4_D7_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 42
+      },
+      "P12_D7_AFalse": {
+        "0": 0,
+        "1": 1029,
+        "2": 0,
+        "3": 52
+      },
+      "P17_D7_AFalse": {
+        "0": 1164,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D5_AFalse": {
+        "0": 1085,
+        "1": 0,
+        "2": 0,
+        "3": 41
+      },
+      "P16_D11_AFalse": {
+        "0": 0,
+        "1": 1143,
+        "2": 0,
+        "3": 40
+      },
+      "P13_D10_AFalse": {
+        "0": 0,
+        "1": 4237,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D6_ATrue": {
+        "0": 247,
+        "1": 110,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D5_AFalse": {
+        "0": 343,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P10_D3_AFalse": {
+        "0": 0,
+        "1": 360,
+        "2": 0,
+        "3": 46
+      },
+      "P13_D11_AFalse": {
+        "0": 0,
+        "1": 1034,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D11_AFalse": {
+        "0": 1231,
+        "1": 0,
+        "2": 0,
+        "3": 46
+      },
+      "P5_D6_AFalse": {
+        "0": 0,
+        "1": 114,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D3_ATrue": {
+        "0": 759,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D9_ATrue": {
+        "0": 0,
+        "1": 345,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D7_ATrue": {
+        "0": 768,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P8_D9_AFalse": {
+        "0": 0,
+        "1": 226,
+        "2": 0,
+        "3": 39
+      },
+      "P18_D9_AFalse": {
+        "0": 1155,
+        "1": 0,
+        "2": 0,
+        "3": 33
+      },
+      "P17_D11_ATrue": {
+        "0": 0,
+        "1": 323,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D6_AFalse": {
+        "0": 1111,
+        "1": 0,
+        "2": 0,
+        "3": 39
+      },
+      "P18_D10_ATrue": {
+        "0": 1203,
+        "1": 433,
+        "2": 0,
+        "3": 0
+      },
+      "P9_D6_AFalse": {
+        "0": 0,
+        "1": 349,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D6_AFalse": {
+        "0": 0,
+        "1": 1081,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D6_AFalse": {
+        "0": 498,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D2_AFalse": {
+        "0": 0,
+        "1": 215,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D2_ATrue": {
+        "0": 150,
+        "1": 100,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D6_AFalse": {
+        "0": 1139,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D9_ATrue": {
+        "0": 0,
+        "1": 341,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D11_ATrue": {
+        "0": 0,
+        "1": 270,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D11_ATrue": {
+        "0": 0,
+        "1": 284,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D10_AFalse": {
+        "0": 0,
+        "1": 938,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D3_AFalse": {
+        "0": 0,
+        "1": 926,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D3_ATrue": {
+        "0": 0,
+        "1": 289,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D3_ATrue": {
+        "0": 198,
+        "1": 104,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D10_AFalse": {
+        "0": 0,
+        "1": 441,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D2_ATrue": {
+        "0": 769,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D9_AFalse": {
+        "0": 0,
+        "1": 127,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D8_AFalse": {
+        "0": 0,
+        "1": 1070,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D9_AFalse": {
+        "0": 0,
+        "1": 1163,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D7_ATrue": {
+        "0": 0,
+        "1": 333,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D9_ATrue": {
+        "0": 189,
+        "1": 104,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D9_ATrue": {
+        "0": 0,
+        "1": 361,
+        "2": 0,
+        "3": 0
+      },
+      "P10_D2_AFalse": {
+        "0": 0,
+        "1": 404,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D10_ATrue": {
+        "0": 0,
+        "1": 1517,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D5_AFalse": {
+        "0": 0,
+        "1": 996,
+        "2": 0,
+        "3": 0
+      },
+      "P10_D8_AFalse": {
+        "0": 0,
+        "1": 346,
+        "2": 0,
+        "3": 39
+      },
+      "P17_D9_ATrue": {
+        "0": 0,
+        "1": 363,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D5_AFalse": {
+        "0": 982,
+        "1": 0,
+        "2": 0,
+        "3": 33
+      },
+      "P17_D2_ATrue": {
+        "0": 215,
+        "1": 112,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D6_AFalse": {
+        "0": 642,
+        "1": 390,
+        "2": 0,
+        "3": 40
+      },
+      "P21_D6_ATrue": {
+        "0": 792,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D4_ATrue": {
+        "0": 0,
+        "1": 139,
+        "2": 94,
+        "3": 0
+      },
+      "P18_D4_ATrue": {
+        "0": 146,
+        "1": 102,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D4_AFalse": {
+        "0": 0,
+        "1": 1079,
+        "2": 0,
+        "3": 0
+      },
+      "P11_D11_AFalse": {
+        "0": 0,
+        "1": 533,
+        "2": 0,
+        "3": 0
+      },
+      "P11_D7_AFalse": {
+        "0": 0,
+        "1": 538,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D4_AFalse": {
+        "0": 1191,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D4_ATrue": {
+        "0": 101,
+        "1": 90,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D4_ATrue": {
+        "0": 0,
+        "1": 98,
+        "2": 0,
+        "3": 39
+      },
+      "P8_D10_AFalse": {
+        "0": 0,
+        "1": 909,
+        "2": 0,
+        "3": 187
+      },
+      "P8_D2_AFalse": {
+        "0": 0,
+        "1": 209,
+        "2": 0,
+        "3": 36
+      },
+      "P13_D2_ATrue": {
+        "0": 0,
+        "1": 251,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D2_ATrue": {
+        "0": 187,
+        "1": 118,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D10_ATrue": {
+        "0": 0,
+        "1": 1526,
+        "2": 0,
+        "3": 0
+      },
+      "P9_D9_AFalse": {
+        "0": 0,
+        "1": 374,
+        "2": 0,
+        "3": 0
+      },
+      "P9_D11_AFalse": {
+        "0": 0,
+        "1": 358,
+        "2": 0,
+        "3": 0
+      },
+      "P8_D8_AFalse": {
+        "0": 0,
+        "1": 234,
+        "2": 0,
+        "3": 33
+      },
+      "P15_D8_ATrue": {
+        "0": 0,
+        "1": 338,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D7_AFalse": {
+        "0": 608,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D3_AFalse": {
+        "0": 1085,
+        "1": 0,
+        "2": 0,
+        "3": 31
+      },
+      "P5_D8_AFalse": {
+        "0": 0,
+        "1": 114,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D4_AFalse": {
+        "0": 0,
+        "1": 936,
+        "2": 0,
+        "3": 37
+      },
+      "P11_D8_AFalse": {
+        "0": 0,
+        "1": 496,
+        "2": 0,
+        "3": 0
+      },
+      "P6_D6_AFalse": {
+        "0": 0,
+        "1": 128,
+        "2": 0,
+        "3": 47
+      },
+      "P8_D6_AFalse": {
+        "0": 0,
+        "1": 227,
+        "2": 0,
+        "3": 42
+      },
+      "P20_D7_AFalse": {
+        "0": 753,
+        "1": 0,
+        "2": 0,
+        "3": 1325
+      },
+      "P12_D2_ATrue": {
+        "0": 0,
+        "1": 103,
+        "2": 0,
+        "3": 56
+      },
+      "P9_D8_AFalse": {
+        "0": 0,
+        "1": 348,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D5_ATrue": {
+        "0": 0,
+        "1": 75,
+        "2": 0,
+        "3": 35
+      },
+      "P11_D2_AFalse": {
+        "0": 0,
+        "1": 447,
+        "2": 0,
+        "3": 0
+      },
+      "P21_D3_AFalse": {
+        "0": 513,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "P4_D5_AFalse": {
+        "0": 0,
+        "1": 1,
+        "2": 0,
+        "3": 48
+      },
+      "P19_D4_ATrue": {
+        "0": 131,
+        "1": 106,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D2_ATrue": {
+        "0": 178,
+        "1": 93,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D7_AFalse": {
+        "0": 0,
+        "1": 1054,
+        "2": 0,
+        "3": 32
+      },
+      "P5_D5_AFalse": {
+        "0": 0,
+        "1": 116,
+        "2": 0,
+        "3": 0
+      },
+      "P8_D3_AFalse": {
+        "0": 0,
+        "1": 237,
+        "2": 0,
+        "3": 40
+      },
+      "P6_D11_AFalse": {
+        "0": 0,
+        "1": 118,
+        "2": 0,
+        "3": 36
+      },
+      "P18_D3_ATrue": {
+        "0": 158,
+        "1": 115,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D6_AFalse": {
+        "0": 0,
+        "1": 224,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D7_ATrue": {
+        "0": 0,
+        "1": 359,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D5_ATrue": {
+        "0": 0,
+        "1": 291,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D10_ATrue": {
+        "0": 0,
+        "1": 489,
+        "2": 0,
+        "3": 172
+      },
+      "P11_D4_AFalse": {
+        "0": 0,
+        "1": 491,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D3_ATrue": {
+        "0": 132,
+        "1": 97,
+        "2": 0,
+        "3": 0
+      },
+      "P17_D3_ATrue": {
+        "0": 203,
+        "1": 116,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D6_ATrue": {
+        "0": 192,
+        "1": 112,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D7_AFalse": {
+        "0": 0,
+        "1": 242,
+        "2": 0,
+        "3": 0
+      },
+      "P8_D7_AFalse": {
+        "0": 0,
+        "1": 252,
+        "2": 0,
+        "3": 38
+      },
+      "P15_D11_ATrue": {
+        "0": 0,
+        "1": 315,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D11_ATrue": {
+        "0": 189,
+        "1": 86,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D4_ATrue": {
+        "0": 139,
+        "1": 99,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D9_ATrue": {
+        "0": 241,
+        "1": 118,
+        "2": 0,
+        "3": 0
+      },
+      "P6_D10_AFalse": {
+        "0": 0,
+        "1": 473,
+        "2": 0,
+        "3": 192
+      },
+      "P9_D3_AFalse": {
+        "0": 0,
+        "1": 322,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D9_ATrue": {
+        "0": 0,
+        "1": 280,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D3_ATrue": {
+        "0": 0,
+        "1": 79,
+        "2": 0,
+        "3": 40
+      },
+      "P14_D4_ATrue": {
+        "0": 0,
+        "1": 277,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D3_ATrue": {
+        "0": 0,
+        "1": 148,
+        "2": 109,
+        "3": 0
+      },
+      "P6_D3_AFalse": {
+        "0": 0,
+        "1": 118,
+        "2": 0,
+        "3": 26
+      },
+      "P10_D7_AFalse": {
+        "0": 0,
+        "1": 349,
+        "2": 0,
+        "3": 39
+      },
+      "P10_D11_AFalse": {
+        "0": 0,
+        "1": 352,
+        "2": 0,
+        "3": 39
+      },
+      "P7_D3_AFalse": {
+        "0": 0,
+        "1": 181,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D4_AFalse": {
+        "0": 0,
+        "1": 120,
+        "2": 0,
+        "3": 0
+      },
+      "P16_D9_AFalse": {
+        "0": 0,
+        "1": 1119,
+        "2": 0,
+        "3": 41
+      },
+      "P14_D6_ATrue": {
+        "0": 0,
+        "1": 314,
+        "2": 0,
+        "3": 0
+      },
+      "P18_D8_ATrue": {
+        "0": 263,
+        "1": 86,
+        "2": 0,
+        "3": 0
+      },
+      "P14_D3_ATrue": {
+        "0": 0,
+        "1": 278,
+        "2": 0,
+        "3": 0
+      },
+      "P7_D8_AFalse": {
+        "0": 0,
+        "1": 215,
+        "2": 0,
+        "3": 0
+      },
+      "P15_D5_ATrue": {
+        "0": 0,
+        "1": 312,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D3_AFalse": {
+        "0": 0,
+        "1": 91,
+        "2": 0,
+        "3": 0
+      },
+      "P19_D5_ATrue": {
+        "0": 146,
+        "1": 98,
+        "2": 0,
+        "3": 0
+      },
+      "P6_D2_AFalse": {
+        "0": 0,
+        "1": 91,
+        "2": 0,
+        "3": 41
+      },
+      "P7_D4_AFalse": {
+        "0": 0,
+        "1": 217,
+        "2": 0,
+        "3": 0
+      },
+      "P20_D7_ATrue": {
+        "0": 196,
+        "1": 104,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D7_ATrue": {
+        "0": 0,
+        "1": 109,
+        "2": 0,
+        "3": 33
+      },
+      "P11_D9_AFalse": {
+        "0": 0,
+        "1": 501,
+        "2": 0,
+        "3": 0
+      },
+      "P12_D9_ATrue": {
+        "0": 0,
+        "1": 132,
+        "2": 0,
+        "3": 30
+      },
+      "P12_D11_ATrue": {
+        "0": 0,
+        "1": 108,
+        "2": 0,
+        "3": 31
+      },
+      "P20_D11_ATrue": {
+        "0": 205,
+        "1": 85,
+        "2": 0,
+        "3": 0
+      },
+      "P6_D7_AFalse": {
+        "0": 0,
+        "1": 110,
+        "2": 0,
+        "3": 34
+      },
+      "P20_D9_ATrue": {
+        "0": 207,
+        "1": 84,
+        "2": 0,
+        "3": 0
+      },
+      "P6_D4_AFalse": {
+        "0": 0,
+        "1": 92,
+        "2": 0,
+        "3": 53
+      },
+      "P19_D8_ATrue": {
+        "0": 185,
+        "1": 72,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D11_AFalse": {
+        "0": 0,
+        "1": 119,
+        "2": 0,
+        "3": 0
+      },
+      "P4_D10_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 148
+      },
+      "P4_D2_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 25
+      },
+      "P20_D5_ATrue": {
+        "0": 167,
+        "1": 101,
+        "2": 0,
+        "3": 0
+      },
+      "P4_D8_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 39
+      },
+      "P17_D5_ATrue": {
+        "0": 135,
+        "1": 89,
+        "2": 0,
+        "3": 0
+      },
+      "P13_D6_ATrue": {
+        "0": 0,
+        "1": 350,
+        "2": 0,
+        "3": 0
+      },
+      "P5_D2_AFalse": {
+        "0": 0,
+        "1": 89,
+        "2": 0,
+        "3": 0
+      },
+      "P4_D3_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 44
+      },
+      "P4_D11_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 49
+      },
+      "P4_D6_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 56
+      },
+      "P4_D9_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 52
+      },
+      "P4_D4_AFalse": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 46
+      }
+    },
+    "state_win_stats": {
+      "P15_D2_ATrue": {
+        "wins": 41896,
+        "total": 100000
+      },
+      "P14_D2_ATrue": {
+        "wins": 41896,
+        "total": 100000
+      },
+      "P16_D2_ATrue": {
+        "wins": 41896,
+        "total": 100000
+      },
+      "P19_D3_AFalse": {
+        "wins": 41896,
+        "total": 99999
+      },
+      "P13_D9_AFalse": {
+        "wins": 41896,
+        "total": 99998
+      },
+      "P10_D9_AFalse": {
+        "wins": 41896,
+        "total": 99997
+      },
+      "P12_D9_AFalse": {
+        "wins": 41896,
+        "total": 99997
+      },
+      "P11_D10_AFalse": {
+        "wins": 41896,
+        "total": 99996
+      },
+      "P21_D10_AFalse": {
+        "wins": 41896,
+        "total": 99996
+      },
+      "P11_D5_AFalse": {
+        "wins": 41895,
+        "total": 99995
+      },
+      "P20_D4_AFalse": {
+        "wins": 41894,
+        "total": 99994
+      },
+      "P16_D4_AFalse": {
+        "wins": 41894,
+        "total": 99994
+      },
+      "P21_D4_ATrue": {
+        "wins": 41894,
+        "total": 99994
+      },
+      "P10_D4_AFalse": {
+        "wins": 41893,
+        "total": 99993
+      },
+      "P12_D6_ATrue": {
+        "wins": 41892,
+        "total": 99992
+      },
+      "P18_D6_ATrue": {
+        "wins": 41892,
+        "total": 99992
+      },
+      "P17_D6_ATrue": {
+        "wins": 41892,
+        "total": 99992
+      },
+      "P15_D6_ATrue": {
+        "wins": 41892,
+        "total": 99992
+      },
+      "P19_D6_ATrue": {
+        "wins": 41892,
+        "total": 99992
+      },
+      "P12_D10_AFalse": {
+        "wins": 41891,
+        "total": 99991
+      },
+      "P15_D10_AFalse": {
+        "wins": 41891,
+        "total": 99991
+      },
+      "P20_D10_AFalse": {
+        "wins": 41891,
+        "total": 99991
+      },
+      "P20_D8_AFalse": {
+        "wins": 41891,
+        "total": 99990
+      },
+      "P12_D8_AFalse": {
+        "wins": 41891,
+        "total": 99990
+      },
+      "P18_D8_AFalse": {
+        "wins": 41891,
+        "total": 99990
+      },
+      "P13_D8_ATrue": {
+        "wins": 41891,
+        "total": 99990
+      },
+      "P20_D8_ATrue": {
+        "wins": 41891,
+        "total": 99990
+      },
+      "P21_D8_ATrue": {
+        "wins": 41891,
+        "total": 99990
+      },
+      "P18_D2_AFalse": {
+        "wins": 41890,
+        "total": 99989
+      },
+      "P20_D9_AFalse": {
+        "wins": 41890,
+        "total": 99988
+      },
+      "P21_D9_ATrue": {
+        "wins": 41890,
+        "total": 99988
+      },
+      "P14_D9_AFalse": {
+        "wins": 41890,
+        "total": 99988
+      },
+      "P20_D3_AFalse": {
+        "wins": 41889,
+        "total": 99987
+      },
+      "P14_D3_AFalse": {
+        "wins": 41889,
+        "total": 99987
+      },
+      "P17_D3_AFalse": {
+        "wins": 41889,
+        "total": 99987
+      },
+      "P16_D3_AFalse": {
+        "wins": 41889,
+        "total": 99987
+      },
+      "P15_D3_AFalse": {
+        "wins": 41889,
+        "total": 99986
+      },
+      "P16_D3_ATrue": {
+        "wins": 41889,
+        "total": 99986
+      },
+      "P8_D5_AFalse": {
+        "wins": 41889,
+        "total": 99984
+      },
+      "P14_D5_AFalse": {
+        "wins": 41889,
+        "total": 99984
+      },
+      "P7_D5_AFalse": {
+        "wins": 41889,
+        "total": 99984
+      },
+      "P15_D5_AFalse": {
+        "wins": 41889,
+        "total": 99984
+      },
+      "P17_D5_AFalse": {
+        "wins": 41889,
+        "total": 99984
+      },
+      "P14_D8_ATrue": {
+        "wins": 41887,
+        "total": 99982
+      },
+      "P12_D8_ATrue": {
+        "wins": 41887,
+        "total": 99982
+      },
+      "P17_D8_ATrue": {
+        "wins": 41887,
+        "total": 99982
+      },
+      "P11_D3_AFalse": {
+        "wins": 41886,
+        "total": 99981
+      },
+      "P13_D2_AFalse": {
+        "wins": 41886,
+        "total": 99980
+      },
+      "P15_D2_AFalse": {
+        "wins": 41886,
+        "total": 99980
+      },
+      "P17_D6_AFalse": {
+        "wins": 41886,
+        "total": 99979
+      },
+      "P14_D2_AFalse": {
+        "wins": 41886,
+        "total": 99978
+      },
+      "P21_D2_AFalse": {
+        "wins": 41886,
+        "total": 99978
+      },
+      "P15_D4_AFalse": {
+        "wins": 41885,
+        "total": 99977
+      },
+      "P21_D10_ATrue": {
+        "wins": 41885,
+        "total": 99976
+      },
+      "P10_D6_AFalse": {
+        "wins": 41884,
+        "total": 99975
+      },
+      "P20_D6_AFalse": {
+        "wins": 41884,
+        "total": 99975
+      },
+      "P9_D7_AFalse": {
+        "wins": 41883,
+        "total": 99974
+      },
+      "P13_D7_AFalse": {
+        "wins": 41883,
+        "total": 99974
+      },
+      "P16_D7_AFalse": {
+        "wins": 41883,
+        "total": 99974
+      },
+      "P17_D9_AFalse": {
+        "wins": 41883,
+        "total": 99973
+      },
+      "P21_D9_AFalse": {
+        "wins": 41883,
+        "total": 99973
+      },
+      "P12_D11_AFalse": {
+        "wins": 41882,
+        "total": 99972
+      },
+      "P15_D11_AFalse": {
+        "wins": 41882,
+        "total": 99972
+      },
+      "P19_D11_AFalse": {
+        "wins": 41882,
+        "total": 99972
+      },
+      "P15_D10_ATrue": {
+        "wins": 41882,
+        "total": 99971
+      },
+      "P14_D10_AFalse": {
+        "wins": 41881,
+        "total": 99970
+      },
+      "P20_D2_AFalse": {
+        "wins": 41881,
+        "total": 99969
+      },
+      "P18_D4_AFalse": {
+        "wins": 41880,
+        "total": 99968
+      },
+      "P19_D4_AFalse": {
+        "wins": 41880,
+        "total": 99968
+      },
+      "P19_D8_AFalse": {
+        "wins": 41879,
+        "total": 99967
+      },
+      "P6_D9_AFalse": {
+        "wins": 41879,
+        "total": 99965
+      },
+      "P20_D11_AFalse": {
+        "wins": 41879,
+        "total": 99964
+      },
+      "P17_D11_AFalse": {
+        "wins": 41879,
+        "total": 99964
+      },
+      "P21_D11_ATrue": {
+        "wins": 41879,
+        "total": 99964
+      },
+      "P16_D5_ATrue": {
+        "wins": 41878,
+        "total": 99963
+      },
+      "P18_D5_ATrue": {
+        "wins": 41878,
+        "total": 99963
+      },
+      "P17_D2_AFalse": {
+        "wins": 41877,
+        "total": 99962
+      },
+      "P7_D11_AFalse": {
+        "wins": 41877,
+        "total": 99961
+      },
+      "P14_D11_AFalse": {
+        "wins": 41877,
+        "total": 99961
+      },
+      "P19_D10_AFalse": {
+        "wins": 41877,
+        "total": 99960
+      },
+      "P19_D7_ATrue": {
+        "wins": 41876,
+        "total": 99958
+      },
+      "P15_D7_ATrue": {
+        "wins": 41876,
+        "total": 99958
+      },
+      "P19_D9_AFalse": {
+        "wins": 41876,
+        "total": 99956
+      },
+      "P9_D10_AFalse": {
+        "wins": 41875,
+        "total": 99953
+      },
+      "P20_D10_ATrue": {
+        "wins": 41875,
+        "total": 99953
+      },
+      "P18_D11_ATrue": {
+        "wins": 41874,
+        "total": 99952
+      },
+      "P7_D9_AFalse": {
+        "wins": 41874,
+        "total": 99951
+      },
+      "P16_D11_ATrue": {
+        "wins": 41874,
+        "total": 99950
+      },
+      "P9_D2_AFalse": {
+        "wins": 41874,
+        "total": 99949
+      },
+      "P19_D2_AFalse": {
+        "wins": 41874,
+        "total": 99949
+      },
+      "P16_D2_AFalse": {
+        "wins": 41873,
+        "total": 99948
+      },
+      "P14_D10_ATrue": {
+        "wins": 41871,
+        "total": 99945
+      },
+      "P13_D10_ATrue": {
+        "wins": 41871,
+        "total": 99945
+      },
+      "P19_D10_ATrue": {
+        "wins": 41871,
+        "total": 99945
+      },
+      "P16_D8_AFalse": {
+        "wins": 41870,
+        "total": 99944
+      },
+      "P6_D8_AFalse": {
+        "wins": 41869,
+        "total": 99943
+      },
+      "P21_D8_AFalse": {
+        "wins": 41869,
+        "total": 99943
+      },
+      "P16_D8_ATrue": {
+        "wins": 41869,
+        "total": 99943
+      },
+      "P12_D2_AFalse": {
+        "wins": 41868,
+        "total": 99942
+      },
+      "P14_D8_AFalse": {
+        "wins": 41866,
+        "total": 99939
+      },
+      "P15_D8_AFalse": {
+        "wins": 41866,
+        "total": 99939
+      },
+      "P16_D10_AFalse": {
+        "wins": 41865,
+        "total": 99938
+      },
+      "P10_D10_AFalse": {
+        "wins": 41865,
+        "total": 99937
+      },
+      "P8_D11_AFalse": {
+        "wins": 41865,
+        "total": 99936
+      },
+      "P21_D11_AFalse": {
+        "wins": 41865,
+        "total": 99936
+      },
+      "P12_D4_AFalse": {
+        "wins": 41864,
+        "total": 99935
+      },
+      "P11_D6_AFalse": {
+        "wins": 41864,
+        "total": 99934
+      },
+      "P14_D6_AFalse": {
+        "wins": 41864,
+        "total": 99934
+      },
+      "P10_D5_AFalse": {
+        "wins": 41864,
+        "total": 99932
+      },
+      "P21_D5_ATrue": {
+        "wins": 41864,
+        "total": 99932
+      },
+      "P18_D10_AFalse": {
+        "wins": 41864,
+        "total": 99931
+      },
+      "P17_D8_AFalse": {
+        "wins": 41863,
+        "total": 99930
+      },
+      "P18_D7_AFalse": {
+        "wins": 41862,
+        "total": 99927
+      },
+      "P16_D4_ATrue": {
+        "wins": 41862,
+        "total": 99926
+      },
+      "P15_D4_ATrue": {
+        "wins": 41862,
+        "total": 99926
+      },
+      "P12_D5_AFalse": {
+        "wins": 41860,
+        "total": 99924
+      },
+      "P13_D5_ATrue": {
+        "wins": 41860,
+        "total": 99924
+      },
+      "P20_D5_AFalse": {
+        "wins": 41860,
+        "total": 99923
+      },
+      "P19_D5_AFalse": {
+        "wins": 41860,
+        "total": 99923
+      },
+      "P9_D4_AFalse": {
+        "wins": 41859,
+        "total": 99921
+      },
+      "P21_D4_AFalse": {
+        "wins": 41859,
+        "total": 99921
+      },
+      "P17_D7_ATrue": {
+        "wins": 41858,
+        "total": 99920
+      },
+      "P13_D7_ATrue": {
+        "wins": 41858,
+        "total": 99920
+      },
+      "P18_D7_ATrue": {
+        "wins": 41858,
+        "total": 99920
+      },
+      "P17_D10_AFalse": {
+        "wins": 41856,
+        "total": 99918
+      },
+      "P15_D6_AFalse": {
+        "wins": 41854,
+        "total": 99915
+      },
+      "P5_D7_AFalse": {
+        "wins": 41853,
+        "total": 99913
+      },
+      "P15_D7_AFalse": {
+        "wins": 41853,
+        "total": 99913
+      },
+      "P12_D3_AFalse": {
+        "wins": 41852,
+        "total": 99910
+      },
+      "P12_D6_AFalse": {
+        "wins": 41852,
+        "total": 99909
+      },
+      "P6_D5_AFalse": {
+        "wins": 41852,
+        "total": 99908
+      },
+      "P9_D5_AFalse": {
+        "wins": 41852,
+        "total": 99908
+      },
+      "P8_D4_AFalse": {
+        "wins": 41851,
+        "total": 99905
+      },
+      "P19_D7_AFalse": {
+        "wins": 41850,
+        "total": 99904
+      },
+      "P4_D7_AFalse": {
+        "wins": 41849,
+        "total": 99903
+      },
+      "P12_D7_AFalse": {
+        "wins": 41849,
+        "total": 99903
+      },
+      "P17_D7_AFalse": {
+        "wins": 41849,
+        "total": 99903
+      },
+      "P16_D5_AFalse": {
+        "wins": 41849,
+        "total": 99902
+      },
+      "P16_D11_AFalse": {
+        "wins": 41848,
+        "total": 99901
+      },
+      "P13_D10_AFalse": {
+        "wins": 41846,
+        "total": 99899
+      },
+      "P16_D6_ATrue": {
+        "wins": 41846,
+        "total": 99898
+      },
+      "P21_D5_AFalse": {
+        "wins": 41845,
+        "total": 99897
+      },
+      "P10_D3_AFalse": {
+        "wins": 41844,
+        "total": 99896
+      },
+      "P13_D11_AFalse": {
+        "wins": 41841,
+        "total": 99893
+      },
+      "P18_D11_AFalse": {
+        "wins": 41841,
+        "total": 99893
+      },
+      "P5_D6_AFalse": {
+        "wins": 41840,
+        "total": 99892
+      },
+      "P21_D3_ATrue": {
+        "wins": 41840,
+        "total": 99891
+      },
+      "P14_D9_ATrue": {
+        "wins": 41839,
+        "total": 99890
+      },
+      "P21_D7_ATrue": {
+        "wins": 41838,
+        "total": 99882
+      },
+      "P8_D9_AFalse": {
+        "wins": 41835,
+        "total": 99878
+      },
+      "P18_D9_AFalse": {
+        "wins": 41835,
+        "total": 99878
+      },
+      "P17_D11_ATrue": {
+        "wins": 41834,
+        "total": 99875
+      },
+      "P18_D6_AFalse": {
+        "wins": 41834,
+        "total": 99874
+      },
+      "P18_D10_ATrue": {
+        "wins": 41833,
+        "total": 99870
+      },
+      "P9_D6_AFalse": {
+        "wins": 41833,
+        "total": 99869
+      },
+      "P13_D6_AFalse": {
+        "wins": 41832,
+        "total": 99867
+      },
+      "P21_D6_AFalse": {
+        "wins": 41832,
+        "total": 99867
+      },
+      "P7_D2_AFalse": {
+        "wins": 41831,
+        "total": 99864
+      },
+      "P18_D2_ATrue": {
+        "wins": 41831,
+        "total": 99864
+      },
+      "P19_D6_AFalse": {
+        "wins": 41830,
+        "total": 99860
+      },
+      "P15_D9_ATrue": {
+        "wins": 41827,
+        "total": 99857
+      },
+      "P14_D11_ATrue": {
+        "wins": 41827,
+        "total": 99856
+      },
+      "P13_D11_ATrue": {
+        "wins": 41827,
+        "total": 99856
+      },
+      "P7_D10_AFalse": {
+        "wins": 41827,
+        "total": 99855
+      },
+      "P13_D3_AFalse": {
+        "wins": 41826,
+        "total": 99854
+      },
+      "P15_D3_ATrue": {
+        "wins": 41822,
+        "total": 99842
+      },
+      "P20_D3_ATrue": {
+        "wins": 41822,
+        "total": 99842
+      },
+      "P5_D10_AFalse": {
+        "wins": 41822,
+        "total": 99841
+      },
+      "P21_D2_ATrue": {
+        "wins": 41820,
+        "total": 99837
+      },
+      "P5_D9_AFalse": {
+        "wins": 41818,
+        "total": 99830
+      },
+      "P13_D8_AFalse": {
+        "wins": 41818,
+        "total": 99829
+      },
+      "P15_D9_AFalse": {
+        "wins": 41818,
+        "total": 99827
+      },
+      "P14_D7_ATrue": {
+        "wins": 41816,
+        "total": 99823
+      },
+      "P19_D9_ATrue": {
+        "wins": 41816,
+        "total": 99822
+      },
+      "P16_D9_ATrue": {
+        "wins": 41816,
+        "total": 99822
+      },
+      "P10_D2_AFalse": {
+        "wins": 41815,
+        "total": 99820
+      },
+      "P16_D10_ATrue": {
+        "wins": 41814,
+        "total": 99817
+      },
+      "P13_D5_AFalse": {
+        "wins": 41812,
+        "total": 99812
+      },
+      "P10_D8_AFalse": {
+        "wins": 41812,
+        "total": 99810
+      },
+      "P17_D9_ATrue": {
+        "wins": 41809,
+        "total": 99796
+      },
+      "P18_D5_AFalse": {
+        "wins": 41808,
+        "total": 99793
+      },
+      "P17_D2_ATrue": {
+        "wins": 41804,
+        "total": 99784
+      },
+      "P16_D6_AFalse": {
+        "wins": 41801,
+        "total": 99780
+      },
+      "P21_D6_ATrue": {
+        "wins": 41801,
+        "total": 99780
+      },
+      "P13_D4_ATrue": {
+        "wins": 41800,
+        "total": 99774
+      },
+      "P18_D4_ATrue": {
+        "wins": 41800,
+        "total": 99774
+      },
+      "P13_D4_AFalse": {
+        "wins": 41800,
+        "total": 99774
+      },
+      "P11_D11_AFalse": {
+        "wins": 41797,
+        "total": 99758
+      },
+      "P11_D7_AFalse": {
+        "wins": 41795,
+        "total": 99753
+      },
+      "P17_D4_AFalse": {
+        "wins": 41790,
+        "total": 99743
+      },
+      "P17_D4_ATrue": {
+        "wins": 41790,
+        "total": 99743
+      },
+      "P12_D4_ATrue": {
+        "wins": 41790,
+        "total": 99743
+      },
+      "P8_D10_AFalse": {
+        "wins": 41789,
+        "total": 99742
+      },
+      "P8_D2_AFalse": {
+        "wins": 41789,
+        "total": 99741
+      },
+      "P13_D2_ATrue": {
+        "wins": 41786,
+        "total": 99737
+      },
+      "P19_D2_ATrue": {
+        "wins": 41786,
+        "total": 99737
+      },
+      "P17_D10_ATrue": {
+        "wins": 41786,
+        "total": 99736
+      },
+      "P9_D9_AFalse": {
+        "wins": 41782,
+        "total": 99729
+      },
+      "P9_D11_AFalse": {
+        "wins": 41781,
+        "total": 99723
+      },
+      "P8_D8_AFalse": {
+        "wins": 41781,
+        "total": 99720
+      },
+      "P15_D8_ATrue": {
+        "wins": 41781,
+        "total": 99720
+      },
+      "P21_D7_AFalse": {
+        "wins": 41774,
+        "total": 99702
+      },
+      "P18_D3_AFalse": {
+        "wins": 41771,
+        "total": 99697
+      },
+      "P5_D8_AFalse": {
+        "wins": 41770,
+        "total": 99696
+      },
+      "P14_D4_AFalse": {
+        "wins": 41770,
+        "total": 99695
+      },
+      "P11_D8_AFalse": {
+        "wins": 41767,
+        "total": 99689
+      },
+      "P6_D6_AFalse": {
+        "wins": 41766,
+        "total": 99688
+      },
+      "P8_D6_AFalse": {
+        "wins": 41766,
+        "total": 99688
+      },
+      "P20_D7_AFalse": {
+        "wins": 41764,
+        "total": 99686
+      },
+      "P12_D2_ATrue": {
+        "wins": 41763,
+        "total": 99685
+      },
+      "P9_D8_AFalse": {
+        "wins": 41759,
+        "total": 99677
+      },
+      "P12_D5_ATrue": {
+        "wins": 41758,
+        "total": 99673
+      },
+      "P11_D2_AFalse": {
+        "wins": 41755,
+        "total": 99666
+      },
+      "P21_D3_AFalse": {
+        "wins": 41753,
+        "total": 99661
+      },
+      "P4_D5_AFalse": {
+        "wins": 41751,
+        "total": 99658
+      },
+      "P19_D4_ATrue": {
+        "wins": 41747,
+        "total": 99650
+      },
+      "P20_D2_ATrue": {
+        "wins": 41745,
+        "total": 99646
+      },
+      "P14_D7_AFalse": {
+        "wins": 41745,
+        "total": 99645
+      },
+      "P5_D5_AFalse": {
+        "wins": 41744,
+        "total": 99644
+      },
+      "P8_D3_AFalse": {
+        "wins": 41738,
+        "total": 99633
+      },
+      "P6_D11_AFalse": {
+        "wins": 41738,
+        "total": 99632
+      },
+      "P18_D3_ATrue": {
+        "wins": 41736,
+        "total": 99624
+      },
+      "P7_D6_AFalse": {
+        "wins": 41732,
+        "total": 99615
+      },
+      "P16_D7_ATrue": {
+        "wins": 41725,
+        "total": 99603
+      },
+      "P14_D5_ATrue": {
+        "wins": 41722,
+        "total": 99595
+      },
+      "P12_D10_ATrue": {
+        "wins": 41720,
+        "total": 99589
+      },
+      "P11_D4_AFalse": {
+        "wins": 41711,
+        "total": 99572
+      },
+      "P19_D3_ATrue": {
+        "wins": 41706,
+        "total": 99559
+      },
+      "P17_D3_ATrue": {
+        "wins": 41706,
+        "total": 99559
+      },
+      "P20_D6_ATrue": {
+        "wins": 41704,
+        "total": 99554
+      },
+      "P7_D7_AFalse": {
+        "wins": 41701,
+        "total": 99545
+      },
+      "P8_D7_AFalse": {
+        "wins": 41694,
+        "total": 99525
+      },
+      "P15_D11_ATrue": {
+        "wins": 41690,
+        "total": 99513
+      },
+      "P19_D11_ATrue": {
+        "wins": 41690,
+        "total": 99513
+      },
+      "P20_D4_ATrue": {
+        "wins": 41690,
+        "total": 99512
+      },
+      "P18_D9_ATrue": {
+        "wins": 41687,
+        "total": 99501
+      },
+      "P6_D10_AFalse": {
+        "wins": 41682,
+        "total": 99489
+      },
+      "P9_D3_AFalse": {
+        "wins": 41671,
+        "total": 99451
+      },
+      "P13_D9_ATrue": {
+        "wins": 41667,
+        "total": 99446
+      },
+      "P12_D3_ATrue": {
+        "wins": 41666,
+        "total": 99442
+      },
+      "P14_D4_ATrue": {
+        "wins": 41661,
+        "total": 99432
+      },
+      "P13_D3_ATrue": {
+        "wins": 41656,
+        "total": 99419
+      },
+      "P6_D3_AFalse": {
+        "wins": 41645,
+        "total": 99401
+      },
+      "P10_D7_AFalse": {
+        "wins": 41644,
+        "total": 99397
+      },
+      "P10_D11_AFalse": {
+        "wins": 41643,
+        "total": 99394
+      },
+      "P7_D3_AFalse": {
+        "wins": 41642,
+        "total": 99392
+      },
+      "P5_D4_AFalse": {
+        "wins": 41639,
+        "total": 99387
+      },
+      "P16_D9_AFalse": {
+        "wins": 41636,
+        "total": 99378
+      },
+      "P14_D6_ATrue": {
+        "wins": 41618,
+        "total": 99334
+      },
+      "P18_D8_ATrue": {
+        "wins": 41616,
+        "total": 99330
+      },
+      "P14_D3_ATrue": {
+        "wins": 41597,
+        "total": 99280
+      },
+      "P7_D8_AFalse": {
+        "wins": 41596,
+        "total": 99279
+      },
+      "P15_D5_ATrue": {
+        "wins": 41594,
+        "total": 99265
+      },
+      "P5_D3_AFalse": {
+        "wins": 41547,
+        "total": 99171
+      },
+      "P19_D5_ATrue": {
+        "wins": 41537,
+        "total": 99147
+      },
+      "P6_D2_AFalse": {
+        "wins": 41490,
+        "total": 99029
+      },
+      "P7_D4_AFalse": {
+        "wins": 41461,
+        "total": 98981
+      },
+      "P20_D7_ATrue": {
+        "wins": 41455,
+        "total": 98971
+      },
+      "P12_D7_ATrue": {
+        "wins": 41453,
+        "total": 98967
+      },
+      "P11_D9_AFalse": {
+        "wins": 41436,
+        "total": 98939
+      },
+      "P12_D9_ATrue": {
+        "wins": 41436,
+        "total": 98939
+      },
+      "P12_D11_ATrue": {
+        "wins": 41423,
+        "total": 98906
+      },
+      "P20_D11_ATrue": {
+        "wins": 41406,
+        "total": 98863
+      },
+      "P6_D7_AFalse": {
+        "wins": 41404,
+        "total": 98859
+      },
+      "P20_D9_ATrue": {
+        "wins": 41404,
+        "total": 98857
+      },
+      "P6_D4_AFalse": {
+        "wins": 41358,
+        "total": 98750
+      },
+      "P19_D8_ATrue": {
+        "wins": 41297,
+        "total": 98643
+      },
+      "P5_D11_AFalse": {
+        "wins": 41268,
+        "total": 98568
+      },
+      "P4_D10_AFalse": {
+        "wins": 41257,
+        "total": 98544
+      },
+      "P4_D2_AFalse": {
+        "wins": 41251,
+        "total": 98529
+      },
+      "P20_D5_ATrue": {
+        "wins": 41201,
+        "total": 98436
+      },
+      "P4_D8_AFalse": {
+        "wins": 41039,
+        "total": 98074
+      },
+      "P17_D5_ATrue": {
+        "wins": 41035,
+        "total": 98062
+      },
+      "P13_D6_ATrue": {
+        "wins": 41024,
+        "total": 98040
+      },
+      "P5_D2_AFalse": {
+        "wins": 41003,
+        "total": 97999
+      },
+      "P4_D3_AFalse": {
+        "wins": 41003,
+        "total": 97998
+      },
+      "P4_D11_AFalse": {
+        "wins": 40755,
+        "total": 97392
+      },
+      "P4_D6_AFalse": {
+        "wins": 40674,
+        "total": 97221
+      },
+      "P4_D9_AFalse": {
+        "wins": 40365,
+        "total": 96460
+      },
+      "P4_D4_AFalse": {
+        "wins": 39806,
+        "total": 95056
+      }
+    },
+    "state_reward_stats": {
+      "P15_D2_ATrue": {
+        "avg": -0.2451149425287356,
+        "std": 0.4613252256268991,
+        "count": 348
+      },
+      "P14_D2_ATrue": {
+        "avg": -0.18764044943820224,
+        "std": 0.38108588925996256,
+        "count": 356
+      },
+      "P16_D2_ATrue": {
+        "avg": -0.1256559766763848,
+        "std": 0.8271437866218172,
+        "count": 343
+      },
+      "P19_D3_AFalse": {
+        "avg": 0.43101436265709164,
+        "std": 1.0061061125289124,
+        "count": 1114
+      },
+      "P13_D9_AFalse": {
+        "avg": -0.2913452492944497,
+        "std": 0.46350374926407256,
+        "count": 1063
+      },
+      "P10_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 438
+      },
+      "P12_D9_AFalse": {
+        "avg": -0.21565985130111526,
+        "std": 0.44894923946349186,
+        "count": 1076
+      },
+      "P11_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 1984
+      },
+      "P21_D10_AFalse": {
+        "avg": 0.8501883948756592,
+        "std": 0.6348488969869027,
+        "count": 2654
+      },
+      "P11_D5_AFalse": {
+        "avg": 0.6748514851485148,
+        "std": 1.7080998729474635,
+        "count": 505
+      },
+      "P20_D4_AFalse": {
+        "avg": 0.21810657009829282,
+        "std": 0.7306164863330737,
+        "count": 1933
+      },
+      "P16_D4_AFalse": {
+        "avg": -0.06641091219096332,
+        "std": 1.07098905374019,
+        "count": 1173
+      },
+      "P21_D4_ATrue": {
+        "avg": 1.2627397260273976,
+        "std": 0.883409894582634,
+        "count": 730
+      },
+      "P10_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 379
+      },
+      "P12_D6_ATrue": {
+        "avg": -0.1588235294117647,
+        "std": 0.34309803697453384,
+        "count": 153
+      },
+      "P18_D6_ATrue": {
+        "avg": 0.35335820895522396,
+        "std": 0.8044233533332042,
+        "count": 268
+      },
+      "P17_D6_ATrue": {
+        "avg": 0.1240601503759399,
+        "std": 0.7706091112859813,
+        "count": 266
+      },
+      "P15_D6_ATrue": {
+        "avg": -0.25669781931464175,
+        "std": 0.4291123188712748,
+        "count": 321
+      },
+      "P19_D6_ATrue": {
+        "avg": 0.35636363636363644,
+        "std": 0.7778673961225095,
+        "count": 275
+      },
+      "P12_D10_AFalse": {
+        "avg": -0.21302791696492482,
+        "std": 0.44336183308924615,
+        "count": 4191
+      },
+      "P15_D10_AFalse": {
+        "avg": -0.4013546798029557,
+        "std": 0.5536588602150868,
+        "count": 4466
+      },
+      "P20_D10_AFalse": {
+        "avg": 0.171770273727296,
+        "std": 0.676803815656831,
+        "count": 7818
+      },
+      "P20_D8_AFalse": {
+        "avg": 0.2642305836951278,
+        "std": 0.7583321372469781,
+        "count": 2073
+      },
+      "P12_D8_AFalse": {
+        "avg": -0.23005591798695246,
+        "std": 0.4651991492942781,
+        "count": 1073
+      },
+      "P18_D8_AFalse": {
+        "avg": 0.1253074739829707,
+        "std": 0.8145382664914861,
+        "count": 1057
+      },
+      "P13_D8_ATrue": {
+        "avg": -0.22465034965034966,
+        "std": 0.41874235212707195,
+        "count": 286
+      },
+      "P20_D8_ATrue": {
+        "avg": 0.56921768707483,
+        "std": 0.6420204080191048,
+        "count": 294
+      },
+      "P21_D8_ATrue": {
+        "avg": 1.2403543307086615,
+        "std": 0.8312085281275098,
+        "count": 762
+      },
+      "P18_D2_AFalse": {
+        "avg": 0.21726959517657193,
+        "std": 0.9917168769416739,
+        "count": 1161
+      },
+      "P20_D9_AFalse": {
+        "avg": 0.2826978074356531,
+        "std": 0.6812069177778269,
+        "count": 2098
+      },
+      "P21_D9_ATrue": {
+        "avg": 1.216987951807229,
+        "std": 0.8131453654771758,
+        "count": 830
+      },
+      "P14_D9_AFalse": {
+        "avg": -0.3212686567164179,
+        "std": 0.5124431845344491,
+        "count": 1072
+      },
+      "P20_D3_AFalse": {
+        "avg": 0.2054573804573805,
+        "std": 0.659766975773105,
+        "count": 1924
+      },
+      "P14_D3_AFalse": {
+        "avg": -0.31435643564356436,
+        "std": 0.5324852274176989,
+        "count": 1111
+      },
+      "P17_D3_AFalse": {
+        "avg": 0.07390065146579808,
+        "std": 1.0255434786550754,
+        "count": 1228
+      },
+      "P16_D3_AFalse": {
+        "avg": -0.15511811023622046,
+        "std": 0.9829929830739547,
+        "count": 1143
+      },
+      "P15_D3_AFalse": {
+        "avg": -0.3938666666666667,
+        "std": 0.5517710314171188,
+        "count": 1125
+      },
+      "P16_D3_ATrue": {
+        "avg": -0.2961002785515321,
+        "std": 0.553010349603626,
+        "count": 359
+      },
+      "P8_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 254
+      },
+      "P14_D5_AFalse": {
+        "avg": -0.30611729019211326,
+        "std": 0.5239901842973563,
+        "count": 989
+      },
+      "P7_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 213
+      },
+      "P15_D5_AFalse": {
+        "avg": -0.3775023832221163,
+        "std": 0.5435198073448729,
+        "count": 1049
+      },
+      "P17_D5_AFalse": {
+        "avg": 0.12357080035180301,
+        "std": 1.1012279475969835,
+        "count": 1137
+      },
+      "P14_D8_ATrue": {
+        "avg": -0.2095406360424028,
+        "std": 0.4019574027792814,
+        "count": 283
+      },
+      "P12_D8_ATrue": {
+        "avg": -0.1958333333333333,
+        "std": 0.39702250522875865,
+        "count": 156
+      },
+      "P17_D8_ATrue": {
+        "avg": -0.3377952755905512,
+        "std": 0.5159929093479532,
+        "count": 381
+      },
+      "P11_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 484
+      },
+      "P13_D2_AFalse": {
+        "avg": -0.2851653696498055,
+        "std": 0.4914950509458267,
+        "count": 1028
+      },
+      "P15_D2_AFalse": {
+        "avg": -0.37124645892351277,
+        "std": 0.5285583173846639,
+        "count": 1059
+      },
+      "P17_D6_AFalse": {
+        "avg": 0.13504753673293005,
+        "std": 0.986035303647546,
+        "count": 1157
+      },
+      "P14_D2_AFalse": {
+        "avg": -0.34366391184573003,
+        "std": 0.5262496875942576,
+        "count": 1089
+      },
+      "P21_D2_AFalse": {
+        "avg": 0.87144128113879,
+        "std": 0.6467880297662384,
+        "count": 562
+      },
+      "P15_D4_AFalse": {
+        "avg": -0.3978732638888889,
+        "std": 0.5655106848083443,
+        "count": 1152
+      },
+      "P21_D10_ATrue": {
+        "avg": 1.1242375081116158,
+        "std": 0.8285777158452597,
+        "count": 3082
+      },
+      "P10_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 386
+      },
+      "P20_D6_AFalse": {
+        "avg": 0.251004759386568,
+        "std": 0.7064644809946322,
+        "count": 1891
+      },
+      "P9_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 338
+      },
+      "P13_D7_AFalse": {
+        "avg": -0.2614474929044466,
+        "std": 0.4578666805913062,
+        "count": 1057
+      },
+      "P16_D7_AFalse": {
+        "avg": -0.4101836393989983,
+        "std": 0.5787058554320111,
+        "count": 1198
+      },
+      "P17_D9_AFalse": {
+        "avg": -0.38104549082202716,
+        "std": 0.7648384910058076,
+        "count": 1253
+      },
+      "P21_D9_AFalse": {
+        "avg": 0.9031397174254316,
+        "std": 0.6009199130171314,
+        "count": 637
+      },
+      "P12_D11_AFalse": {
+        "avg": -0.2116360454943132,
+        "std": 0.4629635985786127,
+        "count": 1143
+      },
+      "P15_D11_AFalse": {
+        "avg": -0.4314086814086814,
+        "std": 0.557565035755868,
+        "count": 1221
+      },
+      "P19_D11_AFalse": {
+        "avg": -0.05029585798816566,
+        "std": 1.0556483332967999,
+        "count": 1352
+      },
+      "P15_D10_ATrue": {
+        "avg": -0.27020275162925417,
+        "std": 0.4585587591305388,
+        "count": 1381
+      },
+      "P14_D10_AFalse": {
+        "avg": -0.3304978763567721,
+        "std": 0.5242988192654767,
+        "count": 4238
+      },
+      "P20_D2_AFalse": {
+        "avg": 0.22533621517771377,
+        "std": 0.7137042007658793,
+        "count": 2082
+      },
+      "P18_D4_AFalse": {
+        "avg": 0.2347903657448707,
+        "std": 1.0267619593093138,
+        "count": 1121
+      },
+      "P19_D4_AFalse": {
+        "avg": 0.42681737588652485,
+        "std": 0.9904805205979037,
+        "count": 1128
+      },
+      "P19_D8_AFalse": {
+        "avg": 0.6093916349809886,
+        "std": 0.8604674268266327,
+        "count": 1315
+      },
+      "P6_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 148
+      },
+      "P20_D11_AFalse": {
+        "avg": 0.03404510556621883,
+        "std": 0.800393377300275,
+        "count": 2084
+      },
+      "P17_D11_AFalse": {
+        "avg": -0.5607803700724054,
+        "std": 0.6029696842274652,
+        "count": 1243
+      },
+      "P21_D11_ATrue": {
+        "avg": 0.7422919508867667,
+        "std": 0.910904045127936,
+        "count": 733
+      },
+      "P16_D5_ATrue": {
+        "avg": -0.07035256410256407,
+        "std": 0.8333460150662261,
+        "count": 312
+      },
+      "P18_D5_ATrue": {
+        "avg": 0.21802325581395351,
+        "std": 0.7854877807596584,
+        "count": 258
+      },
+      "P17_D2_AFalse": {
+        "avg": -0.011941510966693719,
+        "std": 1.0588873656430282,
+        "count": 1231
+      },
+      "P7_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 248
+      },
+      "P14_D11_AFalse": {
+        "avg": -0.3564066852367688,
+        "std": 0.5288920760491524,
+        "count": 1077
+      },
+      "P19_D10_AFalse": {
+        "avg": 0.07346486812965577,
+        "std": 1.0041566189220898,
+        "count": 4967
+      },
+      "P19_D7_ATrue": {
+        "avg": 0.43797250859106523,
+        "std": 0.7437087885260066,
+        "count": 291
+      },
+      "P15_D7_ATrue": {
+        "avg": -0.25768115942028985,
+        "std": 0.4353314410401299,
+        "count": 345
+      },
+      "P19_D9_AFalse": {
+        "avg": 0.2570484581497797,
+        "std": 0.8744783781061461,
+        "count": 1135
+      },
+      "P9_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 1381
+      },
+      "P20_D10_ATrue": {
+        "avg": 0.3359820089955023,
+        "std": 0.6480496998451795,
+        "count": 1334
+      },
+      "P18_D11_ATrue": {
+        "avg": -0.390053050397878,
+        "std": 0.5282602418574578,
+        "count": 377
+      },
+      "P7_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 219
+      },
+      "P16_D11_ATrue": {
+        "avg": -0.30324074074074076,
+        "std": 0.4904617917885037,
+        "count": 324
+      },
+      "P9_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 332
+      },
+      "P19_D2_AFalse": {
+        "avg": 0.4484900776531493,
+        "std": 0.9912711606428659,
+        "count": 1159
+      },
+      "P16_D2_AFalse": {
+        "avg": -0.43600000000000005,
+        "std": 0.58520803518445,
+        "count": 1125
+      },
+      "P14_D10_ATrue": {
+        "avg": -0.2403288958496476,
+        "std": 0.44813898820740966,
+        "count": 1277
+      },
+      "P13_D10_ATrue": {
+        "avg": -0.19201716738197425,
+        "std": 0.42073995685371246,
+        "count": 1165
+      },
+      "P19_D10_ATrue": {
+        "avg": 0.03131274131274133,
+        "std": 0.8056162744939744,
+        "count": 1295
+      },
+      "P16_D8_AFalse": {
+        "avg": -0.44725022914757107,
+        "std": 0.5476821844362781,
+        "count": 1091
+      },
+      "P6_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 127
+      },
+      "P21_D8_AFalse": {
+        "avg": 0.9326989619377161,
+        "std": 0.539618905668921,
+        "count": 578
+      },
+      "P16_D8_ATrue": {
+        "avg": -0.2524484536082474,
+        "std": 0.47765852328702635,
+        "count": 388
+      },
+      "P12_D2_AFalse": {
+        "avg": -0.23718879668049794,
+        "std": 0.4644792310287493,
+        "count": 964
+      },
+      "P14_D8_AFalse": {
+        "avg": -0.3038497217068646,
+        "std": 0.4630969032447888,
+        "count": 1078
+      },
+      "P15_D8_AFalse": {
+        "avg": -0.40389610389610386,
+        "std": 0.560151414366116,
+        "count": 1078
+      },
+      "P16_D10_AFalse": {
+        "avg": -0.4557773812179345,
+        "std": 0.5870669800306102,
+        "count": 4483
+      },
+      "P10_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 1717
+      },
+      "P8_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 264
+      },
+      "P21_D11_AFalse": {
+        "avg": 0.6326086956521739,
+        "std": 0.6482744491522369,
+        "count": 667
+      },
+      "P12_D4_AFalse": {
+        "avg": -0.20976744186046511,
+        "std": 0.42674805143677436,
+        "count": 1075
+      },
+      "P11_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 488
+      },
+      "P14_D6_AFalse": {
+        "avg": -0.3227358490566038,
+        "std": 0.5176525989919756,
+        "count": 1060
+      },
+      "P10_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 411
+      },
+      "P21_D5_ATrue": {
+        "avg": 1.2511984021304927,
+        "std": 0.9018725315511914,
+        "count": 751
+      },
+      "P18_D10_AFalse": {
+        "avg": -0.11811202422145325,
+        "std": 0.978804419749857,
+        "count": 4624
+      },
+      "P17_D8_AFalse": {
+        "avg": -0.35103305785123967,
+        "std": 0.7271370377270375,
+        "count": 1210
+      },
+      "P18_D7_AFalse": {
+        "avg": 0.5048139158576053,
+        "std": 0.954926273946666,
+        "count": 1236
+      },
+      "P16_D4_ATrue": {
+        "avg": -0.0010144927536231616,
+        "std": 0.8815453245354149,
+        "count": 345
+      },
+      "P15_D4_ATrue": {
+        "avg": -0.3038934426229508,
+        "std": 0.5126226411816813,
+        "count": 244
+      },
+      "P12_D5_AFalse": {
+        "avg": -0.2214354527938343,
+        "std": 0.44476245654372243,
+        "count": 1038
+      },
+      "P13_D5_ATrue": {
+        "avg": -0.20780669144981412,
+        "std": 0.4671896757368209,
+        "count": 269
+      },
+      "P20_D5_AFalse": {
+        "avg": 0.21063829787234045,
+        "std": 0.738078022328203,
+        "count": 1880
+      },
+      "P19_D5_AFalse": {
+        "avg": 0.44763079960513324,
+        "std": 0.9670174344744484,
+        "count": 1013
+      },
+      "P9_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 341
+      },
+      "P21_D4_AFalse": {
+        "avg": 0.8965738758029977,
+        "std": 0.6338751324310874,
+        "count": 467
+      },
+      "P17_D7_ATrue": {
+        "avg": 0.02049608355091386,
+        "std": 0.7584710567842649,
+        "count": 383
+      },
+      "P13_D7_ATrue": {
+        "avg": -0.22098360655737706,
+        "std": 0.41852866763567625,
+        "count": 305
+      },
+      "P18_D7_ATrue": {
+        "avg": 0.3256916996047431,
+        "std": 0.7247270276694949,
+        "count": 253
+      },
+      "P17_D10_AFalse": {
+        "avg": -0.5206036470341647,
+        "std": 0.5685763939903676,
+        "count": 4771
+      },
+      "P15_D6_AFalse": {
+        "avg": -0.41340482573726545,
+        "std": 0.5752638028834257,
+        "count": 1119
+      },
+      "P5_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 108
+      },
+      "P15_D7_AFalse": {
+        "avg": -0.38390652557319227,
+        "std": 0.5526541650826188,
+        "count": 1134
+      },
+      "P12_D3_AFalse": {
+        "avg": -0.22107007575757578,
+        "std": 0.4619967479207924,
+        "count": 1056
+      },
+      "P12_D6_AFalse": {
+        "avg": -0.21304537521815006,
+        "std": 0.4499539162368754,
+        "count": 1146
+      },
+      "P6_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 148
+      },
+      "P9_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 314
+      },
+      "P8_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 261
+      },
+      "P19_D7_AFalse": {
+        "avg": 0.6020281456953642,
+        "std": 0.9337014795159125,
+        "count": 1208
+      },
+      "P4_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 42
+      },
+      "P12_D7_AFalse": {
+        "avg": -0.21045328399629973,
+        "std": 0.43576984085706727,
+        "count": 1081
+      },
+      "P17_D7_AFalse": {
+        "avg": 0.015721649484536113,
+        "std": 0.9339516670232051,
+        "count": 1164
+      },
+      "P16_D5_AFalse": {
+        "avg": 0.009680284191829522,
+        "std": 1.0616998020711217,
+        "count": 1126
+      },
+      "P16_D11_AFalse": {
+        "avg": -0.43672865595942517,
+        "std": 0.5538626675640685,
+        "count": 1183
+      },
+      "P13_D10_AFalse": {
+        "avg": -0.2987019117299976,
+        "std": 0.49263464953907227,
+        "count": 4237
+      },
+      "P16_D6_ATrue": {
+        "avg": 0.062044817927170905,
+        "std": 0.8572449638016792,
+        "count": 357
+      },
+      "P21_D5_AFalse": {
+        "avg": 0.9096209912536443,
+        "std": 0.6045942926332762,
+        "count": 343
+      },
+      "P10_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 406
+      },
+      "P13_D11_AFalse": {
+        "avg": -0.31223404255319154,
+        "std": 0.5062689587267933,
+        "count": 1034
+      },
+      "P18_D11_AFalse": {
+        "avg": -0.2721221613155834,
+        "std": 0.9428304031487699,
+        "count": 1277
+      },
+      "P5_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 114
+      },
+      "P21_D3_ATrue": {
+        "avg": 1.2533596837944665,
+        "std": 0.8827724120616441,
+        "count": 759
+      },
+      "P14_D9_ATrue": {
+        "avg": -0.2672463768115942,
+        "std": 0.44428703366627076,
+        "count": 345
+      },
+      "P21_D7_ATrue": {
+        "avg": 1.2278645833333333,
+        "std": 0.853595106981247,
+        "count": 768
+      },
+      "P8_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 265
+      },
+      "P18_D9_AFalse": {
+        "avg": -0.06527777777777777,
+        "std": 0.9683567637133564,
+        "count": 1188
+      },
+      "P17_D11_ATrue": {
+        "avg": -0.3456656346749226,
+        "std": 0.5028369421263836,
+        "count": 323
+      },
+      "P18_D6_AFalse": {
+        "avg": 0.3700434782608696,
+        "std": 1.003654408660015,
+        "count": 1150
+      },
+      "P18_D10_ATrue": {
+        "avg": -0.09046454767726161,
+        "std": 0.8202011825122404,
+        "count": 1636
+      },
+      "P9_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 349
+      },
+      "P13_D6_AFalse": {
+        "avg": -0.29454209065679926,
+        "std": 0.486727445528015,
+        "count": 1081
+      },
+      "P21_D6_AFalse": {
+        "avg": 0.8730923694779116,
+        "std": 0.5920141879184951,
+        "count": 498
+      },
+      "P7_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 215
+      },
+      "P18_D2_ATrue": {
+        "avg": 0.1448,
+        "std": 0.7075542099373023,
+        "count": 250
+      },
+      "P19_D6_AFalse": {
+        "avg": 0.5232221246707639,
+        "std": 0.962908818712367,
+        "count": 1139
+      },
+      "P15_D9_ATrue": {
+        "avg": -0.21730205278592374,
+        "std": 0.4168127841536404,
+        "count": 341
+      },
+      "P14_D11_ATrue": {
+        "avg": -0.21592592592592594,
+        "std": 0.4729792044544506,
+        "count": 270
+      },
+      "P13_D11_ATrue": {
+        "avg": -0.2211267605633803,
+        "std": 0.4074708986265574,
+        "count": 284
+      },
+      "P7_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 938
+      },
+      "P13_D3_AFalse": {
+        "avg": -0.2701943844492441,
+        "std": 0.4907650009819037,
+        "count": 926
+      },
+      "P15_D3_ATrue": {
+        "avg": -0.3083044982698962,
+        "std": 0.4583710785914706,
+        "count": 289
+      },
+      "P20_D3_ATrue": {
+        "avg": 0.5026490066225165,
+        "std": 0.7299026533902762,
+        "count": 302
+      },
+      "P5_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 441
+      },
+      "P21_D2_ATrue": {
+        "avg": 1.1914174252275684,
+        "std": 0.8606506709354657,
+        "count": 769
+      },
+      "P5_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 127
+      },
+      "P13_D8_AFalse": {
+        "avg": -0.3202336448598131,
+        "std": 0.5086397854979375,
+        "count": 1070
+      },
+      "P15_D9_AFalse": {
+        "avg": -0.3815563198624248,
+        "std": 0.5591126453421256,
+        "count": 1163
+      },
+      "P14_D7_ATrue": {
+        "avg": -0.21141141141141143,
+        "std": 0.417311704806945,
+        "count": 333
+      },
+      "P19_D9_ATrue": {
+        "avg": 0.26331058020477816,
+        "std": 0.6281999006240226,
+        "count": 293
+      },
+      "P16_D9_ATrue": {
+        "avg": -0.3272853185595568,
+        "std": 0.46715897278221824,
+        "count": 361
+      },
+      "P10_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 404
+      },
+      "P16_D10_ATrue": {
+        "avg": -0.30510876730388925,
+        "std": 0.48131392010394203,
+        "count": 1517
+      },
+      "P13_D5_AFalse": {
+        "avg": -0.27866465863453815,
+        "std": 0.5401585034333063,
+        "count": 996
+      },
+      "P10_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 385
+      },
+      "P17_D9_ATrue": {
+        "avg": -0.353030303030303,
+        "std": 0.5161087363452241,
+        "count": 363
+      },
+      "P18_D5_AFalse": {
+        "avg": 0.2899014778325123,
+        "std": 1.0563572457684338,
+        "count": 1015
+      },
+      "P17_D2_ATrue": {
+        "avg": 0.003822629969418985,
+        "std": 0.8233736108817474,
+        "count": 327
+      },
+      "P16_D6_AFalse": {
+        "avg": -0.15550373134328357,
+        "std": 0.9517474737121295,
+        "count": 1072
+      },
+      "P21_D6_ATrue": {
+        "avg": 1.2119318181818182,
+        "std": 0.8543262927846473,
+        "count": 792
+      },
+      "P13_D4_ATrue": {
+        "avg": 0.1789699570815451,
+        "std": 1.3366924023486348,
+        "count": 233
+      },
+      "P18_D4_ATrue": {
+        "avg": 0.17883064516129035,
+        "std": 0.7128751442706771,
+        "count": 248
+      },
+      "P13_D4_AFalse": {
+        "avg": -0.3060704355885079,
+        "std": 0.49670157511701263,
+        "count": 1079
+      },
+      "P11_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 533
+      },
+      "P11_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 538
+      },
+      "P17_D4_AFalse": {
+        "avg": 0.03534844668345931,
+        "std": 1.0390878057245998,
+        "count": 1191
+      },
+      "P17_D4_ATrue": {
+        "avg": -0.056282722513088995,
+        "std": 0.6925083806285347,
+        "count": 191
+      },
+      "P12_D4_ATrue": {
+        "avg": -0.17737226277372264,
+        "std": 0.3580141294626231,
+        "count": 137
+      },
+      "P8_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 1096
+      },
+      "P8_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 245
+      },
+      "P13_D2_ATrue": {
+        "avg": -0.1711155378486056,
+        "std": 0.4064866847733361,
+        "count": 251
+      },
+      "P19_D2_ATrue": {
+        "avg": 0.33622950819672137,
+        "std": 0.7328747884343607,
+        "count": 305
+      },
+      "P17_D10_ATrue": {
+        "avg": -0.3383355176933159,
+        "std": 0.5048340190325623,
+        "count": 1526
+      },
+      "P9_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 374
+      },
+      "P9_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 358
+      },
+      "P8_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 267
+      },
+      "P15_D8_ATrue": {
+        "avg": -0.2448224852071006,
+        "std": 0.42059917583531997,
+        "count": 338
+      },
+      "P21_D7_AFalse": {
+        "avg": 0.9046875,
+        "std": 0.5945187414394079,
+        "count": 608
+      },
+      "P18_D3_AFalse": {
+        "avg": 0.2941308243727599,
+        "std": 1.0627907811670787,
+        "count": 1116
+      },
+      "P5_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 114
+      },
+      "P14_D4_AFalse": {
+        "avg": -0.339568345323741,
+        "std": 0.5319171812154454,
+        "count": 973
+      },
+      "P11_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 496
+      },
+      "P6_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 175
+      },
+      "P8_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 269
+      },
+      "P20_D7_AFalse": {
+        "avg": 0.24386429258902792,
+        "std": 0.6897902031872754,
+        "count": 2078
+      },
+      "P12_D2_ATrue": {
+        "avg": -0.13333333333333336,
+        "std": 0.3240208601613582,
+        "count": 159
+      },
+      "P9_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 348
+      },
+      "P12_D5_ATrue": {
+        "avg": -0.294090909090909,
+        "std": 0.46999670299529367,
+        "count": 110
+      },
+      "P11_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 447
+      },
+      "P21_D3_AFalse": {
+        "avg": 0.9134502923976606,
+        "std": 0.651863714368311,
+        "count": 513
+      },
+      "P4_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 49
+      },
+      "P19_D4_ATrue": {
+        "avg": 0.2940928270042194,
+        "std": 0.7914541707915349,
+        "count": 237
+      },
+      "P20_D2_ATrue": {
+        "avg": 0.45553505535055355,
+        "std": 0.705896873751824,
+        "count": 271
+      },
+      "P14_D7_AFalse": {
+        "avg": -0.31915285451197056,
+        "std": 0.5294517653642158,
+        "count": 1086
+      },
+      "P5_D5_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 116
+      },
+      "P8_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 277
+      },
+      "P6_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 154
+      },
+      "P18_D3_ATrue": {
+        "avg": 0.1913919413919414,
+        "std": 0.8381850072956479,
+        "count": 273
+      },
+      "P7_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 224
+      },
+      "P16_D7_ATrue": {
+        "avg": -0.3256267409470752,
+        "std": 0.4868156835012088,
+        "count": 359
+      },
+      "P14_D5_ATrue": {
+        "avg": -0.19965635738831614,
+        "std": 0.4044850174387623,
+        "count": 291
+      },
+      "P12_D10_ATrue": {
+        "avg": -0.1819213313161876,
+        "std": 0.3710525159670654,
+        "count": 661
+      },
+      "P11_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 491
+      },
+      "P19_D3_ATrue": {
+        "avg": 0.21310043668122275,
+        "std": 0.7240132531838319,
+        "count": 229
+      },
+      "P17_D3_ATrue": {
+        "avg": 0.054388714733542336,
+        "std": 0.7937823738603209,
+        "count": 319
+      },
+      "P20_D6_ATrue": {
+        "avg": 0.5018092105263158,
+        "std": 0.7635109883877575,
+        "count": 304
+      },
+      "P7_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 242
+      },
+      "P8_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 290
+      },
+      "P15_D11_ATrue": {
+        "avg": -0.2896825396825397,
+        "std": 0.47719074837014386,
+        "count": 315
+      },
+      "P19_D11_ATrue": {
+        "avg": -0.03254545454545454,
+        "std": 0.7794432002906555,
+        "count": 275
+      },
+      "P20_D4_ATrue": {
+        "avg": 0.4737394957983193,
+        "std": 0.719194728976778,
+        "count": 238
+      },
+      "P18_D9_ATrue": {
+        "avg": -0.013091922005571018,
+        "std": 0.8308190876796536,
+        "count": 359
+      },
+      "P6_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 665
+      },
+      "P9_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 322
+      },
+      "P13_D9_ATrue": {
+        "avg": -0.2242857142857143,
+        "std": 0.3976487014890384,
+        "count": 280
+      },
+      "P12_D3_ATrue": {
+        "avg": -0.16470588235294115,
+        "std": 0.36955304262031957,
+        "count": 119
+      },
+      "P14_D4_ATrue": {
+        "avg": -0.23357400722021662,
+        "std": 0.4158318257887627,
+        "count": 277
+      },
+      "P13_D3_ATrue": {
+        "avg": -0.08657587548638132,
+        "std": 1.2883663633711715,
+        "count": 257
+      },
+      "P6_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 144
+      },
+      "P10_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 388
+      },
+      "P10_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 391
+      },
+      "P7_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 181
+      },
+      "P5_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 120
+      },
+      "P16_D9_AFalse": {
+        "avg": -0.458146551724138,
+        "std": 0.5747792042993606,
+        "count": 1160
+      },
+      "P14_D6_ATrue": {
+        "avg": -0.23121019108280252,
+        "std": 0.43665323926556415,
+        "count": 314
+      },
+      "P18_D8_ATrue": {
+        "avg": 0.15114613180515762,
+        "std": 0.7073286878307027,
+        "count": 349
+      },
+      "P14_D3_ATrue": {
+        "avg": -0.2543165467625899,
+        "std": 0.42810364905069564,
+        "count": 278
+      },
+      "P7_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 215
+      },
+      "P15_D5_ATrue": {
+        "avg": -0.2669871794871795,
+        "std": 0.4250941371939398,
+        "count": 312
+      },
+      "P5_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 91
+      },
+      "P19_D5_ATrue": {
+        "avg": 0.28258196721311485,
+        "std": 0.716258703379318,
+        "count": 244
+      },
+      "P6_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 132
+      },
+      "P7_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 217
+      },
+      "P20_D7_ATrue": {
+        "avg": 0.5236666666666667,
+        "std": 0.6945309368359499,
+        "count": 300
+      },
+      "P12_D7_ATrue": {
+        "avg": -0.22183098591549297,
+        "std": 0.4023025624028877,
+        "count": 142
+      },
+      "P11_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 501
+      },
+      "P12_D9_ATrue": {
+        "avg": -0.22716049382716047,
+        "std": 0.41514904230667715,
+        "count": 162
+      },
+      "P12_D11_ATrue": {
+        "avg": -0.1679856115107914,
+        "std": 0.42434915014857794,
+        "count": 139
+      },
+      "P20_D11_ATrue": {
+        "avg": 0.09931034482758622,
+        "std": 0.8800957276870425,
+        "count": 290
+      },
+      "P6_D7_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 144
+      },
+      "P20_D9_ATrue": {
+        "avg": 0.5749140893470791,
+        "std": 0.6238167434344154,
+        "count": 291
+      },
+      "P6_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 145
+      },
+      "P19_D8_ATrue": {
+        "avg": 0.4875486381322957,
+        "std": 0.7251597318793912,
+        "count": 257
+      },
+      "P5_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 119
+      },
+      "P4_D10_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 148
+      },
+      "P4_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 25
+      },
+      "P20_D5_ATrue": {
+        "avg": 0.4628731343283582,
+        "std": 0.7132359715194407,
+        "count": 268
+      },
+      "P4_D8_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 39
+      },
+      "P17_D5_ATrue": {
+        "avg": 0.012946428571428591,
+        "std": 0.7879886674231076,
+        "count": 224
+      },
+      "P13_D6_ATrue": {
+        "avg": -0.171,
+        "std": 0.40864986759537103,
+        "count": 350
+      },
+      "P5_D2_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 89
+      },
+      "P4_D3_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 44
+      },
+      "P4_D11_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 49
+      },
+      "P4_D6_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 56
+      },
+      "P4_D9_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 52
+      },
+      "P4_D4_AFalse": {
+        "avg": 0.0,
+        "std": 0.0,
+        "count": 46
+      }
+    }
+  }
+}

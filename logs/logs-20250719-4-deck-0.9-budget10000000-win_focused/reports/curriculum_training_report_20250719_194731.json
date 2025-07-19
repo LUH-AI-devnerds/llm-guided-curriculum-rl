@@ -1,0 +1,231 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T19:47:31.245014"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "The agent learns the fundamentals of Blackjack. It must learn when to hit (draw another card) and when to stand (stay with the current hand) based on its hand and the dealer's upcard. The goal is to surpass a basic player following a simple strategy, like hitting on anything below 17.",
+      "difficulty": 1,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 2,
+      "name": "Advanced Hit/Stand - Dealer Shows",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "This stage reinforces hit/stand decisions, but with a stronger emphasis on adapting to the dealer's revealed card. The agent needs to learn more subtle hit/stand strategies considering the dealer's upcard (e.g., hitting soft 17 versus standing on soft 18). More granular hand value and dealer up card awareness.",
+      "difficulty": 2,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 3,
+      "name": "Double Down Introduction",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "This stage introduces the 'Double Down' action. The agent must now learn when it's advantageous to double its bet and receive only one more card. This requires assessing the strength of its initial hand and the likelihood of improving it against the dealer's upcard. The agent needs to learn how to balance risk/reward effectively. Implementing soft hand double down strategy.",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Game: Double Down and Split",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "The agent now has access to all actions including splitting pairs. It has to learn the nuanced rules for splitting pairs based on its pair and the dealer's upcard, considering when splitting is beneficial and when it's not, along with the optimal hit/stand strategy for the split hands. More complex rules and more opportunity for reward. A complete Blackjack training environment.",
+      "difficulty": 5,
+      "success_threshold": 0.48
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 3,
+      "final_win_rate": 0.48796,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 0,
+      "final_win_rate": 0.41558,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "The agent learns the fundamentals of Blackjack. It must learn when to hit (draw another card) and when to stand (stay with the current hand) based on its hand and the dealer's upcard. The goal is to surpass a basic player following a simple strategy, like hitting on anything below 17.",
+        "difficulty": 1,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42846,
+          "avg_reward": 0.07062950000000004,
+          "total_wins": 105244,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [],
+          "time_taken": 292.3492841720581
+        },
+        "agent_1": {
+          "win_rate": 0.40528,
+          "avg_reward": 0.005572500000000027,
+          "total_wins": 99847,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 12.178781986236572
+        }
+      },
+      "timestamp": "2025-07-19T19:07:51.833840"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Advanced Hit/Stand - Dealer Shows",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "This stage reinforces hit/stand decisions, but with a stronger emphasis on adapting to the dealer's revealed card. The agent needs to learn more subtle hit/stand strategies considering the dealer's upcard (e.g., hitting soft 17 versus standing on soft 18). More granular hand value and dealer up card awareness.",
+        "difficulty": 2,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43273,
+          "avg_reward": 0.07809700000000003,
+          "total_wins": 105991,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [],
+          "time_taken": 300.2332510948181
+        },
+        "agent_1": {
+          "win_rate": 0.40188,
+          "avg_reward": -0.003227999999999972,
+          "total_wins": 101556,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 9.623387098312378
+        }
+      },
+      "timestamp": "2025-07-19T19:13:04.913547"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Double Down Introduction",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "This stage introduces the 'Double Down' action. The agent must now learn when it's advantageous to double its bet and receive only one more card. This requires assessing the strength of its initial hand and the likelihood of improving it against the dealer's upcard. The agent needs to learn how to balance risk/reward effectively. Implementing soft hand double down strategy.",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.47675,
+          "avg_reward": 0.08814850000000002,
+          "total_wins": 117396,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 279.6572742462158
+        },
+        "agent_1": {
+          "win_rate": 0.40729,
+          "avg_reward": -0.0022744999999999753,
+          "total_wins": 101199,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 9.547843933105469
+        }
+      },
+      "timestamp": "2025-07-19T19:17:57.167226"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Game: Double Down and Split",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "The agent now has access to all actions including splitting pairs. It has to learn the nuanced rules for splitting pairs based on its pair and the dealer's upcard, considering when splitting is beneficial and when it's not, along with the optimal hit/stand strategy for the split hands. More complex rules and more opportunity for reward. A complete Blackjack training environment.",
+        "difficulty": 5,
+        "success_threshold": 0.48
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48796,
+          "avg_reward": 0.0052740000000000235,
+          "total_wins": 119683,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 1763.1432619094849
+        },
+        "agent_1": {
+          "win_rate": 0.41558,
+          "avg_reward": -0.010605999999999975,
+          "total_wins": 101963,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 7.80087685585022
+        }
+      },
+      "timestamp": "2025-07-19T19:47:31.244973"
+    }
+  ]
+}

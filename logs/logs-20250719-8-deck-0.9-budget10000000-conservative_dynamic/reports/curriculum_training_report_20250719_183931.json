@@ -1,0 +1,236 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T18:39:31.488673"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental strategy of when to hit and when to stand. The agent should learn to avoid busting frequently and understand the basic odds of drawing a card that improves their hand. The dealer's upcard is visible.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Hit/Stand with Dealer Upcard",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Build on the basic strategy by conditioning the hit/stand decisions on the dealer's upcard. The agent should learn to be more aggressive when the dealer shows a bad card (4-6) and more conservative when the dealer shows a good card (7-Ace). This involves forming a more complex understanding of the game state and predicting the dealer's final hand.",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent should learn when it's advantageous to double their bet based on their hand and the dealer's upcard. This requires a more sophisticated risk-reward assessment. Focus should be on exploiting favorable situations, like having a hard 11 or a hard 10 against a weak dealer upcard.",
+      "difficulty": 3,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Blackjack Strategy: Hit/Stand/Double/Split",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the 'Split' action, completing the full set of Blackjack actions. The agent must learn when to split pairs (e.g., Aces, 8s) based on the dealer's upcard and avoid splitting unfavorable pairs (e.g., 10s, 5s). This stage requires the most complex understanding of odds, risk management, and game strategy.",
+      "difficulty": 5,
+      "success_threshold": 0.45
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 4,
+      "final_win_rate": 0.48,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 1,
+      "final_win_rate": 0.39373,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental strategy of when to hit and when to stand. The agent should learn to avoid busting frequently and understand the basic odds of drawing a card that improves their hand. The dealer's upcard is visible.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42469,
+          "avg_reward": -0.039113642243359066,
+          "total_wins": 104007,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 1232.1046788692474
+        },
+        "agent_1": {
+          "win_rate": 0.39627,
+          "avg_reward": -0.1159848826899215,
+          "total_wins": 97267,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.470374822616577
+        }
+      },
+      "timestamp": "2025-07-19T18:22:34.306458"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Hit/Stand with Dealer Upcard",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Build on the basic strategy by conditioning the hit/stand decisions on the dealer's upcard. The agent should learn to be more aggressive when the dealer shows a bad card (4-6) and more conservative when the dealer shows a good card (7-Ace). This involves forming a more complex understanding of the game state and predicting the dealer's final hand.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42764,
+          "avg_reward": -0.029487671743491064,
+          "total_wins": 105193,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 263.6525869369507
+        },
+        "agent_1": {
+          "win_rate": 0.39763,
+          "avg_reward": -0.1169259742898286,
+          "total_wins": 99165,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.430617094039917
+        }
+      },
+      "timestamp": "2025-07-19T18:27:09.318627"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn when it's advantageous to double their bet based on their hand and the dealer's upcard. This requires a more sophisticated risk-reward assessment. Focus should be on exploiting favorable situations, like having a hard 11 or a hard 10 against a weak dealer upcard.",
+        "difficulty": 3,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44847,
+          "avg_reward": -0.025242591445546688,
+          "total_wins": 113662,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 250.97347497940063
+        },
+        "agent_1": {
+          "win_rate": 0.40219,
+          "avg_reward": -0.1350306516325238,
+          "total_wins": 99858,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 8.632685899734497
+        }
+      },
+      "timestamp": "2025-07-19T18:31:32.681381"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Blackjack Strategy: Hit/Stand/Double/Split",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the 'Split' action, completing the full set of Blackjack actions. The agent must learn when to split pairs (e.g., Aces, 8s) based on the dealer's upcard and avoid splitting unfavorable pairs (e.g., 10s, 5s). This stage requires the most complex understanding of odds, risk management, and game strategy.",
+        "difficulty": 5,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48,
+          "avg_reward": -0.12363929810545828,
+          "total_wins": 113979,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 465.4574770927429
+        },
+        "agent_1": {
+          "win_rate": 0.39373,
+          "avg_reward": -0.16883651438594635,
+          "total_wins": 99729,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 10.162174940109253
+        }
+      },
+      "timestamp": "2025-07-19T18:39:31.488645"
+    }
+  ]
+}

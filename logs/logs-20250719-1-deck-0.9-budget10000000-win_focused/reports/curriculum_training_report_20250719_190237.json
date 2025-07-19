@@ -1,0 +1,232 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T19:02:37.592909"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental actions of Hit and Stand. Agent needs to learn when to hit (draw another card) and when to stand (stay with the current hand). Focus on understanding the basic game rules and how the dealer's hand affects optimal decisions. Agent should learn to avoid busting (going over 21) and recognize favorable situations to stand.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introduction to Dealer Strategy",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Deepen understanding of the dealer's strategy and its impact on optimal Hit/Stand decisions. Train the agent to account for the dealer's visible card and its influence on the likelihood of the dealer busting or achieving a strong hand. Focus on optimizing decisions relative to the dealer's upcard to improve win rate.",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Double Down Integration",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent should learn to identify advantageous situations to double their bet and receive only one additional card. Agent needs to understand hand probabilities and potential payoffs to strategically leverage the Double Down action. This stage increases the risk-reward complexity.",
+      "difficulty": 3,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Blackjack Strategy",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the 'Split' action for handling pairs. The agent must learn when splitting pairs into two separate hands is advantageous, considering both the player's hand and the dealer's upcard. Master all available actions and optimize decision-making across all scenarios for expert level play. Includes learning complex splitting heuristics, like always splitting aces and eights, depending on the exact variant rules.",
+      "difficulty": 5,
+      "success_threshold": 0.48
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 4,
+      "final_win_rate": 0.48138,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 2,
+      "final_win_rate": 0.40803,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental actions of Hit and Stand. Agent needs to learn when to hit (draw another card) and when to stand (stay with the current hand). Focus on understanding the basic game rules and how the dealer's hand affects optimal decisions. Agent should learn to avoid busting (going over 21) and recognize favorable situations to stand.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43068,
+          "avg_reward": 0.07798350000000003,
+          "total_wins": 104618,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [],
+          "time_taken": 284.9492950439453
+        },
+        "agent_1": {
+          "win_rate": 0.40313,
+          "avg_reward": 0.004847000000000027,
+          "total_wins": 99959,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 9.666150331497192
+        }
+      },
+      "timestamp": "2025-07-19T18:44:40.516291"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introduction to Dealer Strategy",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Deepen understanding of the dealer's strategy and its impact on optimal Hit/Stand decisions. Train the agent to account for the dealer's visible card and its influence on the likelihood of the dealer busting or achieving a strong hand. Focus on optimizing decisions relative to the dealer's upcard to improve win rate.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43336,
+          "avg_reward": 0.08266050000000003,
+          "total_wins": 105911,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [],
+          "time_taken": 303.4921851158142
+        },
+        "agent_1": {
+          "win_rate": 0.40052,
+          "avg_reward": -0.004183999999999973,
+          "total_wins": 100505,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 9.660609006881714
+        }
+      },
+      "timestamp": "2025-07-19T18:49:56.510033"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Double Down Integration",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn to identify advantageous situations to double their bet and receive only one additional card. Agent needs to understand hand probabilities and potential payoffs to strategically leverage the Double Down action. This stage increases the risk-reward complexity.",
+        "difficulty": 3,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48159,
+          "avg_reward": 0.09889050000000003,
+          "total_wins": 116296,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 322.40235900878906
+        },
+        "agent_1": {
+          "win_rate": 0.40222,
+          "avg_reward": -0.024882999999999978,
+          "total_wins": 101146,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 9.531239032745361
+        }
+      },
+      "timestamp": "2025-07-19T18:55:31.496402"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Blackjack Strategy",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the 'Split' action for handling pairs. The agent must learn when splitting pairs into two separate hands is advantageous, considering both the player's hand and the dealer's upcard. Master all available actions and optimize decision-making across all scenarios for expert level play. Includes learning complex splitting heuristics, like always splitting aces and eights, depending on the exact variant rules.",
+        "difficulty": 5,
+        "success_threshold": 0.48
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48138,
+          "avg_reward": 0.013146000000000024,
+          "total_wins": 119676,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 413.80475997924805
+        },
+        "agent_1": {
+          "win_rate": 0.40803,
+          "avg_reward": -0.035637999999999975,
+          "total_wins": 102681,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 9.542596817016602
+        }
+      },
+      "timestamp": "2025-07-19T19:02:37.592875"
+    }
+  ]
+}

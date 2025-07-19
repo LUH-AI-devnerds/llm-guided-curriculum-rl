@@ -2,21 +2,27 @@
 """
 Log Analysis Script for Blackjack RL Training
 Generates visual summaries similar to strategy tables and performance metrics
+Now properly handles curriculum stages with stage-specific analysis
 """
 
 import json
 import os
-import sys
 import argparse
 from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pathlib import Path
+from collections import defaultdict
 
 
 def load_evaluation_log(log_path):
     """Load evaluation log from JSON file."""
+    with open(log_path, "r") as f:
+        return json.load(f)
+
+
+def load_training_log(log_path):
+    """Load training log from JSON file."""
     with open(log_path, "r") as f:
         return json.load(f)
 
@@ -27,20 +33,18 @@ def load_run_summary(summary_path):
         return json.load(f)
 
 
-def get_evaluation_logs_from_summary(summary_data, log_dir):
-    """Extract evaluation log paths from run summary."""
+def get_logs_from_summary(summary_data, log_dir):
+    """Extract evaluation and training log paths from run summary."""
     evaluation_logs = []
+    training_logs = []
 
-    # Get the evaluation logs directory from summary
-    eval_log_dir = summary_data.get("directory_structure", {}).get(
-        "evaluation_logs", ""
-    )
-
-    # Use the log_dir directly since it's already the correct base path
+    # Get the directories from summary
     eval_log_dir = os.path.join(log_dir, "evaluation")
+    training_log_dir = os.path.join(log_dir, "training")
 
     # Get list of evaluation log files
     eval_log_files = summary_data.get("files_generated", {}).get("evaluation", [])
+    training_log_files = summary_data.get("files_generated", {}).get("training", [])
 
     for log_file in eval_log_files:
         log_path = os.path.join(eval_log_dir, log_file)
@@ -49,10 +53,52 @@ def get_evaluation_logs_from_summary(summary_data, log_dir):
         else:
             print(f"⚠️  Warning: Evaluation log not found: {log_path}")
 
-    return evaluation_logs
+    for log_file in training_log_files:
+        log_path = os.path.join(training_log_dir, log_file)
+        if os.path.exists(log_path):
+            training_logs.append(log_path)
+        else:
+            print(f"⚠️  Warning: Training log not found: {log_path}")
+
+    return evaluation_logs, training_logs
 
 
-def create_strategy_table_heatmap(log_data, output_dir):
+def group_logs_by_agent_and_stage(evaluation_logs, training_logs):
+    """Group logs by agent and stage for curriculum analysis."""
+    agent_stage_data = defaultdict(lambda: defaultdict(dict))
+
+    # Process evaluation logs
+    for log_path in evaluation_logs:
+        try:
+            log_data = load_evaluation_log(log_path)
+            agent_id = log_data["agent_id"]
+            agent_type = log_data["agent_type"]
+            stage_id = log_data.get("stage_id", "unknown")
+
+            agent_key = f"{agent_type}_{agent_id}"
+            agent_stage_data[agent_key]["evaluation"][stage_id] = log_data
+        except Exception as e:
+            print(f"❌ Error loading evaluation log {log_path}: {e}")
+
+    # Process training logs
+    for log_path in training_logs:
+        try:
+            log_data = load_training_log(log_path)
+            agent_id = log_data["agent_id"]
+            agent_type = log_data["agent_type"]
+            stage_id = log_data.get("stage_id", "unknown")
+
+            agent_key = f"{agent_type}_{agent_id}"
+            if "training" not in agent_stage_data[agent_key]:
+                agent_stage_data[agent_key]["training"] = {}
+            agent_stage_data[agent_key]["training"][stage_id] = log_data
+        except Exception as e:
+            print(f"❌ Error loading training log {log_path}: {e}")
+
+    return agent_stage_data
+
+
+def create_strategy_table_heatmap(log_data, output_dir, stage_info=""):
     """Create a heatmap similar to the Blackjack strategy table."""
     strategy_table = log_data["summary"]["strategy_table"]
 
@@ -95,9 +141,10 @@ def create_strategy_table_heatmap(log_data, output_dir):
 
     # Create subplots
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-    fig.suptitle(
-        f'Agent Strategy Table - {log_data["agent_type"].upper()} Agent', fontsize=16
-    )
+    title = f'Agent Strategy Table - {log_data["agent_type"].upper()} Agent'
+    if stage_info:
+        title += f" - {stage_info}"
+    fig.suptitle(title, fontsize=16)
 
     # Stand actions
     sns.heatmap(
@@ -166,7 +213,7 @@ def create_strategy_table_heatmap(log_data, output_dir):
     print(f"📊 Strategy table heatmap saved to: {output_path}")
 
 
-def create_performance_summary(log_data, output_dir):
+def create_performance_summary(log_data, output_dir, stage_info=""):
     """Create a performance summary table similar to Table 1."""
     summary = log_data["summary"]
 
@@ -225,12 +272,12 @@ def create_performance_summary(log_data, output_dir):
             if i % 2 == 0:
                 table[(i, j)].set_facecolor("#f0f0f0")
 
-    plt.title(
-        f'Performance Summary - {log_data["agent_type"].upper()} Agent\n'
-        f'Evaluation Episodes: {log_data["evaluation_episodes"]}',
-        fontsize=14,
-        pad=20,
-    )
+    title = f'Performance Summary - {log_data["agent_type"].upper()} Agent\n'
+    title += f'Evaluation Episodes: {log_data["evaluation_episodes"]}'
+    if stage_info:
+        title += f"\n{stage_info}"
+
+    plt.title(title, fontsize=14, pad=20)
 
     output_path = os.path.join(output_dir, "performance_summary.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -238,7 +285,7 @@ def create_performance_summary(log_data, output_dir):
     print(f"📊 Performance summary saved to: {output_path}")
 
 
-def create_action_distribution_chart(log_data, output_dir):
+def create_action_distribution_chart(log_data, output_dir, stage_info=""):
     """Create action distribution charts."""
     action_performance = log_data["summary"]["action_performance"]
 
@@ -278,6 +325,11 @@ def create_action_distribution_chart(log_data, output_dir):
             va="bottom" if height > 0 else "top",
         )
 
+    if stage_info:
+        fig.suptitle(
+            f"{log_data['agent_type'].upper()} Agent - {stage_info}", fontsize=14
+        )
+
     plt.tight_layout()
     output_path = os.path.join(output_dir, "action_distribution.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -285,7 +337,7 @@ def create_action_distribution_chart(log_data, output_dir):
     print(f"📊 Action distribution chart saved to: {output_path}")
 
 
-def create_state_value_analysis(log_data, output_dir):
+def create_state_value_analysis(log_data, output_dir, stage_info=""):
     """Create state-value analysis similar to the 3D plots."""
     state_reward_stats = log_data["summary"]["state_reward_stats"]
 
@@ -335,6 +387,11 @@ def create_state_value_analysis(log_data, output_dir):
         ax2.set_title("State Values - Soft Totals (With Ace)")
         fig.colorbar(scatter, ax=ax2, shrink=0.5, aspect=5)
 
+    if stage_info:
+        fig.suptitle(
+            f"{log_data['agent_type'].upper()} Agent - {stage_info}", fontsize=14
+        )
+
     plt.tight_layout()
     output_path = os.path.join(output_dir, "state_value_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -342,116 +399,330 @@ def create_state_value_analysis(log_data, output_dir):
     print(f"📊 State value analysis saved to: {output_path}")
 
 
-def create_comparative_analysis(all_logs_data, output_dir):
-    """Create comparative analysis across all agents."""
+def create_stage_progression_charts(agent_stage_data, output_dir):
+    """Create charts showing performance progression across stages."""
 
-    # Extract agent information and performance metrics
-    agents_data = []
-    for log_data in all_logs_data:
-        summary = log_data["summary"]
-        agents_data.append(
-            {
-                "agent_id": log_data["agent_id"],
-                "agent_type": log_data["agent_type"],
-                "win_rate": summary["win_rate"],
-                "avg_reward": summary["avg_reward"],
-                "net_wins": summary["game_outcome_percentages"]["net_wins_percent"],
-                "bust_rate": summary["game_outcome_percentages"]["bust_percent"],
-                "blackjack_rate": summary["game_outcome_percentages"][
-                    "blackjack_percent"
-                ],
-                "push_rate": summary["game_outcome_percentages"]["push_percent"],
-            }
+    for agent_key, agent_data in agent_stage_data.items():
+        evaluation_data = agent_data.get("evaluation", {})
+        training_data = agent_data.get("training", {})
+
+        if not evaluation_data:
+            continue
+
+        # Sort stages - handle both string and integer keys
+        stages = []
+        for key in evaluation_data.keys():
+            if key != "unknown":
+                try:
+                    stages.append(int(key))
+                except (ValueError, TypeError):
+                    continue
+        stages.sort()
+
+        if len(stages) < 2:
+            continue
+
+        # Extract performance metrics across stages
+        win_rates = []
+        avg_rewards = []
+        net_wins = []
+        bust_rates = []
+        blackjack_rates = []
+        stage_names = []
+
+        for stage_id in stages:
+            # Try both string and integer keys
+            stage_data = None
+            if str(stage_id) in evaluation_data:
+                stage_data = evaluation_data[str(stage_id)]
+            elif stage_id in evaluation_data:
+                stage_data = evaluation_data[stage_id]
+
+            if stage_data is None:
+                print(
+                    f"⚠️  Warning: Could not find stage {stage_id} data for {agent_key}"
+                )
+                continue
+
+            summary = stage_data["summary"]
+
+            win_rates.append(summary["win_rate"] * 100)
+            avg_rewards.append(summary["avg_reward"])
+            net_wins.append(summary["game_outcome_percentages"]["net_wins_percent"])
+            bust_rates.append(summary["game_outcome_percentages"]["bust_percent"])
+            blackjack_rates.append(
+                summary["game_outcome_percentages"]["blackjack_percent"]
+            )
+
+            # Get stage name from training data if available
+            stage_name = f"Stage {stage_id}"
+            if str(stage_id) in training_data:
+                stage_name = training_data[str(stage_id)].get(
+                    "stage_name", f"Stage {stage_id}"
+                )
+            elif stage_id in training_data:
+                stage_name = training_data[stage_id].get(
+                    "stage_name", f"Stage {stage_id}"
+                )
+            stage_names.append(stage_name)
+
+        # Create progression charts
+        fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+        fig.suptitle(f"Stage Progression - {agent_key.upper()}", fontsize=16)
+
+        # Win rate progression
+        axes[0, 0].plot(
+            stages, win_rates, "o-", linewidth=2, markersize=8, color="#4CAF50"
         )
+        axes[0, 0].set_title("Win Rate Progression")
+        axes[0, 0].set_xlabel("Stage")
+        axes[0, 0].set_ylabel("Win Rate (%)")
+        axes[0, 0].grid(True, alpha=0.3)
+        axes[0, 0].set_xticks(stages)
+
+        # Add stage names as x-tick labels
+        axes[0, 0].set_xticklabels(
+            [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+            rotation=45,
+            ha="right",
+        )
+
+        # Average reward progression
+        axes[0, 1].plot(
+            stages, avg_rewards, "o-", linewidth=2, markersize=8, color="#2196F3"
+        )
+        axes[0, 1].set_title("Average Reward Progression")
+        axes[0, 1].set_xlabel("Stage")
+        axes[0, 1].set_ylabel("Average Reward")
+        axes[0, 1].grid(True, alpha=0.3)
+        axes[0, 1].set_xticks(stages)
+        axes[0, 1].set_xticklabels(
+            [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+            rotation=45,
+            ha="right",
+        )
+        axes[0, 1].axhline(y=0, color="black", linestyle="-", alpha=0.3)
+
+        # Net wins progression
+        axes[1, 0].plot(
+            stages, net_wins, "o-", linewidth=2, markersize=8, color="#FF9800"
+        )
+        axes[1, 0].set_title("Net Wins Progression")
+        axes[1, 0].set_xlabel("Stage")
+        axes[1, 0].set_ylabel("Net Wins (%)")
+        axes[1, 0].grid(True, alpha=0.3)
+        axes[1, 0].set_xticks(stages)
+        axes[1, 0].set_xticklabels(
+            [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+            rotation=45,
+            ha="right",
+        )
+        axes[1, 0].axhline(y=0, color="black", linestyle="-", alpha=0.3)
+
+        # Game outcomes breakdown
+        x = np.arange(len(stages))
+        width = 0.35
+
+        axes[1, 1].bar(
+            x - width / 2,
+            bust_rates,
+            width,
+            label="Bust Rate",
+            color="#f44336",
+            alpha=0.7,
+        )
+        axes[1, 1].bar(
+            x + width / 2,
+            blackjack_rates,
+            width,
+            label="Blackjack Rate",
+            color="#4CAF50",
+            alpha=0.7,
+        )
+
+        axes[1, 1].set_title("Game Outcomes by Stage")
+        axes[1, 1].set_xlabel("Stage")
+        axes[1, 1].set_ylabel("Percentage (%)")
+        axes[1, 1].set_xticks(x)
+        axes[1, 1].set_xticklabels(
+            [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+            rotation=45,
+            ha="right",
+        )
+        axes[1, 1].legend()
+        axes[1, 1].grid(True, alpha=0.3)
+
+        plt.tight_layout()
+        output_path = os.path.join(output_dir, f"stage_progression_{agent_key}.png")
+        plt.savefig(output_path, dpi=300, bbox_inches="tight")
+        plt.close()
+        print(f"📊 Stage progression chart saved to: {output_path}")
+
+
+def create_comparative_analysis(agent_stage_data, output_dir):
+    """Create comparative analysis across all agents and stages."""
+
+    # Extract all agent-stage combinations
+    all_agent_stages = []
+
+    for agent_key, agent_data in agent_stage_data.items():
+        evaluation_data = agent_data.get("evaluation", {})
+
+        for stage_id, stage_data in evaluation_data.items():
+            if stage_id == "unknown":
+                continue
+
+            summary = stage_data["summary"]
+            all_agent_stages.append(
+                {
+                    "agent_key": agent_key,
+                    "stage_id": int(stage_id),
+                    "win_rate": summary["win_rate"] * 100,
+                    "avg_reward": summary["avg_reward"],
+                    "net_wins": summary["game_outcome_percentages"]["net_wins_percent"],
+                    "bust_rate": summary["game_outcome_percentages"]["bust_percent"],
+                    "blackjack_rate": summary["game_outcome_percentages"][
+                        "blackjack_percent"
+                    ],
+                    "push_rate": summary["game_outcome_percentages"]["push_percent"],
+                }
+            )
+
+    if not all_agent_stages:
+        print("❌ No valid agent-stage data found for comparative analysis")
+        return
 
     # Create comparative charts
-    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-    fig.suptitle("Comparative Agent Performance Analysis", fontsize=16)
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    fig.suptitle("Comparative Agent Performance Across Stages", fontsize=16)
 
     # Agent labels
-    agent_labels = [
-        f"{data['agent_type'].upper()}_{data['agent_id']}" for data in agents_data
-    ]
+    agent_labels = list(set([data["agent_key"] for data in all_agent_stages]))
+    agent_labels.sort()
 
-    # Win rates comparison
-    win_rates = [data["win_rate"] * 100 for data in agents_data]
-    bars1 = axes[0, 0].bar(
-        agent_labels, win_rates, color=["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
-    )
-    axes[0, 0].set_title("Win Rates (%)")
-    axes[0, 0].set_ylabel("Win Rate (%)")
-    axes[0, 0].tick_params(axis="x", rotation=45)
+    # Win rates comparison by stage
+    stages = sorted(list(set([data["stage_id"] for data in all_agent_stages])))
 
-    # Add value labels on bars
-    for bar, rate in zip(bars1, win_rates):
-        height = bar.get_height()
-        axes[0, 0].text(
-            bar.get_x() + bar.get_width() / 2.0,
-            height + 0.5,
-            f"{rate:.1f}%",
-            ha="center",
-            va="bottom",
+    for agent_key in agent_labels:
+        agent_data = [d for d in all_agent_stages if d["agent_key"] == agent_key]
+        agent_data.sort(key=lambda x: x["stage_id"])
+
+        win_rates = [d["win_rate"] for d in agent_data]
+        stage_ids = [d["stage_id"] for d in agent_data]
+
+        axes[0, 0].plot(
+            stage_ids,
+            win_rates,
+            "o-",
+            linewidth=2,
+            markersize=8,
+            label=agent_key.upper(),
         )
 
-    # Net wins comparison
-    net_wins = [data["net_wins"] for data in agents_data]
-    bars2 = axes[0, 1].bar(
-        agent_labels, net_wins, color=["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
-    )
-    axes[0, 1].set_title("Net Wins (%)")
-    axes[0, 1].set_ylabel("Net Wins (%)")
-    axes[0, 1].tick_params(axis="x", rotation=45)
+    axes[0, 0].set_title("Win Rates by Stage")
+    axes[0, 0].set_xlabel("Stage")
+    axes[0, 0].set_ylabel("Win Rate (%)")
+    axes[0, 0].legend()
+    axes[0, 0].grid(True, alpha=0.3)
+    axes[0, 0].set_xticks(stages)
+
+    # Average rewards comparison by stage
+    for agent_key in agent_labels:
+        agent_data = [d for d in all_agent_stages if d["agent_key"] == agent_key]
+        agent_data.sort(key=lambda x: x["stage_id"])
+
+        avg_rewards = [d["avg_reward"] for d in agent_data]
+        stage_ids = [d["stage_id"] for d in agent_data]
+
+        axes[0, 1].plot(
+            stage_ids,
+            avg_rewards,
+            "o-",
+            linewidth=2,
+            markersize=8,
+            label=agent_key.upper(),
+        )
+
+    axes[0, 1].set_title("Average Rewards by Stage")
+    axes[0, 1].set_xlabel("Stage")
+    axes[0, 1].set_ylabel("Average Reward")
+    axes[0, 1].legend()
+    axes[0, 1].grid(True, alpha=0.3)
+    axes[0, 1].set_xticks(stages)
     axes[0, 1].axhline(y=0, color="black", linestyle="-", alpha=0.3)
 
-    # Add value labels on bars
-    for bar, wins in zip(bars2, net_wins):
-        height = bar.get_height()
-        axes[0, 1].text(
-            bar.get_x() + bar.get_width() / 2.0,
-            height + (0.5 if height >= 0 else -1.5),
-            f"{wins:.1f}%",
-            ha="center",
-            va="bottom" if height >= 0 else "top",
+    # Net wins comparison by stage
+    for agent_key in agent_labels:
+        agent_data = [d for d in all_agent_stages if d["agent_key"] == agent_key]
+        agent_data.sort(key=lambda x: x["stage_id"])
+
+        net_wins = [d["net_wins"] for d in agent_data]
+        stage_ids = [d["stage_id"] for d in agent_data]
+
+        axes[1, 0].plot(
+            stage_ids,
+            net_wins,
+            "o-",
+            linewidth=2,
+            markersize=8,
+            label=agent_key.upper(),
         )
 
-    # Average rewards comparison
-    avg_rewards = [data["avg_reward"] for data in agents_data]
-    bars3 = axes[1, 0].bar(
-        agent_labels, avg_rewards, color=["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
-    )
-    axes[1, 0].set_title("Average Rewards")
-    axes[1, 0].set_ylabel("Average Reward")
-    axes[1, 0].tick_params(axis="x", rotation=45)
+    axes[1, 0].set_title("Net Wins by Stage")
+    axes[1, 0].set_xlabel("Stage")
+    axes[1, 0].set_ylabel("Net Wins (%)")
+    axes[1, 0].legend()
+    axes[1, 0].grid(True, alpha=0.3)
+    axes[1, 0].set_xticks(stages)
     axes[1, 0].axhline(y=0, color="black", linestyle="-", alpha=0.3)
 
-    # Add value labels on bars
-    for bar, reward in zip(bars3, avg_rewards):
-        height = bar.get_height()
-        axes[1, 0].text(
-            bar.get_x() + bar.get_width() / 2.0,
-            height + (0.01 if height >= 0 else -0.02),
-            f"{reward:.3f}",
-            ha="center",
-            va="bottom" if height >= 0 else "top",
-        )
+    # Final stage performance comparison
+    final_stage = max(stages)
+    final_performances = [d for d in all_agent_stages if d["stage_id"] == final_stage]
 
-    # Game outcome breakdown
-    bust_rates = [data["bust_rate"] for data in agents_data]
-    blackjack_rates = [data["blackjack_rate"] for data in agents_data]
-    push_rates = [data["push_rate"] for data in agents_data]
+    agent_names = [d["agent_key"].upper() for d in final_performances]
+    final_win_rates = [d["win_rate"] for d in final_performances]
+    final_net_wins = [d["net_wins"] for d in final_performances]
 
-    x = np.arange(len(agent_labels))
-    width = 0.25
+    x = np.arange(len(agent_names))
+    width = 0.35
 
-    axes[1, 1].bar(x - width, bust_rates, width, label="Bust Rate", color="#ff6b6b")
-    axes[1, 1].bar(x, blackjack_rates, width, label="Blackjack Rate", color="#4ecdc4")
-    axes[1, 1].bar(x + width, push_rates, width, label="Push Rate", color="#45b7d1")
+    bars1 = axes[1, 1].bar(
+        x - width / 2,
+        final_win_rates,
+        width,
+        label="Win Rate",
+        color="#4CAF50",
+        alpha=0.7,
+    )
+    bars2 = axes[1, 1].bar(
+        x + width / 2,
+        final_net_wins,
+        width,
+        label="Net Wins",
+        color="#FF9800",
+        alpha=0.7,
+    )
 
-    axes[1, 1].set_title("Game Outcome Breakdown (%)")
+    axes[1, 1].set_title(f"Final Stage ({final_stage}) Performance")
+    axes[1, 1].set_xlabel("Agent")
     axes[1, 1].set_ylabel("Percentage (%)")
     axes[1, 1].set_xticks(x)
-    axes[1, 1].set_xticklabels(agent_labels, rotation=45)
+    axes[1, 1].set_xticklabels(agent_names, rotation=45)
     axes[1, 1].legend()
+    axes[1, 1].grid(True, alpha=0.3)
+
+    # Add value labels on bars
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            axes[1, 1].text(
+                bar.get_x() + bar.get_width() / 2.0,
+                height + 0.5,
+                f"{height:.1f}%",
+                ha="center",
+                va="bottom",
+            )
 
     plt.tight_layout()
     output_path = os.path.join(output_dir, "comparative_analysis.png")
@@ -460,34 +731,51 @@ def create_comparative_analysis(all_logs_data, output_dir):
     print(f"📊 Comparative analysis saved to: {output_path}")
 
 
-def analyze_single_log(log_path, output_dir):
-    """Analyze a single evaluation log file."""
-    try:
-        log_data = load_evaluation_log(log_path)
-        print(f"📊 Analyzing: {os.path.basename(log_path)}")
+def analyze_agent_stages(agent_key, agent_data, output_dir):
+    """Analyze all stages for a single agent."""
+    print(f"📊 Analyzing agent: {agent_key}")
 
-        # Parse log filename to extract agent info
-        log_filename = os.path.basename(log_path)
-        parts = log_filename.replace(".json", "").split("_")
-        agent_type = parts[4]  # tabular/dqn
-        date = parts[5]  # 20250719
-        time = parts[6]  # 120449
+    evaluation_data = agent_data.get("evaluation", {})
+    training_data = agent_data.get("training", {})
 
-        # Create agent-specific output directory
-        agent_output_dir = os.path.join(output_dir, f"{agent_type}_{parts[3]}")
-        os.makedirs(agent_output_dir, exist_ok=True)
+    if not evaluation_data:
+        print(f"❌ No evaluation data found for {agent_key}")
+        return
 
-        # Generate visualizations
-        create_strategy_table_heatmap(log_data, agent_output_dir)
-        create_performance_summary(log_data, agent_output_dir)
-        create_action_distribution_chart(log_data, agent_output_dir)
-        create_state_value_analysis(log_data, agent_output_dir)
+    # Create agent-specific output directory
+    agent_output_dir = os.path.join(output_dir, agent_key)
+    os.makedirs(agent_output_dir, exist_ok=True)
 
-        return log_data
+    # Analyze each stage
+    for stage_id, stage_data in evaluation_data.items():
+        if stage_id == "unknown":
+            continue
 
-    except Exception as e:
-        print(f"❌ Error analyzing {log_path}: {e}")
-        return None
+        print(f"  📊 Analyzing Stage {stage_id}")
+
+        # Get stage info
+        stage_info = f"Stage {stage_id}"
+        if str(stage_id) in training_data:
+            stage_name = training_data[str(stage_id)].get(
+                "stage_name", f"Stage {stage_id}"
+            )
+            stage_info = f"Stage {stage_id}: {stage_name}"
+        elif stage_id in training_data:
+            stage_name = training_data[stage_id].get("stage_name", f"Stage {stage_id}")
+            stage_info = f"Stage {stage_id}: {stage_name}"
+
+        # Create stage-specific output directory
+        stage_output_dir = os.path.join(agent_output_dir, f"stage_{stage_id}")
+        os.makedirs(stage_output_dir, exist_ok=True)
+
+        # Generate visualizations for this stage
+        create_strategy_table_heatmap(stage_data, stage_output_dir, stage_info)
+        create_performance_summary(stage_data, stage_output_dir, stage_info)
+        create_action_distribution_chart(stage_data, stage_output_dir, stage_info)
+        create_state_value_analysis(stage_data, stage_output_dir, stage_info)
+
+    # Create stage progression charts
+    create_stage_progression_charts({agent_key: agent_data}, agent_output_dir)
 
 
 def main():
@@ -512,14 +800,23 @@ def main():
             summary_data = load_run_summary(args.input_path)
             log_dir = os.path.dirname(args.input_path)
 
-            # Get all evaluation logs from summary
-            evaluation_logs = get_evaluation_logs_from_summary(summary_data, log_dir)
+            # Get all evaluation and training logs from summary
+            evaluation_logs, training_logs = get_logs_from_summary(
+                summary_data, log_dir
+            )
 
             if not evaluation_logs:
                 print("❌ No evaluation logs found in run summary!")
                 return
 
-            print(f"📊 Found {len(evaluation_logs)} evaluation logs to analyze")
+            print(
+                f"📊 Found {len(evaluation_logs)} evaluation logs and {len(training_logs)} training logs to analyze"
+            )
+
+            # Group logs by agent and stage
+            agent_stage_data = group_logs_by_agent_and_stage(
+                evaluation_logs, training_logs
+            )
 
             # Create output directory based on run summary
             run_timestamp = summary_data.get(
@@ -530,33 +827,53 @@ def main():
             )
             os.makedirs(output_dir, exist_ok=True)
 
-            # Analyze each log
-            all_logs_data = []
-            for log_path in evaluation_logs:
-                log_data = analyze_single_log(log_path, output_dir)
-                if log_data:
-                    all_logs_data.append(log_data)
+            # Analyze each agent's stages
+            for agent_key, agent_data in agent_stage_data.items():
+                analyze_agent_stages(agent_key, agent_data, output_dir)
 
-            # Create comparative analysis if we have multiple agents
-            if len(all_logs_data) > 1:
-                print(
-                    f"\n📊 Creating comparative analysis for {len(all_logs_data)} agents..."
-                )
-                create_comparative_analysis(all_logs_data, output_dir)
+            # Create comparative analysis if we have multiple agents or stages
+            if len(agent_stage_data) > 1 or any(
+                len(agent_data.get("evaluation", {})) > 1
+                for agent_data in agent_stage_data.values()
+            ):
+                print(f"\n📊 Creating comparative analysis...")
+                create_comparative_analysis(agent_stage_data, output_dir)
 
             # Print run summary
             print(f"\n✅ RUN ANALYSIS COMPLETE!")
             print(f"📁 All analyses saved to: {output_dir}")
             print(f"\n📋 RUN SUMMARY:")
-            print(f"Total Agents Analyzed: {len(all_logs_data)}")
+            print(f"Total Agents Analyzed: {len(agent_stage_data)}")
 
-            for log_data in all_logs_data:
-                summary = log_data["summary"]
-                print(
-                    f"  {log_data['agent_type'].upper()} Agent {log_data['agent_id']}: "
-                    f"Win Rate: {summary['win_rate']*100:.2f}%, "
-                    f"Net Wins: {summary['game_outcome_percentages']['net_wins_percent']:.2f}%"
-                )
+            for agent_key, agent_data in agent_stage_data.items():
+                evaluation_data = agent_data.get("evaluation", {})
+                # Handle both string and integer keys
+                stages = []
+                for key in evaluation_data.keys():
+                    if key != "unknown":
+                        try:
+                            stages.append(int(key))
+                        except (ValueError, TypeError):
+                            continue
+                stages.sort()
+                print(f"  {agent_key.upper()}: {len(stages)} stages ({stages})")
+
+                # Show final stage performance
+                if stages:
+                    final_stage = max(stages)
+                    # Try both string and integer keys
+                    final_data = None
+                    if str(final_stage) in evaluation_data:
+                        final_data = evaluation_data[str(final_stage)]
+                    elif final_stage in evaluation_data:
+                        final_data = evaluation_data[final_stage]
+
+                    if final_data:
+                        summary = final_data["summary"]
+                        print(
+                            f"    Final Stage {final_stage}: Win Rate: {summary['win_rate']*100:.2f}%, "
+                            f"Net Wins: {summary['game_outcome_percentages']['net_wins_percent']:.2f}%"
+                        )
 
         except Exception as e:
             print(f"❌ Error processing run summary: {e}")
@@ -580,7 +897,8 @@ def main():
             # Parse log filename to extract agent info
             log_filename = os.path.basename(args.input_path)
             parts = log_filename.replace(".json", "").split("_")
-            agent_type = parts[4]  # tabular
+            agent_type = parts[4]  # tabular/dqn
+            agent_id = parts[3]
             date = parts[5]  # 20250719
             time = parts[6]  # 120449
 
@@ -591,7 +909,7 @@ def main():
             output_dir = os.path.join(
                 log_dir,
                 "analysis",
-                agent_type,
+                f"{agent_type}_{agent_id}",
                 date,
                 time,
             )
@@ -599,10 +917,16 @@ def main():
             # Create the output directory structure
             os.makedirs(output_dir, exist_ok=True)
 
-            create_strategy_table_heatmap(log_data, output_dir)
-            create_performance_summary(log_data, output_dir)
-            create_action_distribution_chart(log_data, output_dir)
-            create_state_value_analysis(log_data, output_dir)
+            # Get stage info
+            stage_info = ""
+            if "stage_id" in log_data:
+                stage_id = log_data["stage_id"]
+                stage_info = f"Stage {stage_id}"
+
+            create_strategy_table_heatmap(log_data, output_dir, stage_info)
+            create_performance_summary(log_data, output_dir, stage_info)
+            create_action_distribution_chart(log_data, output_dir, stage_info)
+            create_state_value_analysis(log_data, output_dir, stage_info)
 
             print(f"\n✅ Analysis complete! All visualizations saved to: {output_dir}")
 
@@ -610,6 +934,8 @@ def main():
             summary = log_data["summary"]
             print(f"\n📋 QUICK SUMMARY:")
             print(f"Agent Type: {log_data['agent_type'].upper()}")
+            if "stage_id" in log_data:
+                print(f"Stage: {log_data['stage_id']}")
             print(f"Win Rate: {summary['win_rate']*100:.2f}%")
             print(f"Average Reward: {summary['avg_reward']:.3f}")
             print(
