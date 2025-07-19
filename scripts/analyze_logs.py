@@ -155,11 +155,6 @@ def create_performance_summary(log_data, output_dir):
             f"{summary['game_outcome_percentages']['win_percent']:.2f}%",
         ],
         [
-            "Total Losses",
-            summary["game_outcomes"]["losses"],
-            f"{summary['game_outcome_percentages']['lose_percent']:.2f}%",
-        ],
-        [
             "Busts",
             summary["game_outcomes"]["busts"],
             f"{summary['game_outcome_percentages']['bust_percent']:.2f}%",

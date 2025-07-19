@@ -1,0 +1,187 @@
+[build-system]
+requires = ["setuptools>=80.9.0", "wheel>=0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-guided-curriculum-rl"
+version = "1.0.0"
+description = "LLM-Guided Curriculum Learning for Reinforcement Learning"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Amirreza Alasti", email = "amirreza.alasti@example.com"}
+]
+maintainers = [
+    {name = "Amirreza Alasti", email = "amirreza.alasti@example.com"}
+]
+keywords = [
+    "reinforcement-learning",
+    "curriculum-learning", 
+    "large-language-models",
+    "llm",
+    "blackjack",
+    "multi-agent",
+    "deep-learning",
+    "neural-networks",
+    "q-learning",
+    "dqn",
+    "artificial-intelligence",
+    "machine-learning",
+    "education",
+    "simulation",
+    "gaming"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education", 
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Games/Entertainment :: Simulation",
+    "Topic :: Education",
+    "Framework :: Jupyter"
+]
+requires-python = ">=3.8"
+dependencies = [
+    "torch>=2.7.1",
+    "numpy>=2.3.1", 
+    "google-genai>=1.22.0",
+    "pygame>=2.6.1",
+    "gymnasium>=1.1.1",
+    "cloudpickle>=3.1.1",
+    "typing-extensions>=4.14.0",
+    "setuptools>=80.9.0",
+    "wheel>=0.45.1"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0", 
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0"
+]
+docs = [
+    "sphinx>=6.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=1.0.0"
+]
+analysis = [
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "pandas>=1.5.0", 
+    "plotly>=5.0.0",
+    "scikit-learn>=1.0.0"
+]
+full = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0", 
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+    "sphinx>=6.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "pandas>=1.5.0",
+    "plotly>=5.0.0", 
+    "scikit-learn>=1.0.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/amirrezaalasti/llm-guided-curriculum-rl"
+Documentation = "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/blob/main/README.md"
+Repository = "https://github.com/amirrezaalasti/llm-guided-curriculum-rl"
+"Bug Tracker" = "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/issues"
+Changelog = "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/blob/main/CHANGELOG.md"
+
+[project.scripts]
+blackjack-rl = "scripts.RLAgent:main"
+blackjack-gui = "blackjack_gui:main"
+analyze-logs = "scripts.analyze_logs:main"
+curriculum-train = "scripts.curriculum_multi_agent_rl:main"
+
+[tool.setuptools]
+packages = ["scripts"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.yml", "*.yaml", "*.json"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg-info",
+    ".venv",
+    "venv",
+    ".tox",
+    ".mypy_cache"
+]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests"
+] 
