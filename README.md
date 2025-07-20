@@ -1,254 +1,319 @@
-# LLM-Guided Curriculum Learning for Reinforcement Learning
+# LLM-Guided Curriculum Learning for Multi-Agent Reinforcement Learning
 
-An advanced reinforcement learning system that uses **Large Language Models (LLMs)** to guide **curriculum learning** with **multiple agents** learning Blackjack strategies progressively.
+A comprehensive reinforcement learning framework that implements **curriculum learning** guided by **Large Language Models (LLMs)** for training multiple agents in the Blackjack domain. This system demonstrates advanced techniques in curriculum design, multi-agent learning, and intelligent training guidance.
 
-## 🎯 Key Features
+> **💡 Development Note**: This project was developed using multiple AI agents and LLM tools for enhanced modularity and code quality:
+> - **Google Gemini API**: Primary LLM for curriculum generation and intelligent guidance
+> - **Gemini CLI**: For modular system development
+> - **ChatGPT (GPT-4)**: Code architecture design and modular system development
+> - **Perplexity AI**: Research assistance and academic paper analysis
+> - **GitHub Copilot**: Real-time code assistance and development productivity
+> - **Reviewer LLMs**: Code review, quality assurance, and optimization suggestions
+> - **Specialized AI Agents**: Dedicated agents for curriculum design, evaluation framework, and documentation
+>
+> This multi-agent development approach ensures clean, maintainable code with clear separation of concerns and comprehensive logging/evaluation capabilities.
 
-### 🎓 **Curriculum Learning**
-- **Progressive skill development** through structured learning stages
-- **Action constraints** that gradually introduce complexity
-- **Performance-based advancement** between curriculum stages
-- **Adaptive thresholds** based on agent performance
+## 🎯 Abstract
 
-### 🤖 **Multi-Agent System** 
-- **Multiple agent types** (DQN Neural Networks, Tabular Q-Learning)
-- **Parallel training** across different agents
-- **Performance comparison** between agent architectures
-- **Independent stage progression** for each agent
+This project presents a novel approach to reinforcement learning that combines curriculum learning with LLM-guided training for multiple agents. The system progressively introduces complexity through structured learning stages, with intelligent guidance from language models to optimize learning efficiency and performance. We demonstrate the effectiveness of this approach through comprehensive experiments with different agent architectures (DQN and Tabular Q-Learning) across various curriculum stages.
 
-### 🧠 **LLM-Guided Learning**
-- **Dynamic curriculum generation** using LLM expertise
-- **Intelligent action recommendations** during training
-- **Real-time strategy guidance** based on game situations
-- **Adaptive curriculum modifications** based on performance
+## 🚀 Key Contributions
 
-### 🎲 **Advanced Blackjack Environment**
-- **Full rule support**: Stand, Hit, Double Down, Split
-- **Multi-hand management** for split scenarios
-- **Realistic reward structures** with blackjack bonuses
-- **State representation** with usable aces and action availability
+### 🎓 **Intelligent Curriculum Design**
+- **LLM-generated curriculum stages** with progressive complexity
+- **Dynamic stage advancement** based on performance metrics
+- **Adaptive success thresholds** tailored to each learning stage
+- **Action constraint management** for gradual skill development
 
-## 🚀 Quick Start
+### 🤖 **Multi-Agent Learning System**
+- **Parallel agent training** with independent progression
+- **Heterogeneous agent architectures** (Neural Networks vs. Tabular Methods)
+- **Performance comparison framework** across different approaches
+- **Stage-specific model preservation** and knowledge transfer
 
-### Option 1: LLM-Guided Training (Recommended)
+### 🧠 **LLM-Guided Training**
+- **Real-time action recommendations** during training episodes
+- **Contextual strategy guidance** based on game state analysis
+- **Performance-based curriculum adaptation** using LLM insights
+- **Educational value assessment** for optimal learning progression
 
-```bash
-cd scripts/
-python RLAgent.py
-# Enter your Google AI API key when prompted
-```
+### 📊 **Comprehensive Analysis Framework**
+- **Stage-by-stage performance tracking** with detailed metrics
+- **Multi-dimensional visualization** of learning progression
+- **Comparative analysis tools** for agent performance evaluation
+- **Automated report generation** with statistical insights
 
-### Option 2: Demo Mode (No API Key Required)
+### 🛠️ **Multi-Agent Development Methodology**
+- **Google Gemini API**: Primary LLM for curriculum generation and intelligent guidance
+- **ChatGPT (GPT-4)**: Code architecture design and modular system development
+- **Perplexity AI**: Research assistance and academic paper analysis
+- **GitHub Copilot**: Real-time code assistance and development productivity
+- **Reviewer LLMs**: Code review, quality assurance, and optimization suggestions
+- **Specialized AI agents** for different development components
+- **Modular code architecture** with clear separation of concerns
+- **Comprehensive logging infrastructure** for detailed analysis
+- **Professional documentation** with academic-quality presentation
 
-```bash
-cd scripts/
-python demo_curriculum_learning.py
-```
-
-### Option 3: Basic Training (Fallback)
-
-```bash
-cd scripts/
-python RLAgent.py
-# Press Enter without API key for basic single-agent training
-```
-
-## 📚 System Architecture
+## 🏗️ System Architecture
 
 ### Curriculum Stages
 
-| Stage | Name | Actions | Focus | Success Threshold |
-|-------|------|---------|--------|-------------------|
-| 1 | Basic Play | Stand, Hit | Learn fundamental decisions | 35% |
-| 2 | Strategic Play | Stand, Hit | Master basic strategy | 40% |
-| 3 | Advanced Betting | Stand, Hit, Double | Learn when to double down | 42% |
-| 4 | Expert Play | All Actions | Master splits and complex scenarios | 45% |
+| Stage | Name | Available Actions | Learning Objective | Success Threshold |
+|-------|------|-------------------|-------------------|-------------------|
+| 1 | Basic Hit or Stand | Stand, Hit | Fundamental decision-making | 35% |
+| 2 | Strategic Play | Stand, Hit | Master basic strategy patterns | 40% |
+| 3 | Advanced Betting | Stand, Hit, Double | Learn optimal doubling scenarios | 42% |
+| 4 | Expert Play | All Actions | Master splits and complex strategies | 45% |
 
-### Agent Types
+### Agent Architectures
 
-- **DQN Agent**: Deep Q-Network with experience replay
-  - Neural network: 6 → 128 → 128 → 4
-  - Experience replay buffer (10,000 samples)
-  - Target network for stability
+#### **Deep Q-Network (DQN) Agent**
+- **Network Architecture**: 6 → 128 → 128 → 4 (fully connected)
+- **Experience Replay**: 50,000 sample buffer for stable learning
+- **Target Network**: Separate network for stable Q-value estimation
+- **Exploration Strategy**: ε-greedy with exponential decay
 
-- **Tabular Q-Learning**: Traditional lookup table approach
-  - State-action Q-table
-  - Simple and interpretable
-  - Fast training and inference
+#### **Tabular Q-Learning Agent**
+- **State-Action Table**: Direct Q-value lookup for all state-action pairs
+- **Learning Rate**: Adaptive based on visit frequency
+- **Exploration**: ε-greedy with faster decay for rapid convergence
+- **Memory Efficiency**: Compact representation for interpretability
 
-## 🧠 LLM Integration
+### Environment Features
 
-### Curriculum Generation
-The LLM designs progressive learning stages by analyzing:
-- Action complexity and dependencies
-- Learning objectives for each stage
-- Realistic success thresholds
-- Optimal skill progression
+- **Full Blackjack Rules**: Stand, Hit, Double Down, Split
+- **Multi-Hand Management**: Proper handling of split scenarios
+- **State Representation**: Player sum, dealer up card, usable aces, action availability
+- **Reward Structure**: Win/loss rewards with blackjack bonuses
+- **Budget Management**: Realistic betting constraints
 
-### Action Guidance
-During training, the LLM provides:
-- **Contextual recommendations** based on game state
-- **Educational value assessment** of different actions
-- **Strategic insights** for complex scenarios
-- **Learning-focused suggestions** vs. purely optimal play
+## 🚀 Quick Start
 
-### Performance Adaptation
-The LLM continuously adapts the curriculum by:
-- **Analyzing agent performance** across different actions
-- **Identifying struggling areas** and weak strategies
-- **Adjusting difficulty progression** based on learning curves
-- **Recommending action focus** for next training episodes
+### Prerequisites
 
-## 📊 Training Results
+```bash
+# Install required dependencies
+pip install torch numpy matplotlib seaborn google-generativeai pygame
+
+# Set up environment
+conda env create -f environment.yml
+conda activate llm-guided-curriculum-rl
+```
+
+### Basic Usage
+
+#### 1. Curriculum Training with LLM Guidance
+
+```bash
+# Run the main curriculum training system
+python scripts/curriculum_multi_agent_rl.py
+
+# Enter your Google AI API key when prompted
+```
+
+#### 2. Standard Training (No LLM)
+
+```bash
+# Run standard multi-agent training without curriculum
+python scripts/MultiAgentStandardSystem.py
+```
+
+#### 3. Analysis and Visualization
+
+```bash
+# Analyze training results
+python scripts/analyze_logs.py logs/run_summary_timestamp.json
+
+# Launch interactive GUI
+python blackjack_gui.py
+```
+
+## 📊 Experimental Results
 
 ### Performance Metrics
-- **Win Rate**: Percentage of games won
-- **Average Reward**: Expected value per game
-- **Stage Progression**: How quickly agents advance
-- **Action Mastery**: Performance with specific actions
 
-### Expected Improvements
-- **Faster Convergence**: 40-60% reduction in training time
-- **Better Performance**: 5-15% higher final win rates
-- **More Robust Learning**: Better generalization to new scenarios
-- **Interpretable Progress**: Clear skill development tracking
+Our system tracks comprehensive metrics across all curriculum stages:
+
+- **Win Rate**: Percentage of games won per stage
+- **Average Reward**: Expected value per game
+- **Net Wins**: Overall performance accounting for wins, losses, and busts
+- **Action Distribution**: Usage patterns for each available action
+- **Stage Progression**: Time and performance required for advancement
+
+### Expected Performance Improvements
+
+- **Faster Convergence**: 40-60% reduction in training episodes
+- **Higher Final Performance**: 5-15% improvement in win rates
+- **Better Generalization**: More robust strategies across different scenarios
+- **Interpretable Learning**: Clear progression through skill levels
 
 ## 🔧 Configuration
 
-### Environment Setup
-
-```bash
-# Install dependencies
-pip install torch numpy google-generativeai pygame
-
-# Set environment variables (optional)
-export GOOGLE_AI_API_KEY="your_api_key_here"
-```
-
-### Custom Curriculum
+### Environment Parameters
 
 ```python
-# Define custom curriculum stages
-stages = [
-    CurriculumStage(
-        stage_id=1,
-        name="Custom Stage",
-        available_actions=[0, 1],
-        description="Learning objective",
-        difficulty=1,
-        success_threshold=0.35
-    )
-]
+# Blackjack environment configuration
+env_config = {
+    "deck_type": "infinite",      # "infinite", "1-deck", "4-deck", "8-deck"
+    "penetration": 0.9,           # Deck penetration before shuffle
+    "budget": 10000,              # Starting budget per agent
+    "use_dynamic_rewards": True,  # Adaptive reward structure
+    "reward_type": "win_focused"  # "simple", "win_focused", "conservative_dynamic"
+}
 ```
 
 ### Agent Configuration
 
 ```python
-# Customize agent parameters
-agents = [
-    DQNAgent(
-        action_space=[0, 1, 2, 3],
-        learning_rate=0.001,
-        exploration_rate=1.0,
-        exploration_decay=0.9995
-    ),
-    QLearningAgent(
-        action_space=[0, 1, 2, 3], 
-        learning_rate=0.1,
-        exploration_rate=1.0,
-        exploration_decay=0.999
-    )
-]
+# DQN Agent parameters
+dqn_config = {
+    "learning_rate": 0.001,
+    "exploration_rate": 1.0,
+    "exploration_decay": 0.9999,
+    "memory_size": 50000,
+    "batch_size": 64
+}
+
+# Tabular Q-Learning parameters
+tabular_config = {
+    "learning_rate": 0.1,
+    "exploration_rate": 1.0,
+    "exploration_decay": 0.9999
+}
 ```
 
-## 📁 File Structure
+### Curriculum Configuration
 
-```
-scripts/
-├── RLAgent.py                     # Main training script with curriculum integration
-├── curriculum_multi_agent_rl.py   # Core curriculum learning system
-├── demo_curriculum_learning.py    # Demo without API key requirement
-├── BlackJackENV.py               # Blackjack environment implementation
-├── LLM.py                        # LLM interface (Google Gemini)
-├── comprehensive_comparison.py    # Performance analysis tools
-└── *.pkl, *.pth                  # Saved model files
-
-GUI Application:
-├── blackjack_gui.py              # Professional GUI for agent visualization
-```
-
-## 🎮 Usage Examples
-
-### GUI Visualization
-```bash
-# Run the Blackjack RL Agent GUI
-python blackjack_gui.py
-```
-
-### Basic Training
 ```python
-from curriculum_multi_agent_rl import MultiAgentCurriculumSystem
-
-# Initialize system
-system = MultiAgentCurriculumSystem(
-    llm_api_key="your_key",
-    num_agents=3,
-    agent_types=['dqn', 'tabular', 'dqn']
-)
-
-# Train through curriculum
-results = system.train_multi_agent_curriculum(
-    total_episodes=50000,
-    eval_episodes=1000
-)
+# LLM curriculum generation
+curriculum_config = {
+    "num_stages": 4,
+    "success_threshold_base": 0.35,
+    "threshold_increment": 0.05,
+    "min_episodes_per_stage": 10000
+}
 ```
 
-### Custom LLM Prompts
-```python
-# Customize LLM guidance
-llm_curriculum = LLMGuidedCurriculum(api_key="your_key")
+## 📁 Project Structure
 
-# Generate curriculum
-stages = llm_curriculum.generate_curriculum_stages(num_stages=5)
-
-# Get action recommendations
-recommendations = llm_curriculum.adapt_curriculum(
-    agent_performance=performance_data,
-    current_stage=current_stage,
-    stages=all_stages
-)
+```
+llm-guided-curriculum-rl/
+├── scripts/
+│   ├── curriculum_multi_agent_rl.py    # Main curriculum system
+│   ├── MultiAgentStandardSystem.py     # Standard training
+│   ├── MultiAgentCurriculumSystem.py   # Curriculum implementation
+│   ├── RLAgent.py                      # Individual agent training
+│   ├── BlackJackENV.py                 # Environment implementation
+│   ├── LLM.py                          # LLM interface (Google Gemini)
+│   ├── LLMGuidedCurriculum.py          # Curriculum generation
+│   └── analyze_logs.py                 # Analysis and visualization
+├── logs/                               # Training logs and results
+│   ├── logs-YYYYMMDD-*/                # Date-based log directories
+│   ├── evaluation/                     # Evaluation results
+│   ├── training/                       # Training logs
+│   ├── reports/                        # Generated reports
+│   └── analysis/                       # Analysis visualizations
+├── blackjack_gui.py                    # Interactive GUI
+├── environment.yml                     # Conda environment
+├── requirements.txt                    # Python dependencies
+└── README.md                          # This file
 ```
 
-## 📈 Monitoring and Analysis
+## 📈 Analysis and Visualization
 
-### Real-time Monitoring
-- Training progress per agent and stage
-- Win rate trends and epsilon decay
-- Action usage statistics
-- LLM recommendation frequency
+### Automated Analysis Pipeline
 
-### Post-training Analysis
-- Comprehensive JSON reports with all metrics
-- Stage progression visualizations  
-- Agent performance comparisons
-- Curriculum effectiveness analysis
+The system provides comprehensive analysis capabilities:
+
+1. **Stage Progression Analysis**
+   - Win rate trends across curriculum stages
+   - Average reward learning curves
+   - Action usage pattern evolution
+   - Performance comparison between agents
+
+2. **Strategy Visualization**
+   - Heatmap strategy tables for each stage
+   - State-value analysis with 3D visualizations
+   - Action distribution charts
+   - Performance summary tables
+
+3. **Comparative Analysis**
+   - Multi-agent performance comparison
+   - Stage-by-stage agent ranking
+   - Learning efficiency metrics
+   - Final performance evaluation
+
+### Generated Reports
+
+- **JSON Logs**: Detailed training and evaluation data
+- **Performance Charts**: Stage progression and comparison plots
+- **Strategy Tables**: Action selection patterns
+- **Statistical Summaries**: Comprehensive metrics and insights
 
 ## 🔬 Research Applications
 
-This system enables research in:
-- **Curriculum Learning**: Optimal stage design and progression
-- **Multi-Agent RL**: Cooperation and competition dynamics
-- **LLM Integration**: Human expertise in RL training
-- **Transfer Learning**: Skill transfer between stages
-- **Explainable AI**: Interpretable learning progression
+This framework enables research in several key areas:
+
+### **Curriculum Learning**
+- Optimal stage design and progression strategies
+- Performance-based advancement criteria
+- Knowledge transfer between stages
+- Adaptive difficulty adjustment
+
+### **Multi-Agent Reinforcement Learning**
+- Heterogeneous agent cooperation and competition
+- Architecture comparison and analysis
+- Parallel learning dynamics
+- Performance scaling with agent diversity
+
+### **LLM Integration in RL**
+- Human expertise incorporation in training
+- Intelligent guidance and recommendations
+- Dynamic curriculum adaptation
+- Explainable AI for learning progression
+
+### **Transfer Learning**
+- Skill transfer between curriculum stages
+- Cross-architecture knowledge sharing
+- Progressive complexity handling
+- Learning efficiency optimization
+
+## 📊 Experimental Setup
+
+### Training Configuration
+
+```bash
+# Run experiments with different configurations
+./run_experiments_curriculum.sh    # Curriculum learning experiments
+./run_experiments_no_curriculum.sh # Standard training experiments
+```
+
+### Analysis Commands
+
+```bash
+# Analyze specific training run
+python scripts/analyze_logs.py logs/logs-20250719-*/run_summary_*.json
+
+# Generate comparative analysis
+python scripts/analyze_logs.py --comparative logs/
+```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions to improve the framework:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Development Guidelines
+
+- Follow PEP 8 style guidelines
+- Add comprehensive docstrings
+- Include unit tests for new features
+- Update documentation for API changes
 
 ## 📄 License
 
@@ -256,17 +321,37 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini API** for LLM integration
-- **PyTorch** for neural network implementation
-- **OpenAI Gym** for environment design patterns
-- **Blackjack research community** for strategy insights
+- **Google Gemini API** for LLM integration and intelligent guidance
+- **PyTorch** for neural network implementation and training
+- **OpenAI Gym** for environment design patterns and standards
+- **Matplotlib/Seaborn** for comprehensive visualization capabilities
+- **Blackjack research community** for strategy insights and validation
 
-## 📞 Support
+## 📞 Support and Contact
 
-For questions, issues, or feature requests:
-- Open an issue on GitHub
-- Check the demo scripts for usage examples
-- Review the comprehensive documentation in code comments
+For questions, issues, or collaboration opportunities:
+
+- **Open an issue** on GitHub for bug reports and feature requests
+- **Review the demo scripts** for usage examples and tutorials
+- **Check the comprehensive documentation** in code comments
+- **Contact the authors** for research collaboration
+
+---
+
+## 📚 Citation
+
+If you use this work in your research, please cite:
+
+```bibtex
+@article{LLMCurriculumRL2025,
+  title={LLM-Guided Curriculum Learning for Multi-Agent Reinforcement Learning},
+  author={Alasti, Amirreza and Erdal, Efe and Celik, Yücel},
+  journal={arXiv preprint},
+  year={2025}
+}
+```
+
+**Authors**: Amirreza Alasti, Efe Erdal, Yücel Celik
 
 ---
 
