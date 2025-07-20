@@ -1,0 +1,241 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T20:45:33.590543"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "The agent learns the basic strategy of when to hit or stand. Focuses on understanding card values and the risk of busting. The agent only has two actions available - hit or stand. The dealer hits on soft 17.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "The agent learns when to double down to maximize expected value. This stage introduces a more nuanced decision based on the player's hand and the dealer's upcard. The dealer hits on soft 17.",
+      "difficulty": 3,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Advanced Strategy: Double and Soft Hands",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "The agent refines its understanding of when to hit, stand, or double down, particularly with soft hands (hands containing an Ace). Dealer hits on soft 17. This stage focuses on learning the optimal strategy for more complex situations.",
+      "difficulty": 4,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Blackjack Strategy: Splitting Included",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "The agent learns the complete Blackjack strategy, including the crucial decision of when to split pairs. This involves understanding the probabilities of creating strong hands after splitting and the risks associated with splitting weak pairs against strong dealer upcards. The dealer hits on soft 17.",
+      "difficulty": 5,
+      "success_threshold": 0.48
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 2,
+      "final_win_rate": 0.45422,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 2,
+      "final_win_rate": 0.44327,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "The agent learns the basic strategy of when to hit or stand. Focuses on understanding card values and the risk of busting. The agent only has two actions available - hit or stand. The dealer hits on soft 17.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42877,
+          "avg_reward": -0.05443,
+          "total_wins": 104256,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 669.7752583026886
+        },
+        "agent_1": {
+          "win_rate": 0.40232,
+          "avg_reward": -0.12336,
+          "total_wins": 96963,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 14.345483779907227
+        }
+      },
+      "timestamp": "2025-07-19T20:08:49.175317"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "The agent learns when to double down to maximize expected value. This stage introduces a more nuanced decision based on the player's hand and the dealer's upcard. The dealer hits on soft 17.",
+        "difficulty": 3,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44011,
+          "avg_reward": -0.05474,
+          "total_wins": 109418,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 690.9530026912689
+        },
+        "agent_1": {
+          "win_rate": 0.41453,
+          "avg_reward": -0.15326,
+          "total_wins": 103198,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 14.145733833312988
+        }
+      },
+      "timestamp": "2025-07-19T20:20:37.490994"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Advanced Strategy: Double and Soft Hands",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "The agent refines its understanding of when to hit, stand, or double down, particularly with soft hands (hands containing an Ace). Dealer hits on soft 17. This stage focuses on learning the optimal strategy for more complex situations.",
+        "difficulty": 4,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43501,
+          "avg_reward": -0.04178,
+          "total_wins": 109514,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 675.8236708641052
+        },
+        "agent_1": {
+          "win_rate": 0.40366,
+          "avg_reward": -0.15173,
+          "total_wins": 103369,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 13.989987134933472
+        }
+      },
+      "timestamp": "2025-07-19T20:32:10.716677"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Blackjack Strategy: Splitting Included",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "The agent learns the complete Blackjack strategy, including the crucial decision of when to split pairs. This involves understanding the probabilities of creating strong hands after splitting and the risks associated with splitting weak pairs against strong dealer upcards. The dealer hits on soft 17.",
+        "difficulty": 5,
+        "success_threshold": 0.48
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.45422,
+          "avg_reward": -0.09671,
+          "total_wins": 112433,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 786.6934220790863
+        },
+        "agent_1": {
+          "win_rate": 0.44327,
+          "avg_reward": -0.13564,
+          "total_wins": 105097,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 13.28345775604248
+        }
+      },
+      "timestamp": "2025-07-19T20:45:33.590543"
+    }
+  ]
+}
