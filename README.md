@@ -1,5 +1,9 @@
 # LLM-Guided Curriculum Learning for Multi-Agent Reinforcement Learning
 
+<div align="center">
+  <img src="logo.png" alt="AI and Blackjack" width="300"/>
+</div>
+
 A comprehensive reinforcement learning framework that implements **curriculum learning** guided by **Large Language Models (LLMs)** for training multiple agents in the Blackjack domain. This system demonstrates advanced techniques in curriculum design, multi-agent learning, and intelligent training guidance.
 
 > **💡 Development Note**: This project was developed using multiple AI agents and LLM tools for enhanced modularity and code quality:
