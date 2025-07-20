@@ -3,8 +3,8 @@ import json
 import time
 from datetime import datetime
 import numpy as np
-from scripts.RLAgent import DQNAgent, QLearningAgent
-from scripts.BlackJackENV import BlackjackEnv
+from RLAgent import DQNAgent, QLearningAgent
+from BlackJackENV import BlackjackEnv
 
 
 class MultiAgentStandardSystem:

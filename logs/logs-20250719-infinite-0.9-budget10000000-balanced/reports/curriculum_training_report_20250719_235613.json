@@ -1,0 +1,244 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T23:56:13.498916"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand Strategy",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn basic hitting and standing strategies. The agent should learn when to hit (draw a card) and when to stand (stay with the current hand) based on its hand value and the dealer's upcard. Agent must start to beat random play.",
+      "difficulty": 1,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 2,
+      "name": "Adding Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent learns when it's advantageous to double its bet and take only one additional card. The agent must now integrate understanding of risk/reward ratio and favorable starting hands.",
+      "difficulty": 3,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 3,
+      "name": "Split Decision",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the 'Split' action. The agent learns when to split a pair into two separate hands to maximize potential winnings. Complex strategy here requires the agent to reason about conditional probabilities given specific pairs and dealer's upcard.",
+      "difficulty": 4,
+      "success_threshold": 0.47
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Blackjack Strategy",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Integrate all available actions. Master the full blackjack strategy, combining hitting, standing, doubling down, and splitting to achieve optimal play.  Agent must learn to balance short-term risks for long-term reward, as splitting increases variance.",
+      "difficulty": 5,
+      "success_threshold": 0.49
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 2,
+      "final_win_rate": 0.4829,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 0,
+      "final_win_rate": 0.40733,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand Strategy",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic hitting and standing strategies. The agent should learn when to hit (draw a card) and when to stand (stay with the current hand) based on its hand value and the dealer's upcard. Agent must start to beat random play.",
+        "difficulty": 1,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42886,
+          "avg_reward": -0.05087,
+          "total_wins": 103951,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 587.0479621887207
+        },
+        "agent_1": {
+          "win_rate": 0.39002,
+          "avg_reward": -0.15059,
+          "total_wins": 96994,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 9.08781099319458
+        }
+      },
+      "timestamp": "2025-07-19T23:21:36.019330"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Adding Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent learns when it's advantageous to double its bet and take only one additional card. The agent must now integrate understanding of risk/reward ratio and favorable starting hands.",
+        "difficulty": 3,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44448,
+          "avg_reward": -0.04766,
+          "total_wins": 108680,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 534.652987241745
+        },
+        "agent_1": {
+          "win_rate": 0.41829,
+          "avg_reward": -0.13065,
+          "total_wins": 102897,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 8.522282838821411
+        }
+      },
+      "timestamp": "2025-07-19T23:30:42.120038"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Split Decision",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the 'Split' action. The agent learns when to split a pair into two separate hands to maximize potential winnings. Complex strategy here requires the agent to reason about conditional probabilities given specific pairs and dealer's upcard.",
+        "difficulty": 4,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48928,
+          "avg_reward": -0.11836,
+          "total_wins": 114680,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 727.9614310264587
+        },
+        "agent_1": {
+          "win_rate": 0.41635,
+          "avg_reward": -0.15589,
+          "total_wins": 103699,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 8.813671350479126
+        }
+      },
+      "timestamp": "2025-07-19T23:43:01.859193"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Blackjack Strategy",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Integrate all available actions. Master the full blackjack strategy, combining hitting, standing, doubling down, and splitting to achieve optimal play.  Agent must learn to balance short-term risks for long-term reward, as splitting increases variance.",
+        "difficulty": 5,
+        "success_threshold": 0.49
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4829,
+          "avg_reward": -0.15407,
+          "total_wins": 116521,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 779.9191343784332
+        },
+        "agent_1": {
+          "win_rate": 0.40733,
+          "avg_reward": -0.1787,
+          "total_wins": 103774,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 8.462439060211182
+        }
+      },
+      "timestamp": "2025-07-19T23:56:13.498916"
+    }
+  ]
+}

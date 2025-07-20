@@ -1,0 +1,239 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T19:56:55.414996"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamentals of Blackjack. The agent should learn when to hit and when to stand based on its hand and the dealer's upcard. Focus is on avoiding busting and understanding basic hand values.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent must learn to identify situations where doubling down provides a significant advantage (e.g., hard 11, or soft 19/20 vs. low dealer upcard). Emphasize risk/reward assessment.",
+      "difficulty": 3,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Splitting Pairs",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the 'Split' action. The agent must learn which pairs to split based on the dealer's upcard (e.g., splitting 8s and Aces is usually beneficial, splitting 10s is generally not). Requires understanding conditional probabilities and expected value.",
+      "difficulty": 4,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Mastery and Refinement",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Refine the agent's strategy across all actions. This stage focuses on optimizing the agent's decision-making in complex scenarios, fine-tuning its understanding of hand probabilities, and adapting to different dealer upcards. The agent should consistently outperform the baseline strategy.",
+      "difficulty": 5,
+      "success_threshold": 0.45
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 4,
+      "final_win_rate": 0.47932,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 2,
+      "final_win_rate": 0.41842,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamentals of Blackjack. The agent should learn when to hit and when to stand based on its hand and the dealer's upcard. Focus is on avoiding busting and understanding basic hand values.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42717,
+          "avg_reward": 0.06918450000000002,
+          "total_wins": 104988,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [],
+          "time_taken": 632.185129404068
+        },
+        "agent_1": {
+          "win_rate": 0.40666,
+          "avg_reward": 0.012178000000000027,
+          "total_wins": 99494,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 9.463932037353516
+        }
+      },
+      "timestamp": "2025-07-19T19:19:03.059721"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent must learn to identify situations where doubling down provides a significant advantage (e.g., hard 11, or soft 19/20 vs. low dealer upcard). Emphasize risk/reward assessment.",
+        "difficulty": 3,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48042,
+          "avg_reward": 0.09642600000000003,
+          "total_wins": 120328,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 605.9070889949799
+        },
+        "agent_1": {
+          "win_rate": 0.40689,
+          "avg_reward": -0.0006834999999999723,
+          "total_wins": 101708,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 9.295876026153564
+        }
+      },
+      "timestamp": "2025-07-19T19:29:21.608627"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Splitting Pairs",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the 'Split' action. The agent must learn which pairs to split based on the dealer's upcard (e.g., splitting 8s and Aces is usually beneficial, splitting 10s is generally not). Requires understanding conditional probabilities and expected value.",
+        "difficulty": 4,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4966,
+          "avg_reward": 0.01667300000000002,
+          "total_wins": 117783,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 858.5678091049194
+        },
+        "agent_1": {
+          "win_rate": 0.41645,
+          "avg_reward": 0.005046500000000026,
+          "total_wins": 103157,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 9.432385206222534
+        }
+      },
+      "timestamp": "2025-07-19T19:43:52.677484"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Mastery and Refinement",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Refine the agent's strategy across all actions. This stage focuses on optimizing the agent's decision-making in complex scenarios, fine-tuning its understanding of hand probabilities, and adapting to different dealer upcards. The agent should consistently outperform the baseline strategy.",
+        "difficulty": 5,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.47932,
+          "avg_reward": 0.060179500000000025,
+          "total_wins": 117529,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 770.2319917678833
+        },
+        "agent_1": {
+          "win_rate": 0.41842,
+          "avg_reward": -0.018808499999999978,
+          "total_wins": 104245,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 9.411069631576538
+        }
+      },
+      "timestamp": "2025-07-19T19:56:55.414996"
+    }
+  ]
+}

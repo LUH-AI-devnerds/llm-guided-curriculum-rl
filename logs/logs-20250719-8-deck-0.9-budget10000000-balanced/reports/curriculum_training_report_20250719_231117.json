@@ -1,0 +1,244 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T23:11:17.316923"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit or Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental strategy of when to 'Hit' or 'Stand' based on the player's hand total and the dealer's upcard. Agent needs to develop a basic understanding of busting and the value of different cards.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent must now learn to identify favorable situations where doubling down maximizes expected return. This stage requires the agent to assess risk vs reward more strategically.",
+      "difficulty": 3,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Splitting Pairs",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the 'Split' action. The agent must learn which pairs are advantageous to split based on the dealer's upcard. This requires deeper understanding of card counting probabilities and independent hand evaluation.",
+      "difficulty": 4,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Advanced Blackjack Strategy",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "This stage requires mastering all available actions in Blackjack. Agents must optimize for various situations and refine betting strategies to increase long-term profit. The environment can include more complex rules like dealer peeking or varying deck numbers.",
+      "difficulty": 5,
+      "success_threshold": 0.45
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 3,
+      "final_win_rate": 0.39589,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 2,
+      "final_win_rate": 0.44092,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental strategy of when to 'Hit' or 'Stand' based on the player's hand total and the dealer's upcard. Agent needs to develop a basic understanding of busting and the value of different cards.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42689,
+          "avg_reward": -0.05351,
+          "total_wins": 104796,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 618.6541652679443
+        },
+        "agent_1": {
+          "win_rate": 0.39436,
+          "avg_reward": -0.14089,
+          "total_wins": 96088,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 13.681077241897583
+        }
+      },
+      "timestamp": "2025-07-19T22:14:26.355739"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent must now learn to identify favorable situations where doubling down maximizes expected return. This stage requires the agent to assess risk vs reward more strategically.",
+        "difficulty": 3,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4436,
+          "avg_reward": -0.05099,
+          "total_wins": 110006,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 613.0505523681641
+        },
+        "agent_1": {
+          "win_rate": 0.41618,
+          "avg_reward": -0.14621,
+          "total_wins": 102947,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 13.439642906188965
+        }
+      },
+      "timestamp": "2025-07-19T22:24:56.454753"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Splitting Pairs",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the 'Split' action. The agent must learn which pairs are advantageous to split based on the dealer's upcard. This requires deeper understanding of card counting probabilities and independent hand evaluation.",
+        "difficulty": 4,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.46527,
+          "avg_reward": -0.0881,
+          "total_wins": 113041,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 1734.029278755188
+        },
+        "agent_1": {
+          "win_rate": 0.41451,
+          "avg_reward": -0.13934,
+          "total_wins": 103619,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 13.525749683380127
+        }
+      },
+      "timestamp": "2025-07-19T22:54:07.325366"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Advanced Blackjack Strategy",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "This stage requires mastering all available actions in Blackjack. Agents must optimize for various situations and refine betting strategies to increase long-term profit. The environment can include more complex rules like dealer peeking or varying deck numbers.",
+        "difficulty": 5,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.39589,
+          "avg_reward": -0.36293,
+          "total_wins": 111273,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 1013.1394574642181
+        },
+        "agent_1": {
+          "win_rate": 0.44092,
+          "avg_reward": -0.14603,
+          "total_wins": 105897,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 13.666686296463013
+        }
+      },
+      "timestamp": "2025-07-19T23:11:17.316923"
+    }
+  ]
+}

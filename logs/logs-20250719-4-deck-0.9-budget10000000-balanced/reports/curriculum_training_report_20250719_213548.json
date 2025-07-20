@@ -1,0 +1,242 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-19T21:35:48.844479"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "The agent learns the fundamentals of Blackjack by only having the option to hit or stand. The primary objective is to understand when to hit to improve the hand value and when to stand to avoid busting.  It learns the basic rules and expected value through trial and error. The dealer's actions are known to the agent, but the agent cannot influence them.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "The agent now learns when to effectively use the Double Down action. This stage builds upon the previous one by adding a strategic element.  The agent needs to identify advantageous situations where doubling the bet is likely to yield a higher reward. Success depends on understanding probabilities and risk assessment.",
+      "difficulty": 3,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Basic Splits (Easy Cases)",
+      "available_actions": [
+        0,
+        1,
+        3
+      ],
+      "description": "Here, the agent learns when to split pairs to maximize their chances of winning. To simplify the initial learning, the agent is only presented with hands that feature easy splits (e.g. A-A, 8-8).  The agent needs to learn to consider that splitting may lead to two promising hands, effectively doubling its opportunities to win.",
+      "difficulty": 3,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Full Blackjack Strategy",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "The agent now has access to all available actions and must learn the full complexity of Blackjack strategy. This includes knowing when to hit, stand, double down, and split in all possible scenarios.  It requires a deep understanding of card counting principles (even if implicitly) and probability calculations to achieve optimal performance. The agent will encounter all possible starting hands and dealer upcards.",
+      "difficulty": 5,
+      "success_threshold": 0.45
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 4,
+      "final_win_rate": 0.45734,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 2,
+      "final_win_rate": 0.41992,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "The agent learns the fundamentals of Blackjack by only having the option to hit or stand. The primary objective is to understand when to hit to improve the hand value and when to stand to avoid busting.  It learns the basic rules and expected value through trial and error. The dealer's actions are known to the agent, but the agent cannot influence them.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43029,
+          "avg_reward": -0.04761,
+          "total_wins": 104397,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 609.6971938610077
+        },
+        "agent_1": {
+          "win_rate": 0.38894,
+          "avg_reward": -0.14686,
+          "total_wins": 96792,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 13.669540643692017
+        }
+      },
+      "timestamp": "2025-07-19T20:57:46.132662"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "The agent now learns when to effectively use the Double Down action. This stage builds upon the previous one by adding a strategic element.  The agent needs to identify advantageous situations where doubling the bet is likely to yield a higher reward. Success depends on understanding probabilities and risk assessment.",
+        "difficulty": 3,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44335,
+          "avg_reward": -0.05107,
+          "total_wins": 108280,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 616.2768445014954
+        },
+        "agent_1": {
+          "win_rate": 0.4132,
+          "avg_reward": -0.14536,
+          "total_wins": 103237,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2
+          ],
+          "time_taken": 13.466829776763916
+        }
+      },
+      "timestamp": "2025-07-19T21:08:19.298156"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Basic Splits (Easy Cases)",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Here, the agent learns when to split pairs to maximize their chances of winning. To simplify the initial learning, the agent is only presented with hands that feature easy splits (e.g. A-A, 8-8).  The agent needs to learn to consider that splitting may lead to two promising hands, effectively doubling its opportunities to win.",
+        "difficulty": 3,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.45904,
+          "avg_reward": -0.11815,
+          "total_wins": 112955,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 789.352596282959
+        },
+        "agent_1": {
+          "win_rate": 0.38581,
+          "avg_reward": -0.17134,
+          "total_wins": 99034,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 13.345560073852539
+        }
+      },
+      "timestamp": "2025-07-19T21:21:45.659008"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Full Blackjack Strategy",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "The agent now has access to all available actions and must learn the full complexity of Blackjack strategy. This includes knowing when to hit, stand, double down, and split in all possible scenarios.  It requires a deep understanding of card counting principles (even if implicitly) and probability calculations to achieve optimal performance. The agent will encounter all possible starting hands and dealer upcards.",
+        "difficulty": 5,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.45734,
+          "avg_reward": -0.12503,
+          "total_wins": 114183,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 826.0343706607819
+        },
+        "agent_1": {
+          "win_rate": 0.41992,
+          "avg_reward": -0.14633,
+          "total_wins": 104040,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            2,
+            3
+          ],
+          "time_taken": 14.001324892044067
+        }
+      },
+      "timestamp": "2025-07-19T21:35:48.844479"
+    }
+  ]
+}
