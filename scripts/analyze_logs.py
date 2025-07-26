@@ -33,14 +33,22 @@ def load_run_summary(summary_path):
         return json.load(f)
 
 
+def load_curriculum_report(report_path):
+    """Load curriculum training report from JSON file."""
+    with open(report_path, "r") as f:
+        return json.load(f)
+
+
 def get_logs_from_summary(summary_data, log_dir):
     """Extract evaluation and training log paths from run summary."""
     evaluation_logs = []
     training_logs = []
+    curriculum_report = None
 
     # Get the directories from summary
     eval_log_dir = os.path.join(log_dir, "evaluation")
     training_log_dir = os.path.join(log_dir, "training")
+    reports_dir = os.path.join(log_dir, "reports")
 
     # Get list of evaluation log files
     eval_log_files = summary_data.get("files_generated", {}).get("evaluation", [])
@@ -60,12 +68,33 @@ def get_logs_from_summary(summary_data, log_dir):
         else:
             print(f"⚠️  Warning: Training log not found: {log_path}")
 
-    return evaluation_logs, training_logs
+    # Look for curriculum training report
+    if os.path.exists(reports_dir):
+        report_files = [
+            f
+            for f in os.listdir(reports_dir)
+            if f.startswith("curriculum_training_report")
+        ]
+        if report_files:
+            # Use the most recent report
+            report_files.sort()
+            curriculum_report = os.path.join(reports_dir, report_files[-1])
+
+    return evaluation_logs, training_logs, curriculum_report
 
 
-def group_logs_by_agent_and_stage(evaluation_logs, training_logs):
+def group_logs_by_agent_and_stage(
+    evaluation_logs, training_logs, curriculum_report=None, run_summary=None
+):
     """Group logs by agent and stage for curriculum analysis."""
     agent_stage_data = defaultdict(lambda: defaultdict(dict))
+
+    # Get deck type and reward type from run summary
+    deck_type = "unknown"
+    reward_type = "unknown"
+    if run_summary and "training_config" in run_summary:
+        deck_type = run_summary["training_config"].get("deck_type", "unknown")
+        reward_type = run_summary["training_config"].get("reward_type", "unknown")
 
     # Process evaluation logs
     for log_path in evaluation_logs:
@@ -77,6 +106,11 @@ def group_logs_by_agent_and_stage(evaluation_logs, training_logs):
 
             agent_key = f"{agent_type}_{agent_id}"
             agent_stage_data[agent_key]["evaluation"][stage_id] = log_data
+            # Store deck type and reward type at agent level
+            if "deck_type" not in agent_stage_data[agent_key]:
+                agent_stage_data[agent_key]["deck_type"] = deck_type
+            if "reward_type" not in agent_stage_data[agent_key]:
+                agent_stage_data[agent_key]["reward_type"] = reward_type
         except Exception as e:
             print(f"❌ Error loading evaluation log {log_path}: {e}")
 
@@ -92,13 +126,49 @@ def group_logs_by_agent_and_stage(evaluation_logs, training_logs):
             if "training" not in agent_stage_data[agent_key]:
                 agent_stage_data[agent_key]["training"] = {}
             agent_stage_data[agent_key]["training"][stage_id] = log_data
+
+            # Store deck type and reward type at agent level if not already set
+            if "deck_type" not in agent_stage_data[agent_key]:
+                agent_stage_data[agent_key]["deck_type"] = deck_type
+            if "reward_type" not in agent_stage_data[agent_key]:
+                agent_stage_data[agent_key]["reward_type"] = reward_type
         except Exception as e:
             print(f"❌ Error loading training log {log_path}: {e}")
+
+    # Extract training times from curriculum report
+    if curriculum_report:
+        try:
+            with open(curriculum_report, "r") as f:
+                report_data = json.load(f)
+
+            # Extract training times from global_performance_log
+            if "global_performance_log" in report_data:
+                for stage_log in report_data["global_performance_log"]:
+                    stage_id = stage_log["stage"]["stage_id"]
+                    results = stage_log["results"]
+
+                    for agent_key, agent_result in results.items():
+                        # Convert agent_key (e.g., "agent_0") to our format (e.g., "dqn_0")
+                        agent_id = agent_key.split("_")[1]
+                        agent_type = agent_result["agent_type"]
+                        time_taken = agent_result.get("time_taken", 0)
+
+                        our_agent_key = f"{agent_type}_{agent_id}"
+
+                        # Store training time
+                        if "training_times" not in agent_stage_data[our_agent_key]:
+                            agent_stage_data[our_agent_key]["training_times"] = {}
+                        agent_stage_data[our_agent_key]["training_times"][
+                            stage_id
+                        ] = time_taken
+
+        except Exception as e:
+            print(f"❌ Error loading curriculum report {curriculum_report}: {e}")
 
     return agent_stage_data
 
 
-def create_strategy_table_heatmap(log_data, output_dir, stage_info=""):
+def create_strategy_table_heatmap(log_data, output_dir, stage_info="", deck_type=""):
     """Create a heatmap similar to the Blackjack strategy table."""
     strategy_table = log_data["summary"]["strategy_table"]
 
@@ -142,6 +212,8 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info=""):
     # Create subplots
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     title = f'Agent Strategy Table - {log_data["agent_type"].upper()} Agent'
+    if deck_type:
+        title += f" ({deck_type})"
     if stage_info:
         title += f" - {stage_info}"
     fig.suptitle(title, fontsize=16)
@@ -213,7 +285,7 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info=""):
     print(f"📊 Strategy table heatmap saved to: {output_path}")
 
 
-def create_performance_summary(log_data, output_dir, stage_info=""):
+def create_performance_summary(log_data, output_dir, stage_info="", deck_type=""):
     """Create a performance summary table similar to Table 1."""
     summary = log_data["summary"]
 
@@ -272,8 +344,10 @@ def create_performance_summary(log_data, output_dir, stage_info=""):
             if i % 2 == 0:
                 table[(i, j)].set_facecolor("#f0f0f0")
 
-    title = f'Performance Summary - {log_data["agent_type"].upper()} Agent\n'
-    title += f'Evaluation Episodes: {log_data["evaluation_episodes"]}'
+    title = f'Performance Summary - {log_data["agent_type"].upper()} Agent'
+    if deck_type:
+        title += f" ({deck_type})"
+    title += f'\nEvaluation Episodes: {log_data["evaluation_episodes"]}'
     if stage_info:
         title += f"\n{stage_info}"
 
@@ -285,7 +359,7 @@ def create_performance_summary(log_data, output_dir, stage_info=""):
     print(f"📊 Performance summary saved to: {output_path}")
 
 
-def create_action_distribution_chart(log_data, output_dir, stage_info=""):
+def create_action_distribution_chart(log_data, output_dir, stage_info="", deck_type=""):
     """Create action distribution charts."""
     action_performance = log_data["summary"]["action_performance"]
 
@@ -325,10 +399,12 @@ def create_action_distribution_chart(log_data, output_dir, stage_info=""):
             va="bottom" if height > 0 else "top",
         )
 
+    title = f"{log_data['agent_type'].upper()} Agent"
+    if deck_type:
+        title += f" ({deck_type})"
     if stage_info:
-        fig.suptitle(
-            f"{log_data['agent_type'].upper()} Agent - {stage_info}", fontsize=14
-        )
+        title += f" - {stage_info}"
+    fig.suptitle(title, fontsize=14)
 
     plt.tight_layout()
     output_path = os.path.join(output_dir, "action_distribution.png")
@@ -337,7 +413,7 @@ def create_action_distribution_chart(log_data, output_dir, stage_info=""):
     print(f"📊 Action distribution chart saved to: {output_path}")
 
 
-def create_state_value_analysis(log_data, output_dir, stage_info=""):
+def create_state_value_analysis(log_data, output_dir, stage_info="", deck_type=""):
     """Create state-value analysis similar to the 3D plots."""
     state_reward_stats = log_data["summary"]["state_reward_stats"]
 
@@ -387,10 +463,12 @@ def create_state_value_analysis(log_data, output_dir, stage_info=""):
         ax2.set_title("State Values - Soft Totals (With Ace)")
         fig.colorbar(scatter, ax=ax2, shrink=0.5, aspect=5)
 
+    title = f"{log_data['agent_type'].upper()} Agent"
+    if deck_type:
+        title += f" ({deck_type})"
     if stage_info:
-        fig.suptitle(
-            f"{log_data['agent_type'].upper()} Agent - {stage_info}", fontsize=14
-        )
+        title += f" - {stage_info}"
+    fig.suptitle(title, fontsize=14)
 
     plt.tight_layout()
     output_path = os.path.join(output_dir, "state_value_analysis.png")
@@ -405,6 +483,7 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
     for agent_key, agent_data in agent_stage_data.items():
         evaluation_data = agent_data.get("evaluation", {})
         training_data = agent_data.get("training", {})
+        deck_type = agent_data.get("deck_type", "")
 
         if not evaluation_data:
             continue
@@ -467,8 +546,17 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
             stage_names.append(stage_name)
 
         # Create progression charts
+        title = f"Stage Progression - {agent_key.upper()}"
+        title_parts = []
+        if deck_type and deck_type != "unknown":
+            title_parts.append(f"Deck: {deck_type}")
+        reward_type = agent_data.get("reward_type", "")
+        if reward_type and reward_type != "unknown":
+            title_parts.append(f"Reward: {reward_type}")
+        if title_parts:
+            title += f" ({' | '.join(title_parts)})"
         fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-        fig.suptitle(f"Stage Progression - {agent_key.upper()}", fontsize=16)
+        fig.suptitle(title, fontsize=16)
 
         # Win rate progression
         axes[0, 0].plot(
@@ -564,9 +652,18 @@ def create_comparative_analysis(agent_stage_data, output_dir):
 
     # Extract all agent-stage combinations
     all_agent_stages = []
+    training_times = {}  # Store training times for each agent
 
     for agent_key, agent_data in agent_stage_data.items():
         evaluation_data = agent_data.get("evaluation", {})
+        deck_type = agent_data.get("deck_type", "")
+        reward_type = agent_data.get("reward_type", "")
+
+        # Extract training times from curriculum report data
+        training_times_data = agent_data.get("training_times", {})
+        if training_times_data:
+            total_time = sum(training_times_data.values())
+            training_times[agent_key] = total_time
 
         for stage_id, stage_data in evaluation_data.items():
             if stage_id == "unknown":
@@ -585,6 +682,8 @@ def create_comparative_analysis(agent_stage_data, output_dir):
                         "blackjack_percent"
                     ],
                     "push_rate": summary["game_outcome_percentages"]["push_percent"],
+                    "deck_type": deck_type,
+                    "reward_type": reward_type,
                 }
             )
 
@@ -592,9 +691,33 @@ def create_comparative_analysis(agent_stage_data, output_dir):
         print("❌ No valid agent-stage data found for comparative analysis")
         return
 
-    # Create comparative charts
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-    fig.suptitle("Comparative Agent Performance Across Stages", fontsize=16)
+    # Get deck type and reward type for title
+    deck_types = set(
+        [
+            data["deck_type"]
+            for data in all_agent_stages
+            if data["deck_type"] != "unknown"
+        ]
+    )
+    reward_types = set(
+        [
+            data["reward_type"]
+            for data in all_agent_stages
+            if data["reward_type"] != "unknown"
+        ]
+    )
+
+    title_parts = []
+    if deck_types:
+        title_parts.append(f"Deck: {', '.join(deck_types)}")
+    if reward_types:
+        title_parts.append(f"Reward: {', '.join(reward_types)}")
+
+    title_str = f" ({' | '.join(title_parts)})" if title_parts else ""
+
+    # Create comparative charts - now 2x3 to include time comparison
+    fig, axes = plt.subplots(2, 3, figsize=(20, 12))
+    fig.suptitle(f"Comparative Agent Performance Across Stages{title_str}", fontsize=16)
 
     # Agent labels
     agent_labels = list(set([data["agent_key"] for data in all_agent_stages]))
@@ -650,6 +773,30 @@ def create_comparative_analysis(agent_stage_data, output_dir):
     axes[0, 1].grid(True, alpha=0.3)
     axes[0, 1].set_xticks(stages)
     axes[0, 1].axhline(y=0, color="black", linestyle="-", alpha=0.3)
+
+    # Bust rates comparison by stage (top-right chart)
+    for agent_key in agent_labels:
+        agent_data = [d for d in all_agent_stages if d["agent_key"] == agent_key]
+        agent_data.sort(key=lambda x: x["stage_id"])
+
+        bust_rates = [d["bust_rate"] for d in agent_data]
+        stage_ids = [d["stage_id"] for d in agent_data]
+
+        axes[0, 2].plot(
+            stage_ids,
+            bust_rates,
+            "o-",
+            linewidth=2,
+            markersize=8,
+            label=agent_key.upper(),
+        )
+
+    axes[0, 2].set_title("Bust Rates by Stage")
+    axes[0, 2].set_xlabel("Stage")
+    axes[0, 2].set_ylabel("Bust Rate (%)")
+    axes[0, 2].legend()
+    axes[0, 2].grid(True, alpha=0.3)
+    axes[0, 2].set_xticks(stages)
 
     # Net wins comparison by stage
     for agent_key in agent_labels:
@@ -724,6 +871,50 @@ def create_comparative_analysis(agent_stage_data, output_dir):
                 va="bottom",
             )
 
+    # Training time comparison (new chart)
+    if training_times:
+        agent_names_time = list(training_times.keys())
+        training_time_values = list(training_times.values())
+
+        # Convert to minutes for better readability
+        training_time_minutes = [time / 60 for time in training_time_values]
+
+        bars_time = axes[1, 2].bar(
+            agent_names_time,
+            training_time_minutes,
+            color=["#2196F3", "#FF9800", "#4CAF50"],
+            alpha=0.7,
+        )
+
+        axes[1, 2].set_title("Total Training Time Comparison")
+        axes[1, 2].set_xlabel("Agent")
+        axes[1, 2].set_ylabel("Training Time (minutes)")
+        axes[1, 2].set_xticklabels(
+            [name.upper() for name in agent_names_time], rotation=45
+        )
+        axes[1, 2].grid(True, alpha=0.3)
+
+        # Add value labels on bars
+        for bar, time_min in zip(bars_time, training_time_minutes):
+            height = bar.get_height()
+            axes[1, 2].text(
+                bar.get_x() + bar.get_width() / 2.0,
+                height + 0.1,
+                f"{time_min:.1f}m",
+                ha="center",
+                va="bottom",
+            )
+    else:
+        axes[1, 2].text(
+            0.5,
+            0.5,
+            "No training time data available",
+            ha="center",
+            va="center",
+            transform=axes[1, 2].transAxes,
+        )
+        axes[1, 2].set_title("Training Time Comparison")
+
     plt.tight_layout()
     output_path = os.path.join(output_dir, "comparative_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
@@ -737,6 +928,7 @@ def analyze_agent_stages(agent_key, agent_data, output_dir):
 
     evaluation_data = agent_data.get("evaluation", {})
     training_data = agent_data.get("training", {})
+    deck_type = agent_data.get("deck_type", "")
 
     if not evaluation_data:
         print(f"❌ No evaluation data found for {agent_key}")
@@ -769,10 +961,14 @@ def analyze_agent_stages(agent_key, agent_data, output_dir):
         os.makedirs(stage_output_dir, exist_ok=True)
 
         # Generate visualizations for this stage
-        create_strategy_table_heatmap(stage_data, stage_output_dir, stage_info)
-        create_performance_summary(stage_data, stage_output_dir, stage_info)
-        create_action_distribution_chart(stage_data, stage_output_dir, stage_info)
-        create_state_value_analysis(stage_data, stage_output_dir, stage_info)
+        create_strategy_table_heatmap(
+            stage_data, stage_output_dir, stage_info, deck_type
+        )
+        create_performance_summary(stage_data, stage_output_dir, stage_info, deck_type)
+        create_action_distribution_chart(
+            stage_data, stage_output_dir, stage_info, deck_type
+        )
+        create_state_value_analysis(stage_data, stage_output_dir, stage_info, deck_type)
 
     # Create stage progression charts
     create_stage_progression_charts({agent_key: agent_data}, agent_output_dir)
@@ -801,7 +997,7 @@ def main():
             log_dir = os.path.dirname(args.input_path)
 
             # Get all evaluation and training logs from summary
-            evaluation_logs, training_logs = get_logs_from_summary(
+            evaluation_logs, training_logs, curriculum_report = get_logs_from_summary(
                 summary_data, log_dir
             )
 
@@ -815,7 +1011,7 @@ def main():
 
             # Group logs by agent and stage
             agent_stage_data = group_logs_by_agent_and_stage(
-                evaluation_logs, training_logs
+                evaluation_logs, training_logs, curriculum_report, summary_data
             )
 
             # Create output directory based on run summary
@@ -890,6 +1086,21 @@ def main():
             print(f"❌ Error loading log file: {e}")
             return
 
+        # Try to find corresponding curriculum report
+        curriculum_report = None
+        log_dir = os.path.dirname(args.input_path)
+        reports_dir = os.path.join(log_dir, "..", "reports")
+        if os.path.exists(reports_dir):
+            report_files = [
+                f
+                for f in os.listdir(reports_dir)
+                if f.startswith("curriculum_training_report")
+            ]
+            if report_files:
+                report_files.sort()
+                curriculum_report = os.path.join(reports_dir, report_files[-1])
+                print(f"📊 Found curriculum report: {curriculum_report}")
+
         # Generate visualizations
         print(f"\n🎨 Generating visualizations...")
 
@@ -917,16 +1128,19 @@ def main():
             # Create the output directory structure
             os.makedirs(output_dir, exist_ok=True)
 
-            # Get stage info
+            # Get stage info and deck type
             stage_info = ""
+            deck_type = log_data.get("deck_type", "")
             if "stage_id" in log_data:
                 stage_id = log_data["stage_id"]
                 stage_info = f"Stage {stage_id}"
 
-            create_strategy_table_heatmap(log_data, output_dir, stage_info)
-            create_performance_summary(log_data, output_dir, stage_info)
-            create_action_distribution_chart(log_data, output_dir, stage_info)
-            create_state_value_analysis(log_data, output_dir, stage_info)
+            create_strategy_table_heatmap(log_data, output_dir, stage_info, deck_type)
+            create_performance_summary(log_data, output_dir, stage_info, deck_type)
+            create_action_distribution_chart(
+                log_data, output_dir, stage_info, deck_type
+            )
+            create_state_value_analysis(log_data, output_dir, stage_info, deck_type)
 
             print(f"\n✅ Analysis complete! All visualizations saved to: {output_dir}")
 

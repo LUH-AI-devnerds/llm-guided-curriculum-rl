@@ -345,19 +345,19 @@ class BlackjackEnv:
         else:
             win_rate = 0.5
 
-        # Very conservative scaling
+        # Enhanced conservative scaling with stronger signals
         if base_reward > 0:  # Winning
-            # Minimal bonus when budget is low
-            budget_bonus = 1.0 + (1.0 - budget_ratio) * 0.05  # Max 1.05x bonus
-            # Minimal bonus for consistent winning
-            performance_bonus = 1.0 + (win_rate - 0.5) * 0.02  # Max 1.01x bonus
+            # Meaningful bonus when budget is low (encourages preservation)
+            budget_bonus = 1.0 + (1.0 - budget_ratio) * 0.3  # Max 1.3x bonus
+            # Reward for consistent winning performance
+            performance_bonus = 1.0 + (win_rate - 0.5) * 0.4  # Max 1.2x bonus
             scaled_reward = base_reward * budget_bonus * performance_bonus
 
         elif base_reward < 0:  # Losing
-            # Minimal penalty when budget is low
-            budget_penalty = 1.0 + (1.0 - budget_ratio) * 0.1  # Max 1.1x penalty
-            # Minimal penalty for poor performance
-            performance_penalty = 1.0 + (0.5 - win_rate) * 0.02  # Max 1.01x penalty
+            # Stronger penalty when budget is low (discourages risky play)
+            budget_penalty = 1.0 + (1.0 - budget_ratio) * 0.5  # Max 1.5x penalty
+            # Penalty for poor performance (encourages better strategy)
+            performance_penalty = 1.0 + (0.5 - win_rate) * 0.3  # Max 1.15x penalty
             scaled_reward = base_reward * budget_penalty * performance_penalty
 
         else:  # Push
@@ -547,44 +547,3 @@ class BlackjackEnv:
         )
 
         return stats
-
-
-# Enhanced BlackjackEnv with finite deck support and card counting
-# Maintains backward compatibility with original BlackjackEnv interface
-
-
-def demo_finite_deck():
-    """Demonstrate the finite deck functionality."""
-    print("🎲 FINITE DECK BLACKJACK DEMO")
-    print("=" * 50)
-
-    # Test different deck types
-    deck_types = ["infinite", "1-deck", "6-deck", "8-deck"]
-
-    for deck_type in deck_types:
-        print(f"\n🃏 Testing {deck_type.upper()} deck:")
-        print("-" * 30)
-
-        env = BlackjackEnv(deck_type=deck_type, penetration=0.75)
-
-        # Play a few hands
-        for hand in range(3):
-            state = env.reset()
-            deck_info = env.get_card_counting_info()
-
-            print(f"Hand {hand + 1}:")
-            print(f"  Player: {env.player_hands[0]}")
-            print(f"  Dealer: [{env.dealer_hand[0]}, ?]")
-            print(f"  Cards remaining: {deck_info['cards_remaining']}")
-            if deck_info["running_count"] is not None:
-                print(f"  Running count: {deck_info['running_count']}")
-                print(f"  True count: {deck_info['true_count']:.2f}")
-
-            # Play one action (hit)
-            state, reward, done = env.step(1)  # Hit
-            print(f"  After hit: {env.player_hands[0]}, Reward: {reward}")
-            print()
-
-
-if __name__ == "__main__":
-    demo_finite_deck()
