@@ -93,10 +93,15 @@ class MultiAgentStandardSystem:
                 episode_rewards.append(total_reward)
                 detailed_stats = env.get_detailed_win_stats()
                 if detailed_stats:
+                    episode_wins = 0
+                    episode_losses = 0
                     for hand_detail in detailed_stats["hand_details"]:
+                        bet_multiplier = 2 if hand_detail["doubled"] else 1
                         if hand_detail["result"] in ("win", "blackjack"):
-                            bet_multiplier = 2 if hand_detail["doubled"] else 1
-                            wins += bet_multiplier
+                            episode_wins += bet_multiplier
+                        elif hand_detail["result"] in ("lose", "bust"):
+                            episode_losses += bet_multiplier
+                    wins += episode_wins
                 agent.decay_epsilon()
                 if episode % every_n_episodes_to_log == 0:
                     print(
@@ -218,11 +223,15 @@ class MultiAgentStandardSystem:
 
             detailed_stats = env.get_detailed_win_stats()
             if detailed_stats:
+                episode_wins = 0
+                episode_losses = 0
                 for hand_detail in detailed_stats["hand_details"]:
+                    bet_multiplier = 2 if hand_detail["doubled"] else 1
                     if hand_detail["result"] in ("win", "blackjack"):
-                        bet_multiplier = 2 if hand_detail["doubled"] else 1
-                        wins += bet_multiplier
                         episode_wins += bet_multiplier
+                    elif hand_detail["result"] in ("lose", "bust"):
+                        episode_losses += bet_multiplier
+                wins += episode_wins
 
                 # Track game outcomes
                 for hand_detail in detailed_stats["hand_details"]:

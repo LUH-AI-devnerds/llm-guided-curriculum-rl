@@ -123,18 +123,80 @@ class BlackjackEnv:
             return False
         return self._get_hand_sum(self.dealer_hand) == 21
 
+    def _is_valid_double_down(self, player_sum, dealer_up, has_usable_ace=False):
+        """
+        Check if double down is strategically valid based on basic strategy
+        Handles both hard and soft hands
+        """
+        # Never allow double down on blackjack (21 with 2 cards)
+        if player_sum == 21:
+            return False
+
+        # For soft hands (has usable ace), different rules apply
+        if has_usable_ace:
+            # Soft double down rules
+            if player_sum >= 20:  # Soft 20+ (A-9, A-10, A-A)
+                return False  # Never double soft 20+
+            elif player_sum == 19:  # Soft 19 (A-8)
+                return dealer_up == 6  # Only double soft 19 vs dealer 6
+            elif player_sum == 18:  # Soft 18 (A-7)
+                return dealer_up in [2, 3, 4, 5, 6]  # Double soft 18 vs dealer 2-6
+            elif player_sum == 17:  # Soft 17 (A-6)
+                return dealer_up in [3, 4, 5, 6]  # Double soft 17 vs dealer 3-6
+            elif player_sum == 16:  # Soft 16 (A-5)
+                return dealer_up in [4, 5, 6]  # Double soft 16 vs dealer 4-6
+            elif player_sum == 15:  # Soft 15 (A-4)
+                return dealer_up in [4, 5, 6]  # Double soft 15 vs dealer 4-6
+            elif player_sum == 14:  # Soft 14 (A-3)
+                return dealer_up in [5, 6]  # Double soft 14 vs dealer 5-6
+            elif player_sum == 13:  # Soft 13 (A-2)
+                return dealer_up in [5, 6]  # Double soft 13 vs dealer 5-6
+            else:
+                return False  # No valid soft doubles below 13
+
+        # For hard hands (no usable ace)
+        # Never double on 17, 18, 19, 20, or 21
+        if player_sum >= 17:
+            return False
+
+        # Specific valid double down scenarios for hard hands
+        valid_doubles = {
+            8: [5, 6],  # Double 8 vs dealer 5-6
+            9: [3, 4, 5, 6],  # Double 9 vs dealer 3-6
+            10: [2, 3, 4, 5, 6, 7, 8, 9],  # Double 10 vs dealer 2-9
+            11: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],  # Double 11 vs any dealer
+        }
+
+        # Only allow double down if it's in the valid scenarios
+        return player_sum in valid_doubles and dealer_up in valid_doubles[player_sum]
+
     def _is_valid_action(self, action):
         if self.game_over or self.current_hand_idx >= len(self.player_hands):
             return False
 
         current_hand = self.player_hands[self.current_hand_idx]
+        player_sum = self._get_hand_sum(current_hand)
+        dealer_up = self.dealer_hand[0]
+        # Fix soft hand detection: check if ace is usable (not causing bust)
+        # A soft hand has an ace that can be counted as 11 without busting
+        has_usable_ace = (
+            11 in current_hand
+            and player_sum <= 21
+            and player_sum >= 12
+            and player_sum != 21
+        )
 
         if action == 0:
             return True
         elif action == 1:
-            return self._get_hand_sum(current_hand) < 21
+            return player_sum < 21
         elif action == 2:
-            return len(current_hand) == 2 and self.can_double
+            # Check both technical and strategic validity
+            return (
+                len(current_hand) == 2
+                and self.can_double
+                and self._is_valid_double_down(player_sum, dealer_up, has_usable_ace)
+            )
         elif action == 3:
             return self._can_split() and len(self.player_hands) < 4
         elif action == 4:
@@ -155,38 +217,99 @@ class BlackjackEnv:
             num_aces -= 1
         return hand_sum
 
-    def get_reward(self, agent_hand, dealer_hand, has_busted):
+    def get_reward(
+        self,
+        agent_hand,
+        dealer_hand,
+        has_busted,
+        action_taken=None,
+        original_sum=None,
+        dealer_up=None,
+    ):
         agent_total = self._get_hand_sum(agent_hand)
         dealer_total = self._get_hand_sum(dealer_hand)
 
         if has_busted:
-            return -3.0
-
-        if agent_total == 21 and len(agent_hand) == 2:
-            return 1.0
-
-        if not self.game_over:
-            if agent_total < 12:
-                return 0.01
-            elif 12 <= agent_total <= 16:
-                if dealer_total >= 7:
-                    return -0.01
-                else:
-                    return 0.01
-            elif 17 <= agent_total <= 20:
-                return 0.02
-            else:
-                return 0.0
-
-        if dealer_total > 21:
-            return 1.0
-
-        if agent_total > dealer_total:
-            return 1.0
-        elif agent_total < dealer_total:
             return -1.0
+        elif (
+            len(agent_hand) == 2
+            and agent_total == 21
+            and not self._dealer_has_blackjack()
+        ):
+            return 1.5  # Blackjack pays 3:2
+        elif dealer_total > 21:
+            return 1.0  # Dealer bust
+        elif agent_total > dealer_total:
+            return 1.0  # Win
+        elif agent_total < dealer_total:
+            return -1.0  # Loss
         else:
-            return 0.0
+            return 0.0  # Push
+
+    def get_enhanced_reward(
+        self,
+        agent_hand,
+        dealer_hand,
+        has_busted,
+        hand_index=0,
+    ):
+        """
+        Enhanced reward function that considers strategic elements
+        """
+        agent_total = self._get_hand_sum(agent_hand)
+        dealer_total = self._get_hand_sum(dealer_hand)
+
+        if has_busted:
+            if self.doubled_down[hand_index]:
+                return -6.0
+            else:
+                return -2.0
+
+        # Base reward with proper blackjack handling
+        if (
+            len(agent_hand) == 2
+            and agent_total == 21
+            and not self._dealer_has_blackjack()
+        ):
+            base_reward = 1.5  # Blackjack pays 3:2
+        elif dealer_total > 21:
+            base_reward = 1.0  # Dealer bust
+            if self.doubled_down[hand_index]:
+                base_reward *= 2.1
+        elif agent_total > dealer_total:
+            base_reward = 1.0  # Win
+            if self.doubled_down[hand_index]:
+                base_reward *= 2
+        elif agent_total < dealer_total:
+            base_reward = -1.0  # Loss
+            if self.doubled_down[hand_index]:
+                base_reward *= 2.1
+        else:
+            base_reward = 0.0  # Push
+
+        # Strategic bonuses
+        strategic_bonus = 0.0
+
+        # 1. Double down strategic evaluation
+        if self.doubled_down[hand_index] and hasattr(self, "double_down_info"):
+            double_info = self.double_down_info
+            if double_info["was_valid"]:
+                strategic_bonus += 0.3  # Good strategic decision
+            # No penalty needed since invalid doubles are blocked entirely
+
+        # 2. Insurance evaluation
+        if self.insurance_bets[hand_index] > 0:
+            if self._dealer_has_blackjack():
+                strategic_bonus += 0.2  # Successful insurance
+            else:
+                strategic_bonus -= 0.1  # Failed insurance
+
+        # 3. Split evaluation
+        if len(self.player_hands) > 1 and hand_index > 0:
+            if agent_total <= 21 and (dealer_total > 21 or agent_total > dealer_total):
+                strategic_bonus += 0.2  # Successful split
+
+        return base_reward + strategic_bonus
 
     def _get_state(self):
         if self.game_over or self.current_hand_idx >= len(self.player_hands):
@@ -194,7 +317,11 @@ class BlackjackEnv:
                 last_hand = self.player_hands[-1]
                 player_sum = self._get_hand_sum(last_hand)
                 dealer_up_card = self.dealer_hand[0]
-                has_usable_ace = 11 in last_hand and self._get_hand_sum(last_hand) <= 21
+                has_usable_ace = (
+                    11 in last_hand
+                    and self._get_hand_sum(last_hand) <= 21
+                    and self._get_hand_sum(last_hand) != 21
+                )
                 return (
                     player_sum,
                     dealer_up_card,
@@ -216,7 +343,11 @@ class BlackjackEnv:
         current_hand = self.player_hands[self.current_hand_idx]
         player_sum = self._get_hand_sum(current_hand)
         dealer_up_card = self.dealer_hand[0]
-        has_usable_ace = 11 in current_hand and self._get_hand_sum(current_hand) <= 21
+        has_usable_ace = (
+            11 in current_hand
+            and self._get_hand_sum(current_hand) <= 21
+            and self._get_hand_sum(current_hand) != 21
+        )
 
         can_split = self._can_split() and len(self.player_hands) < 4
         can_double = self.can_double and len(current_hand) == 2
@@ -271,32 +402,40 @@ class BlackjackEnv:
             return self._get_state(), 0, False
 
         elif action == 2:
-            if not (len(current_hand) == 2 and self.can_double):
-                return self._get_state(), -0.1, False
+            # NUCLEAR OPTION: COMPLETELY BLOCK invalid double downs
+            original_sum = self._get_hand_sum(current_hand)
+            dealer_up = self.dealer_hand[0]
+            has_usable_ace = (
+                11 in current_hand
+                and original_sum <= 21
+                and original_sum >= 12
+                and original_sum != 21
+            )
 
+            # Check if this is a valid double down
+            was_valid = self._is_valid_double_down(
+                original_sum, dealer_up, has_usable_ace
+            )
+
+            # Store strategic decision info
+            self.double_down_info = {
+                "original_sum": original_sum,
+                "dealer_up": dealer_up,
+                "has_usable_ace": has_usable_ace,
+                "was_valid": was_valid,
+            }
+
+            # NUCLEAR OPTION: COMPLETELY BLOCK invalid double downs
+            if not was_valid:
+                # Return massive penalty and DON'T execute the action
+                return self._get_state(), -50.0, False
+
+            # Valid double down - proceed normally
             current_hand.append(self._draw_card())
             self.doubled_down[self.current_hand_idx] = True
 
-            player_sum = self._get_hand_sum(current_hand)
-            dealer_up = self.dealer_hand[0]
-
-            shaping_reward = 0.0
-
-            original_sum = self._get_hand_sum(current_hand[:-1])
-
-            if original_sum == 11:
-                shaping_reward = 0.1
-            elif original_sum == 10 and dealer_up <= 9:
-                shaping_reward = 0.1
-            elif original_sum == 9 and dealer_up in [3, 4, 5, 6]:
-                shaping_reward = 0.1
-            elif original_sum == 8 and dealer_up in [5, 6]:
-                shaping_reward = 0.05
-            else:
-                shaping_reward = -0.05
-
             next_state, final_reward, done = self._move_to_next_hand()
-            return next_state, shaping_reward, done
+            return next_state, 0, done
 
         elif action == 3:
             if not self._can_split():
@@ -331,10 +470,8 @@ class BlackjackEnv:
             self.insurance_bets[self.current_hand_idx] = 0.5
             self.can_insure = False
 
-            if self._dealer_has_blackjack():
-                return self._get_state(), 1.0, False
-            else:
-                return self._get_state(), -0.5, False
+            # Insurance result will be evaluated in final reward
+            return self._get_state(), 0, False
 
         else:
             return self._move_to_next_hand()
@@ -359,27 +496,32 @@ class BlackjackEnv:
 
         total_reward = 0
         dealer_busted = dealer_sum > 21
+        hand_rewards = []
 
         for i, hand in enumerate(self.player_hands):
             if self.surrendered_hands[i]:
-                total_reward -= 0.5
+                hand_reward = -0.5
+                hand_rewards.append(hand_reward)
+                total_reward += hand_reward
                 continue
 
             player_sum = self._get_hand_sum(hand)
             has_busted = player_sum > 21
 
-            hand_reward = self.get_reward(hand, self.dealer_hand, has_busted)
+            # Use enhanced reward function
+            hand_reward = self.get_enhanced_reward(
+                hand,
+                self.dealer_hand,
+                has_busted,
+                hand_index=i,
+            )
 
-            if self.doubled_down[i]:
-                hand_reward *= 2
-
-            if self.insurance_bets[i] > 0:
-                if self._dealer_has_blackjack():
-                    hand_reward += self.insurance_bets[i] * 2
-                else:
-                    hand_reward -= self.insurance_bets[i]
-
+            hand_rewards.append(hand_reward)
             total_reward += hand_reward
+
+        # Clear double down info for next game
+        if hasattr(self, "double_down_info"):
+            delattr(self, "double_down_info")
 
         self.game_over = True
         return self._get_state(), total_reward, True

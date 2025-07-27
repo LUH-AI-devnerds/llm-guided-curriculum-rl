@@ -66,6 +66,15 @@ class LLMGuidedCurriculum:
         4. Difficulty level (1-5 scale)
         5. Success threshold (win rate 0.0-1.0 to advance)
         
+        You arent forced to use actions in the order of the list. You can use actions in any order you want.
+        You can even choose to not use an action at all.
+        The complexity of actions are as follows:
+        - Stand: 1
+        - Hit: 1
+        - Early Surrender: 3
+        - Insurance: 3
+        - Double Down: 4
+        - Split: 4
         Respond in this exact JSON format:
         {{
             "stages": [
@@ -149,6 +158,16 @@ class LLMGuidedCurriculum:
         1. Should the agent advance to next stage? (yes/no)
         2. What actions should be emphasized in next training episodes?
         3. Any curriculum modifications needed?
+
+        You arent forced to use actions in the order of the list. You can use actions in any order you want.
+        You can even choose to not use an action at all.
+        The complexity of actions are as follows:
+        - Stand: 1
+        - Hit: 1
+        - Early Surrender: 3
+        - Insurance: 3
+        - Double Down: 4
+        - Split: 4
         
         Respond in JSON format:
         {{

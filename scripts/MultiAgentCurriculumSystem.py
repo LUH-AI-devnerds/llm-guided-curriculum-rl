@@ -28,6 +28,8 @@ class CurriculumBlackjackEnv(BlackjackEnv):
                 f"⚠️  Curriculum constraint: Action {action} not allowed in stage {self.stage.stage_id}. Forcing stand."
             )
             action = 0
+        elif not self._is_valid_action(action):
+            action = 0
 
         return super().step(action)
 
@@ -185,42 +187,35 @@ class MultiAgentCurriculumSystem:
                             agent, recommendations["recommended_actions"]
                         )
 
-                    llm_advance = recommendations.get("advance_stage", False)
                     episode_win_rate = agent_performance.get("win_rate", 0)
-
-                    threshold_advance = episode_win_rate >= stage.success_threshold
-
-                    if isinstance(llm_advance, str):
-                        llm_advance = llm_advance.lower() == "true"
-
                     current_attempts = agent_stage_attempts[agent.agent_id][
                         stage.stage_id
                     ]
+
+                    # Simplified advancement logic
+                    threshold_met = episode_win_rate >= stage.success_threshold
                     max_attempts_reached = current_attempts >= max_episodes_per_stage
-                    should_advance = (
-                        llm_advance and threshold_advance
-                    ) or max_attempts_reached
+
+                    # Advance if threshold met OR max attempts reached
+                    should_advance = threshold_met or max_attempts_reached
 
                     if should_advance:
                         agent.current_stage += 1
-                        if max_attempts_reached:
+                        if threshold_met:
+                            print(f"✅ Agent {agent_idx} advanced to next stage!")
+                            print(
+                                f"   📊 Win Rate: {episode_win_rate:.3f} >= {stage.success_threshold}"
+                            )
+                        else:
                             print(
                                 f"⚠️  Agent {agent_idx} forced to advance (max attempts reached)"
                             )
                             print(
                                 f"   📊 Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
                             )
-                            print(
-                                f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
-                            )
-                        else:
-                            print(f"✅ Agent {agent_idx} advanced to next stage!")
-                            print(
-                                f"   📊 Win Rate: {episode_win_rate:.3f} >= {stage.success_threshold}"
-                            )
-                            print(
-                                f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
-                            )
+                        print(
+                            f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
+                        )
 
                         self._preserve_learned_strategies(
                             agent, stage, agent_performance
@@ -235,10 +230,7 @@ class MultiAgentCurriculumSystem:
                         print(
                             f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
                         )
-                        if not llm_advance:
-                            print(f"   🤖 LLM recommendation: Do not advance")
-                        if not threshold_advance:
-                            print(f"   🎯 Success threshold not met")
+                        print(f"   🎯 Success threshold not met")
 
                     stage_results[f"agent_{agent_idx}"] = agent_performance
                     agent.stage_performance.append(agent_performance)
@@ -413,13 +405,16 @@ class MultiAgentCurriculumSystem:
             detailed_stats = env.get_detailed_win_stats()
             if detailed_stats:
                 episode_wins = 0
+                episode_losses = 0
                 for hand_detail in detailed_stats["hand_details"]:
+                    bet_multiplier = 2 if hand_detail["doubled"] else 1
                     if (
                         hand_detail["result"] == "win"
                         or hand_detail["result"] == "blackjack"
                     ):
-                        bet_multiplier = 2 if hand_detail["doubled"] else 1
                         episode_wins += bet_multiplier
+                    elif hand_detail["result"] in ["lose", "bust"]:
+                        episode_losses += bet_multiplier
 
                 if episode_wins > 0:
                     wins += episode_wins
@@ -689,7 +684,6 @@ class MultiAgentCurriculumSystem:
             "agent_type": agent.agent_type,
             "evaluation_episodes": episodes,
             "timestamp": datetime.now().isoformat(),
-            "episodes": [],
         }
 
         for episode_idx in range(episodes):
@@ -763,28 +757,33 @@ class MultiAgentCurriculumSystem:
             detailed_stats = eval_env.get_detailed_win_stats()
             if detailed_stats:
                 episode_wins = 0
+                episode_losses = 0
                 for hand_detail in detailed_stats["hand_details"]:
+                    bet_multiplier = 2 if hand_detail["doubled"] else 1
                     if (
                         hand_detail["result"] == "win"
                         or hand_detail["result"] == "blackjack"
                     ):
-                        episode_wins += 1
+                        episode_wins += bet_multiplier
+                    elif hand_detail["result"] in ["lose", "bust"]:
+                        episode_losses += bet_multiplier
 
                 if episode_wins > 0:
                     wins += episode_wins
 
                 for hand_detail in detailed_stats["hand_details"]:
                     result = hand_detail["result"]
+                    bet_multiplier = 2 if hand_detail["doubled"] else 1
                     if result == "win":
-                        game_outcomes["wins"] += 1
+                        game_outcomes["wins"] += bet_multiplier
                     elif result == "lose":
-                        game_outcomes["losses"] += 1
+                        game_outcomes["losses"] += bet_multiplier
                     elif result == "blackjack":
-                        game_outcomes["blackjacks"] += 1
+                        game_outcomes["blackjacks"] += bet_multiplier
                     elif result == "push":
-                        game_outcomes["pushes"] += 1
+                        game_outcomes["pushes"] += bet_multiplier
                     elif result == "bust":
-                        game_outcomes["busts"] += 1
+                        game_outcomes["busts"] += bet_multiplier
 
                 for state_key in state_win_stats:
                     state_win_stats[state_key]["total"] += 1
@@ -807,8 +806,6 @@ class MultiAgentCurriculumSystem:
                     "dealer_hand": final_game_info["dealer_hand"].copy(),
                     "detailed_stats": detailed_stats,
                 }
-
-            evaluation_log["episodes"].append(episode_log)
 
             for action in episode_actions:
                 action_rewards[action].append(episode_reward)

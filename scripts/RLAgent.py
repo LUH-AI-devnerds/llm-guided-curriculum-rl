@@ -17,21 +17,9 @@ class DQNNetwork(nn.Module):
         self.fc3 = nn.Linear(hidden_size, hidden_size // 2)
         self.fc4 = nn.Linear(hidden_size // 2, output_size)
 
-        self.dropout = nn.Dropout(0.1)
-
-        self._initialize_weights()
-
-    def _initialize_weights(self):
-        for module in self.modules():
-            if isinstance(module, nn.Linear):
-                nn.init.xavier_uniform_(module.weight)
-                nn.init.constant_(module.bias, 0.01)
-
     def forward(self, x):
         x = F.relu(self.fc1(x))
-        x = self.dropout(x)
         x = F.relu(self.fc2(x))
-        x = self.dropout(x)
         x = F.relu(self.fc3(x))
         return self.fc4(x)
 
@@ -76,7 +64,8 @@ class DQNAgent:
         self.curriculum_stage = curriculum_stage
 
         if curriculum_stage and curriculum_stage.stage_id > old_stage_id:
-            keep_size = max(1000, int(len(self.memory) * 0.2))
+            # Keep more experiences for better knowledge transfer
+            keep_size = max(2000, int(len(self.memory) * 0.4))
             if len(self.memory) > keep_size:
                 recent_experiences = list(self.memory)[-keep_size:]
                 self.memory.clear()
@@ -85,8 +74,17 @@ class DQNAgent:
                     f"  🧹 Cleaned memory: kept {len(self.memory)} recent experiences"
                 )
 
+        # Always reset epsilon for current stage (not just when advancing)
         if curriculum_stage and curriculum_stage.stage_id > 1:
-            self.epsilon = max(0.3, self.epsilon)
+            # Progressive epsilon reduction based on stage complexity
+            if curriculum_stage.stage_id == 2:
+                self.epsilon = max(0.2, self.epsilon)  # Double down stage
+            elif curriculum_stage.stage_id == 3:
+                self.epsilon = max(0.15, self.epsilon)  # Split stage
+            elif curriculum_stage.stage_id == 4:
+                self.epsilon = max(0.1, self.epsilon)  # Surrender stage
+            elif curriculum_stage.stage_id >= 5:
+                self.epsilon = max(0.05, self.epsilon)  # Insurance stage
             print(
                 f"  🔄 Reset epsilon to {self.epsilon:.3f} for stage {curriculum_stage.stage_id}"
             )
@@ -256,7 +254,8 @@ class DQNAgent:
 
     def decay_epsilon(self):
         if self.curriculum_stage:
-            stage_factor = 1.0 + (self.curriculum_stage.stage_id - 1) * 0.1
+            # Faster decay for advanced stages
+            stage_factor = 1.0 + (self.curriculum_stage.stage_id - 1) * 0.2
             adjusted_decay = self.epsilon_decay**stage_factor
             self.epsilon = max(self.epsilon_min, self.epsilon * adjusted_decay)
         else:
@@ -354,8 +353,17 @@ class QLearningAgent:
     def set_curriculum_stage(self, curriculum_stage):
         self.curriculum_stage = curriculum_stage
 
+        # Always reset epsilon for current stage (not just when advancing)
         if curriculum_stage and curriculum_stage.stage_id > 1:
-            self.epsilon = max(0.2, self.epsilon)
+            # Progressive epsilon reduction for tabular agent
+            if curriculum_stage.stage_id == 2:
+                self.epsilon = max(0.15, self.epsilon)
+            elif curriculum_stage.stage_id == 3:
+                self.epsilon = max(0.1, self.epsilon)
+            elif curriculum_stage.stage_id == 4:
+                self.epsilon = max(0.08, self.epsilon)
+            elif curriculum_stage.stage_id >= 5:
+                self.epsilon = max(0.05, self.epsilon)
             print(
                 f"   Reset epsilon to {self.epsilon:.3f} for stage {curriculum_stage.stage_id}"
             )

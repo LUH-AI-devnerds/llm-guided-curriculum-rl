@@ -766,26 +766,26 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
                 color="#f44336",
                 alpha=0.7,
             )
-            axes[1, 1].bar(
-                x + width / 2,
-                blackjack_rates,
-                width,
-                label="Blackjack Rate",
-                color="#4CAF50",
-                alpha=0.7,
-            )
+        axes[1, 1].bar(
+            x + width / 2,
+            blackjack_rates,
+            width,
+            label="Blackjack Rate",
+            color="#4CAF50",
+            alpha=0.7,
+        )
 
-            axes[1, 1].set_title("Game Outcomes by Stage")
-            axes[1, 1].set_xlabel("Stage")
-            axes[1, 1].set_ylabel("Percentage (%)")
-            axes[1, 1].set_xticks(x)
-            axes[1, 1].set_xticklabels(
-                [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
-                rotation=45,
-                ha="right",
-            )
-            axes[1, 1].legend()
-            axes[1, 1].grid(True, alpha=0.3)
+        axes[1, 1].set_title("Game Outcomes by Stage")
+        axes[1, 1].set_xlabel("Stage")
+        axes[1, 1].set_ylabel("Percentage (%)")
+        axes[1, 1].set_xticks(x)
+        axes[1, 1].set_xticklabels(
+            [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+            rotation=45,
+            ha="right",
+        )
+        axes[1, 1].legend()
+        axes[1, 1].grid(True, alpha=0.3)
 
         plt.tight_layout()
         output_path = os.path.join(output_dir, f"stage_progression_{agent_key}.png")
