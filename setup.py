@@ -1,19 +1,11 @@
 #!/usr/bin/env python3
-"""
-Setup script for LLM-Guided Curriculum Learning for Reinforcement Learning
-
-A comprehensive reinforcement learning system that uses Large Language Models (LLMs)
-to guide curriculum learning with multiple agents learning Blackjack strategies progressively.
-"""
 
 import os
 import sys
 from setuptools import setup, find_packages
 
 
-# Read the README file for long description
 def read_readme():
-    """Read README.md file for long description."""
     readme_path = os.path.join(os.path.dirname(__file__), "README.md")
     if os.path.exists(readme_path):
         with open(readme_path, "r", encoding="utf-8") as f:
@@ -21,9 +13,7 @@ def read_readme():
     return "LLM-Guided Curriculum Learning for Reinforcement Learning"
 
 
-# Read requirements from requirements.txt
 def read_requirements():
-    """Read requirements from requirements.txt file."""
     requirements_path = os.path.join(os.path.dirname(__file__), "requirements.txt")
     if os.path.exists(requirements_path):
         with open(requirements_path, "r", encoding="utf-8") as f:
@@ -33,7 +23,6 @@ def read_requirements():
     return []
 
 
-# Package metadata
 PACKAGE_NAME = "llm-guided-curriculum-rl"
 PACKAGE_VERSION = "1.0.0"
 PACKAGE_DESCRIPTION = "LLM-Guided Curriculum Learning for Reinforcement Learning"
@@ -61,7 +50,6 @@ PACKAGE_CLASSIFIERS = [
     "Framework :: Jupyter",
 ]
 
-# Package keywords
 PACKAGE_KEYWORDS = [
     "reinforcement-learning",
     "curriculum-learning",
@@ -80,7 +68,6 @@ PACKAGE_KEYWORDS = [
     "gaming",
 ]
 
-# Project URLs
 PROJECT_URLS = {
     "Bug Reports": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/issues",
     "Source": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl",
@@ -88,13 +75,10 @@ PROJECT_URLS = {
     "Changelog": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/blob/main/CHANGELOG.md",
 }
 
-# Python version requirement
 PYTHON_REQUIRES = ">=3.8"
 
-# Package dependencies
 INSTALL_REQUIRES = read_requirements()
 
-# Development dependencies
 EXTRAS_REQUIRE = {
     "dev": [
         "pytest>=7.0.0",
@@ -138,12 +122,10 @@ EXTRAS_REQUIRE = {
     ],
 }
 
-# Package data
 PACKAGE_DATA = {
     "": ["*.md", "*.txt", "*.yml", "*.yaml", "*.json"],
 }
 
-# Entry points for command-line tools
 ENTRY_POINTS = {
     "console_scripts": [
         "blackjack-rl=scripts.RLAgent:main",
@@ -153,18 +135,14 @@ ENTRY_POINTS = {
     ],
 }
 
-# Package discovery
 PACKAGES = find_packages(include=["scripts", "scripts.*"])
 
-# Include non-Python files
 INCLUDE_PACKAGE_DATA = True
 
-# Zip safe
 ZIP_SAFE = False
 
 
 def main():
-    """Main setup function."""
     setup(
         name=PACKAGE_NAME,
         version=PACKAGE_VERSION,

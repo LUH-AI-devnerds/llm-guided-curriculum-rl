@@ -91,10 +91,10 @@ def group_logs_by_agent_and_stage(
 
     # Get deck type and reward type from run summary
     deck_type = "unknown"
-    reward_type = "unknown"
+    reward_type = "simplified"  # Default to simplified reward system
     if run_summary and "training_config" in run_summary:
         deck_type = run_summary["training_config"].get("deck_type", "unknown")
-        reward_type = run_summary["training_config"].get("reward_type", "unknown")
+        reward_type = run_summary["training_config"].get("reward_type", "simplified")
 
     # Process evaluation logs
     for log_path in evaluation_logs:
@@ -172,6 +172,13 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info="", deck_type
     """Create a heatmap similar to the Blackjack strategy table."""
     strategy_table = log_data["summary"]["strategy_table"]
 
+    # Debug: Print some strategy table info
+    print(f"  📊 Strategy table has {len(strategy_table)} states")
+    if strategy_table:
+        sample_state = list(strategy_table.keys())[0]
+        sample_stats = strategy_table[sample_state]
+        print(f"  📊 Sample state {sample_state}: {sample_stats}")
+
     # Extract player sums and dealer cards
     player_sums = set()
     dealer_cards = set()
@@ -189,7 +196,7 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info="", deck_type
     player_sums = sorted(list(player_sums))
     dealer_cards = sorted(list(dealer_cards))
 
-    # Create matrices for each action
+    # Create matrices for each action (only 4 main actions: stand, hit, double, split)
     stand_matrix = np.zeros((len(player_sums), len(dealer_cards)))
     hit_matrix = np.zeros((len(player_sums), len(dealer_cards)))
     double_matrix = np.zeros((len(player_sums), len(dealer_cards)))
@@ -204,12 +211,12 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info="", deck_type
         p_idx = player_sums.index(player_sum)
         d_idx = dealer_cards.index(dealer_card)
 
-        stand_matrix[p_idx, d_idx] = stats["stand_percent"]
-        hit_matrix[p_idx, d_idx] = stats["hit_percent"]
-        double_matrix[p_idx, d_idx] = stats["double_percent"]
-        split_matrix[p_idx, d_idx] = stats["split_percent"]
+        stand_matrix[p_idx, d_idx] = stats.get("stand_percent", 0)
+        hit_matrix[p_idx, d_idx] = stats.get("hit_percent", 0)
+        double_matrix[p_idx, d_idx] = stats.get("double_percent", 0)
+        split_matrix[p_idx, d_idx] = stats.get("split_percent", 0)
 
-    # Create subplots
+    # Create subplots - back to 2x2 for 4 main actions
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     title = f'Agent Strategy Table - {log_data["agent_type"].upper()} Agent'
     if deck_type:
@@ -290,41 +297,70 @@ def create_performance_summary(log_data, output_dir, stage_info="", deck_type=""
     summary = log_data["summary"]
 
     # Create performance table
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(
+        figsize=(12, 10)
+    )  # Increased height to accommodate more rows
     ax.axis("tight")
     ax.axis("off")
 
-    # Table data
+    # Table data - now includes surrender and insurance statistics
     table_data = [
         ["Metric", "Value", "Percentage"],
-        ["Win Rate", f"{summary['win_rate']:.3f}", f"{summary['win_rate']*100:.2f}%"],
-        ["Average Reward", f"{summary['avg_reward']:.3f}", ""],
         [
-            "Total Wins",
-            summary["game_outcomes"]["wins"],
-            f"{summary['game_outcome_percentages']['win_percent']:.2f}%",
+            "Win Rate",
+            f"{summary.get('win_rate', 0):.3f}",
+            f"{summary.get('win_rate', 0)*100:.2f}%",
         ],
-        [
-            "Busts",
-            summary["game_outcomes"]["busts"],
-            f"{summary['game_outcome_percentages']['bust_percent']:.2f}%",
-        ],
-        [
-            "Pushes",
-            summary["game_outcomes"]["pushes"],
-            f"{summary['game_outcome_percentages']['push_percent']:.2f}%",
-        ],
-        [
-            "Blackjacks",
-            summary["game_outcomes"]["blackjacks"],
-            f"{summary['game_outcome_percentages']['blackjack_percent']:.2f}%",
-        ],
-        [
-            "Net Wins",
-            "",
-            f"{summary['game_outcome_percentages']['net_wins_percent']:.2f}%",
-        ],
+        ["Average Reward", f"{summary.get('avg_reward', 0):.3f}", ""],
+        ["Total Wins", f"{summary.get('total_wins', 0)}", ""],
     ]
+
+    # Add game outcome percentages if available
+    game_outcomes = summary.get("game_outcome_percentages", {})
+    if game_outcomes:
+        table_data.extend(
+            [
+                [
+                    "Win/Loss Ratio",
+                    f"{game_outcomes.get('win_loss_ratio', 0):.2f}",
+                    "",
+                ],
+                [
+                    "Bust Rate",
+                    f"{game_outcomes.get('bust_percent', 0):.1f}%",
+                    "",
+                ],
+                [
+                    "Blackjack Rate",
+                    f"{game_outcomes.get('blackjack_percent', 0):.1f}%",
+                    "",
+                ],
+                [
+                    "Push Rate",
+                    f"{game_outcomes.get('push_percent', 0):.1f}%",
+                    "",
+                ],
+            ]
+        )
+
+    # Add surrender and insurance statistics if available
+    if "surrenders" in summary:
+        table_data.append(
+            [
+                "Surrenders",
+                f"{summary['surrenders']}",
+                f"{summary['surrenders']/summary.get('total_hands', 1)*100:.1f}%",
+            ]
+        )
+
+    if "insurance_bets" in summary:
+        table_data.append(
+            [
+                "Insurance Bets",
+                f"{summary['insurance_bets']}",
+                f"{summary['insurance_bets']/summary.get('total_hands', 1)*100:.1f}%",
+            ]
+        )
 
     # Create table
     table = ax.table(
@@ -347,7 +383,7 @@ def create_performance_summary(log_data, output_dir, stage_info="", deck_type=""
     title = f'Performance Summary - {log_data["agent_type"].upper()} Agent'
     if deck_type:
         title += f" ({deck_type})"
-    title += f'\nEvaluation Episodes: {log_data["evaluation_episodes"]}'
+    title += f'\nEvaluation Episodes: {log_data.get("evaluation_episodes", "Unknown")}'
     if stage_info:
         title += f"\n{stage_info}"
 
@@ -361,25 +397,110 @@ def create_performance_summary(log_data, output_dir, stage_info="", deck_type=""
 
 def create_action_distribution_chart(log_data, output_dir, stage_info="", deck_type=""):
     """Create action distribution charts."""
-    action_performance = log_data["summary"]["action_performance"]
+    # Check if action_performance exists, otherwise try to derive from other data
+    action_performance = log_data["summary"].get("action_performance", {})
 
-    # Action names
-    action_names = ["Stand", "Hit", "Double", "Split"]
-    action_counts = [action_performance[str(i)]["count"] for i in range(4)]
-    action_avg_rewards = [action_performance[str(i)]["avg_reward"] for i in range(4)]
+    # If action_performance is empty, try to get action usage from strategy table
+    if not action_performance:
+        strategy_table = log_data["summary"].get("strategy_table", {})
+        if strategy_table:
+            # Derive action usage from strategy table
+            action_counts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+            action_rewards = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
+
+            for state_stats in strategy_table.values():
+                total_actions = state_stats.get("total_actions", 0)
+                avg_reward = state_stats.get("avg_reward", 0)
+
+                # Calculate action counts
+                action_counts[0] += int(
+                    state_stats.get("stand_percent", 0) * total_actions / 100
+                )
+                action_counts[1] += int(
+                    state_stats.get("hit_percent", 0) * total_actions / 100
+                )
+                action_counts[2] += int(
+                    state_stats.get("double_percent", 0) * total_actions / 100
+                )
+                action_counts[3] += int(
+                    state_stats.get("split_percent", 0) * total_actions / 100
+                )
+                action_counts[4] += int(
+                    state_stats.get("surrender_percent", 0) * total_actions / 100
+                )
+                action_counts[5] += int(
+                    state_stats.get("insurance_percent", 0) * total_actions / 100
+                )
+
+                # Collect rewards for each action (weighted by action percentage)
+                for action_id in range(6):
+                    action_percent = state_stats.get(
+                        f"{['stand', 'hit', 'double', 'split', 'surrender', 'insurance'][action_id]}_percent",
+                        0,
+                    )
+                    if action_percent > 0:
+                        # Add the average reward weighted by action percentage
+                        action_rewards[action_id].extend(
+                            [avg_reward] * int(action_percent * total_actions / 100)
+                        )
+
+            # Convert to the expected format with calculated average rewards
+            action_performance = {}
+            for i in range(6):
+                count = action_counts[i]
+                avg_reward = np.mean(action_rewards[i]) if action_rewards[i] else 0.0
+                action_performance[str(i)] = {"count": count, "avg_reward": avg_reward}
+        else:
+            # If no strategy table either, create empty data
+            action_performance = {
+                str(i): {"count": 0, "avg_reward": 0.0} for i in range(6)
+            }
+
+    # Action names (now 6 actions)
+    action_names = ["Stand", "Hit", "Double", "Split", "Surrender", "Insurance"]
+    action_counts = []
+    action_avg_rewards = []
+
+    # Get data for all 6 actions, handling missing actions gracefully
+    for i in range(6):
+        action_key = str(i)
+        if action_key in action_performance:
+            action_counts.append(action_performance[action_key]["count"])
+            action_avg_rewards.append(action_performance[action_key]["avg_reward"])
+        else:
+            action_counts.append(0)
+            action_avg_rewards.append(0)
 
     # Create subplots
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
 
     # Action count pie chart
-    colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
-    ax1.pie(
-        action_counts,
-        labels=action_names,
-        autopct="%1.1f%%",
-        colors=colors,
-        startangle=90,
-    )
+    colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99", "#ff9966", "#cccccc"]
+    # Only show actions that were actually used
+    used_actions = [
+        (name, count) for name, count in zip(action_names, action_counts) if count > 0
+    ]
+
+    if used_actions:
+        used_names, used_counts = zip(*used_actions)
+        used_colors = [colors[action_names.index(name)] for name in used_names]
+
+        ax1.pie(
+            used_counts,
+            labels=used_names,
+            autopct="%1.1f%%",
+            colors=used_colors,
+            startangle=90,
+        )
+    else:
+        ax1.text(
+            0.5,
+            0.5,
+            "No actions recorded",
+            ha="center",
+            va="center",
+            transform=ax1.transAxes,
+        )
     ax1.set_title("Action Distribution")
 
     # Action average rewards bar chart
@@ -391,13 +512,14 @@ def create_action_distribution_chart(log_data, output_dir, stage_info="", deck_t
     # Add value labels on bars
     for bar, reward in zip(bars, action_avg_rewards):
         height = bar.get_height()
-        ax2.text(
-            bar.get_x() + bar.get_width() / 2.0,
-            height,
-            f"{reward:.3f}",
-            ha="center",
-            va="bottom" if height > 0 else "top",
-        )
+        if height != 0:  # Only label non-zero values
+            ax2.text(
+                bar.get_x() + bar.get_width() / 2.0,
+                height,
+                f"{reward:.3f}",
+                ha="center",
+                va="bottom" if height > 0 else "top",
+            )
 
     title = f"{log_data['agent_type'].upper()} Agent"
     if deck_type:
@@ -415,7 +537,11 @@ def create_action_distribution_chart(log_data, output_dir, stage_info="", deck_t
 
 def create_state_value_analysis(log_data, output_dir, stage_info="", deck_type=""):
     """Create state-value analysis similar to the 3D plots."""
-    state_reward_stats = log_data["summary"]["state_reward_stats"]
+    state_reward_stats = log_data["summary"].get("state_reward_stats", {})
+
+    if not state_reward_stats:
+        print(f"  ⚠️  No state reward statistics available for state value analysis")
+        return
 
     # Separate hard and soft totals
     hard_states = {}
@@ -504,9 +630,10 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
         # Extract performance metrics across stages
         win_rates = []
         avg_rewards = []
-        net_wins = []
+        win_loss_ratios = []
         bust_rates = []
         blackjack_rates = []
+        training_times = []  # Add training times
         stage_names = []
 
         for stage_id in stages:
@@ -525,13 +652,17 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
 
             summary = stage_data["summary"]
 
-            win_rates.append(summary["win_rate"] * 100)
-            avg_rewards.append(summary["avg_reward"])
-            net_wins.append(summary["game_outcome_percentages"]["net_wins_percent"])
-            bust_rates.append(summary["game_outcome_percentages"]["bust_percent"])
-            blackjack_rates.append(
-                summary["game_outcome_percentages"]["blackjack_percent"]
-            )
+            win_rates.append(summary.get("win_rate", 0) * 100)
+            avg_rewards.append(summary.get("avg_reward", 0))
+
+            game_outcomes = summary.get("game_outcome_percentages", {})
+            win_loss_ratios.append(game_outcomes.get("win_loss_ratio", 0))
+            bust_rates.append(game_outcomes.get("bust_percent", 0))
+            blackjack_rates.append(game_outcomes.get("blackjack_percent", 0))
+
+            # Get training time for this stage
+            training_time = agent_data.get("training_times", {}).get(str(stage_id), 0)
+            training_times.append(training_time)
 
             # Get stage name from training data if available
             stage_name = f"Stage {stage_id}"
@@ -545,7 +676,7 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
                 )
             stage_names.append(stage_name)
 
-        # Create progression charts
+        # Create progression charts - back to 2x2 layout
         title = f"Stage Progression - {agent_key.upper()}"
         title_parts = []
         if deck_type and deck_type != "unknown":
@@ -591,13 +722,13 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
         )
         axes[0, 1].axhline(y=0, color="black", linestyle="-", alpha=0.3)
 
-        # Net wins progression
+        # Win/Loss ratio progression
         axes[1, 0].plot(
-            stages, net_wins, "o-", linewidth=2, markersize=8, color="#FF9800"
+            stages, win_loss_ratios, "o-", linewidth=2, markersize=8, color="#FF9800"
         )
-        axes[1, 0].set_title("Net Wins Progression")
+        axes[1, 0].set_title("Win/Loss Ratio Progression")
         axes[1, 0].set_xlabel("Stage")
-        axes[1, 0].set_ylabel("Net Wins (%)")
+        axes[1, 0].set_ylabel("Win/Loss Ratio")
         axes[1, 0].grid(True, alpha=0.3)
         axes[1, 0].set_xticks(stages)
         axes[1, 0].set_xticklabels(
@@ -605,40 +736,56 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
             rotation=45,
             ha="right",
         )
-        axes[1, 0].axhline(y=0, color="black", linestyle="-", alpha=0.3)
+        axes[1, 0].axhline(y=1, color="black", linestyle="-", alpha=0.3)
 
-        # Game outcomes breakdown
-        x = np.arange(len(stages))
-        width = 0.35
+        # Training time progression
+        if any(t > 0 for t in training_times):
+            axes[1, 1].plot(
+                stages, training_times, "o-", linewidth=2, markersize=8, color="#9C27B0"
+            )
+            axes[1, 1].set_title("Training Time Progression")
+            axes[1, 1].set_xlabel("Stage")
+            axes[1, 1].set_ylabel("Training Time (seconds)")
+            axes[1, 1].grid(True, alpha=0.3)
+            axes[1, 1].set_xticks(stages)
+            axes[1, 1].set_xticklabels(
+                [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+                rotation=45,
+                ha="right",
+            )
+        else:
+            # If no training times available, show game outcomes breakdown
+            x = np.arange(len(stages))
+            width = 0.35
 
-        axes[1, 1].bar(
-            x - width / 2,
-            bust_rates,
-            width,
-            label="Bust Rate",
-            color="#f44336",
-            alpha=0.7,
-        )
-        axes[1, 1].bar(
-            x + width / 2,
-            blackjack_rates,
-            width,
-            label="Blackjack Rate",
-            color="#4CAF50",
-            alpha=0.7,
-        )
+            axes[1, 1].bar(
+                x - width / 2,
+                bust_rates,
+                width,
+                label="Bust Rate",
+                color="#f44336",
+                alpha=0.7,
+            )
+            axes[1, 1].bar(
+                x + width / 2,
+                blackjack_rates,
+                width,
+                label="Blackjack Rate",
+                color="#4CAF50",
+                alpha=0.7,
+            )
 
-        axes[1, 1].set_title("Game Outcomes by Stage")
-        axes[1, 1].set_xlabel("Stage")
-        axes[1, 1].set_ylabel("Percentage (%)")
-        axes[1, 1].set_xticks(x)
-        axes[1, 1].set_xticklabels(
-            [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
-            rotation=45,
-            ha="right",
-        )
-        axes[1, 1].legend()
-        axes[1, 1].grid(True, alpha=0.3)
+            axes[1, 1].set_title("Game Outcomes by Stage")
+            axes[1, 1].set_xlabel("Stage")
+            axes[1, 1].set_ylabel("Percentage (%)")
+            axes[1, 1].set_xticks(x)
+            axes[1, 1].set_xticklabels(
+                [f"{s}\n{stage_names[i]}" for i, s in enumerate(stages)],
+                rotation=45,
+                ha="right",
+            )
+            axes[1, 1].legend()
+            axes[1, 1].grid(True, alpha=0.3)
 
         plt.tight_layout()
         output_path = os.path.join(output_dir, f"stage_progression_{agent_key}.png")
@@ -674,14 +821,26 @@ def create_comparative_analysis(agent_stage_data, output_dir):
                 {
                     "agent_key": agent_key,
                     "stage_id": int(stage_id),
-                    "win_rate": summary["win_rate"] * 100,
-                    "avg_reward": summary["avg_reward"],
-                    "net_wins": summary["game_outcome_percentages"]["net_wins_percent"],
-                    "bust_rate": summary["game_outcome_percentages"]["bust_percent"],
-                    "blackjack_rate": summary["game_outcome_percentages"][
-                        "blackjack_percent"
-                    ],
-                    "push_rate": summary["game_outcome_percentages"]["push_percent"],
+                    "win_rate": summary.get("win_rate", 0) * 100,
+                    "avg_reward": summary.get("avg_reward", 0),
+                    "win_loss_ratio": summary.get("game_outcome_percentages", {}).get(
+                        "win_loss_ratio", 0
+                    ),
+                    "bust_rate": summary.get("game_outcome_percentages", {}).get(
+                        "bust_percent", 0
+                    ),
+                    "blackjack_rate": summary.get("game_outcome_percentages", {}).get(
+                        "blackjack_percent", 0
+                    ),
+                    "push_rate": summary.get("game_outcome_percentages", {}).get(
+                        "push_percent", 0
+                    ),
+                    "surrender_rate": summary.get("surrenders", 0)
+                    / summary.get("total_hands", 1)
+                    * 100,
+                    "insurance_rate": summary.get("insurance_bets", 0)
+                    / summary.get("total_hands", 1)
+                    * 100,
                     "deck_type": deck_type,
                     "reward_type": reward_type,
                 }
@@ -715,8 +874,8 @@ def create_comparative_analysis(agent_stage_data, output_dir):
 
     title_str = f" ({' | '.join(title_parts)})" if title_parts else ""
 
-    # Create comparative charts - now 2x3 to include time comparison
-    fig, axes = plt.subplots(2, 3, figsize=(20, 12))
+    # Create comparative charts - back to 2x2 layout
+    fig, axes = plt.subplots(2, 2, figsize=(20, 12))
     fig.suptitle(f"Comparative Agent Performance Across Stages{title_str}", fontsize=16)
 
     # Agent labels
@@ -774,7 +933,7 @@ def create_comparative_analysis(agent_stage_data, output_dir):
     axes[0, 1].set_xticks(stages)
     axes[0, 1].axhline(y=0, color="black", linestyle="-", alpha=0.3)
 
-    # Bust rates comparison by stage (top-right chart)
+    # Bust rates comparison by stage
     for agent_key in agent_labels:
         agent_data = [d for d in all_agent_stages if d["agent_key"] == agent_key]
         agent_data.sort(key=lambda x: x["stage_id"])
@@ -782,7 +941,7 @@ def create_comparative_analysis(agent_stage_data, output_dir):
         bust_rates = [d["bust_rate"] for d in agent_data]
         stage_ids = [d["stage_id"] for d in agent_data]
 
-        axes[0, 2].plot(
+        axes[1, 0].plot(
             stage_ids,
             bust_rates,
             "o-",
@@ -791,129 +950,87 @@ def create_comparative_analysis(agent_stage_data, output_dir):
             label=agent_key.upper(),
         )
 
-    axes[0, 2].set_title("Bust Rates by Stage")
-    axes[0, 2].set_xlabel("Stage")
-    axes[0, 2].set_ylabel("Bust Rate (%)")
-    axes[0, 2].legend()
-    axes[0, 2].grid(True, alpha=0.3)
-    axes[0, 2].set_xticks(stages)
-
-    # Net wins comparison by stage
-    for agent_key in agent_labels:
-        agent_data = [d for d in all_agent_stages if d["agent_key"] == agent_key]
-        agent_data.sort(key=lambda x: x["stage_id"])
-
-        net_wins = [d["net_wins"] for d in agent_data]
-        stage_ids = [d["stage_id"] for d in agent_data]
-
-        axes[1, 0].plot(
-            stage_ids,
-            net_wins,
-            "o-",
-            linewidth=2,
-            markersize=8,
-            label=agent_key.upper(),
-        )
-
-    axes[1, 0].set_title("Net Wins by Stage")
+    axes[1, 0].set_title("Bust Rates by Stage")
     axes[1, 0].set_xlabel("Stage")
-    axes[1, 0].set_ylabel("Net Wins (%)")
+    axes[1, 0].set_ylabel("Bust Rate (%)")
     axes[1, 0].legend()
     axes[1, 0].grid(True, alpha=0.3)
     axes[1, 0].set_xticks(stages)
-    axes[1, 0].axhline(y=0, color="black", linestyle="-", alpha=0.3)
 
-    # Final stage performance comparison
-    final_stage = max(stages)
-    final_performances = [d for d in all_agent_stages if d["stage_id"] == final_stage]
+    # Training time comparison
+    if training_times:
+        agent_names = list(training_times.keys())
+        total_times = list(training_times.values())
 
-    agent_names = [d["agent_key"].upper() for d in final_performances]
-    final_win_rates = [d["win_rate"] for d in final_performances]
-    final_net_wins = [d["net_wins"] for d in final_performances]
+        bars = axes[1, 1].bar(
+            agent_names, total_times, color=["#4CAF50", "#2196F3", "#FF9800"]
+        )
+        axes[1, 1].set_title("Total Training Time Comparison")
+        axes[1, 1].set_xlabel("Agent")
+        axes[1, 1].set_ylabel("Total Training Time (seconds)")
+        axes[1, 1].grid(True, alpha=0.3)
 
-    x = np.arange(len(agent_names))
-    width = 0.35
-
-    bars1 = axes[1, 1].bar(
-        x - width / 2,
-        final_win_rates,
-        width,
-        label="Win Rate",
-        color="#4CAF50",
-        alpha=0.7,
-    )
-    bars2 = axes[1, 1].bar(
-        x + width / 2,
-        final_net_wins,
-        width,
-        label="Net Wins",
-        color="#FF9800",
-        alpha=0.7,
-    )
-
-    axes[1, 1].set_title(f"Final Stage ({final_stage}) Performance")
-    axes[1, 1].set_xlabel("Agent")
-    axes[1, 1].set_ylabel("Percentage (%)")
-    axes[1, 1].set_xticks(x)
-    axes[1, 1].set_xticklabels(agent_names, rotation=45)
-    axes[1, 1].legend()
-    axes[1, 1].grid(True, alpha=0.3)
-
-    # Add value labels on bars
-    for bars in [bars1, bars2]:
-        for bar in bars:
+        # Add value labels on bars
+        for bar, time_val in zip(bars, total_times):
             height = bar.get_height()
             axes[1, 1].text(
                 bar.get_x() + bar.get_width() / 2.0,
-                height + 0.5,
-                f"{height:.1f}%",
-                ha="center",
-                va="bottom",
-            )
-
-    # Training time comparison (new chart)
-    if training_times:
-        agent_names_time = list(training_times.keys())
-        training_time_values = list(training_times.values())
-
-        # Convert to minutes for better readability
-        training_time_minutes = [time / 60 for time in training_time_values]
-
-        bars_time = axes[1, 2].bar(
-            agent_names_time,
-            training_time_minutes,
-            color=["#2196F3", "#FF9800", "#4CAF50"],
-            alpha=0.7,
-        )
-
-        axes[1, 2].set_title("Total Training Time Comparison")
-        axes[1, 2].set_xlabel("Agent")
-        axes[1, 2].set_ylabel("Training Time (minutes)")
-        axes[1, 2].set_xticklabels(
-            [name.upper() for name in agent_names_time], rotation=45
-        )
-        axes[1, 2].grid(True, alpha=0.3)
-
-        # Add value labels on bars
-        for bar, time_min in zip(bars_time, training_time_minutes):
-            height = bar.get_height()
-            axes[1, 2].text(
-                bar.get_x() + bar.get_width() / 2.0,
-                height + 0.1,
-                f"{time_min:.1f}m",
+                height + max(total_times) * 0.01,
+                f"{time_val:.1f}s",
                 ha="center",
                 va="bottom",
             )
     else:
-        axes[1, 2].text(
-            0.5,
-            0.5,
-            "No training time data available",
-            ha="center",
-            va="center",
-            transform=axes[1, 2].transAxes,
+        # Final stage performance comparison
+        final_stage = max(stages)
+        final_performances = [
+            d for d in all_agent_stages if d["stage_id"] == final_stage
+        ]
+
+        agent_names = [d["agent_key"].upper() for d in final_performances]
+        final_win_rates = [d["win_rate"] for d in final_performances]
+        final_bust_rates = [d["bust_rate"] for d in final_performances]
+
+        x = np.arange(len(agent_names))
+        width = 0.35
+
+        bars1 = axes[1, 1].bar(
+            x - width / 2,
+            final_win_rates,
+            width,
+            label="Win Rate",
+            color="#4CAF50",
+            alpha=0.7,
         )
-        axes[1, 2].set_title("Training Time Comparison")
+        bars2 = axes[1, 1].bar(
+            x + width / 2,
+            final_bust_rates,
+            width,
+            label="Bust Rate",
+            color="#f44336",
+            alpha=0.7,
+        )
+
+        axes[1, 1].set_title(f"Final Stage ({final_stage}) Performance")
+        axes[1, 1].set_xlabel("Agent")
+        axes[1, 1].set_ylabel("Rate (%)")
+        axes[1, 1].set_xticks(x)
+        axes[1, 1].set_xticklabels(agent_names, rotation=45)
+        axes[1, 1].legend()
+        axes[1, 1].grid(True, alpha=0.3)
+
+        # Add value labels on bars
+        for bars in [bars1, bars2]:
+            for bar in bars:
+                height = bar.get_height()
+                label = f"{height:.1f}%"
+                axes[1, 1].text(
+                    bar.get_x() + bar.get_width() / 2.0,
+                    height + 0.5,
+                    label,
+                    ha="center",
+                    va="bottom",
+                )
 
     plt.tight_layout()
     output_path = os.path.join(output_dir, "comparative_analysis.png")
@@ -1066,9 +1183,10 @@ def main():
 
                     if final_data:
                         summary = final_data["summary"]
+                        game_outcomes = summary.get("game_outcome_percentages", {})
                         print(
-                            f"    Final Stage {final_stage}: Win Rate: {summary['win_rate']*100:.2f}%, "
-                            f"Net Wins: {summary['game_outcome_percentages']['net_wins_percent']:.2f}%"
+                            f"    Final Stage {final_stage}: Win Rate: {summary.get('win_rate', 0)*100:.2f}%, "
+                            f"Win/Loss Ratio: {game_outcomes.get('win_loss_ratio', 0):.2f}"
                         )
 
         except Exception as e:
@@ -1135,12 +1253,34 @@ def main():
                 stage_id = log_data["stage_id"]
                 stage_info = f"Stage {stage_id}"
 
-            create_strategy_table_heatmap(log_data, output_dir, stage_info, deck_type)
-            create_performance_summary(log_data, output_dir, stage_info, deck_type)
-            create_action_distribution_chart(
-                log_data, output_dir, stage_info, deck_type
-            )
-            create_state_value_analysis(log_data, output_dir, stage_info, deck_type)
+            # Generate each visualization with individual error handling
+            try:
+                create_strategy_table_heatmap(
+                    log_data, output_dir, stage_info, deck_type
+                )
+                print("  ✅ Strategy table heatmap created")
+            except Exception as e:
+                print(f"  ❌ Error creating strategy table heatmap: {e}")
+
+            try:
+                create_performance_summary(log_data, output_dir, stage_info, deck_type)
+                print("  ✅ Performance summary created")
+            except Exception as e:
+                print(f"  ❌ Error creating performance summary: {e}")
+
+            try:
+                create_action_distribution_chart(
+                    log_data, output_dir, stage_info, deck_type
+                )
+                print("  ✅ Action distribution chart created")
+            except Exception as e:
+                print(f"  ❌ Error creating action distribution chart: {e}")
+
+            try:
+                create_state_value_analysis(log_data, output_dir, stage_info, deck_type)
+                print("  ✅ State value analysis created")
+            except Exception as e:
+                print(f"  ❌ Error creating state value analysis: {e}")
 
             print(f"\n✅ Analysis complete! All visualizations saved to: {output_dir}")
 
@@ -1150,14 +1290,13 @@ def main():
             print(f"Agent Type: {log_data['agent_type'].upper()}")
             if "stage_id" in log_data:
                 print(f"Stage: {log_data['stage_id']}")
-            print(f"Win Rate: {summary['win_rate']*100:.2f}%")
-            print(f"Average Reward: {summary['avg_reward']:.3f}")
-            print(
-                f"Net Wins: {summary['game_outcome_percentages']['net_wins_percent']:.2f}%"
-            )
-            print(
-                f"Bust Rate: {summary['game_outcome_percentages']['bust_percent']:.2f}%"
-            )
+            print(f"Win Rate (Episodes): {summary.get('win_rate', 0)*100:.2f}%")
+            # print(f"Win Rate (Hands): {summary.get('hand_win_rate', 0)*100:.2f}%")
+            print(f"Average Reward: {summary.get('avg_reward', 0):.3f}")
+
+            game_outcomes = summary.get("game_outcome_percentages", {})
+            print(f"Win/Loss Ratio: {game_outcomes.get('win_loss_ratio', 0):.2f}")
+            print(f"Bust Rate: {game_outcomes.get('bust_percent', 0):.2f}%")
 
         except Exception as e:
             print(f"❌ Error generating visualizations: {e}")

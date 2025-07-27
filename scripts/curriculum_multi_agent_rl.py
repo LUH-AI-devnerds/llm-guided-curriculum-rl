@@ -5,22 +5,6 @@ from MultiAgentCurriculumSystem import (
 )
 from MultiAgentStandardSystem import MultiAgentStandardSystem
 
-"""
-Enhanced Win Counting System
-
-This module implements an enhanced win counting system that properly accounts for:
-1. Split hands - Multiple hands can be won in a single episode
-2. Double down scenarios - Bet amounts are doubled, affecting win value
-3. Different bet amounts - Win counting is proportional to bet size
-
-Win counting logic:
-- Each winning hand counts as 1 win (or 2 wins if doubled down)
-- Split scenarios can result in multiple wins per episode
-- Win rate is calculated as: total_wins / total_episodes
-- This provides more accurate training evaluation for RL agents
-"""
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -47,26 +31,29 @@ if __name__ == "__main__":
         default=0.9,
         help="Deck penetration for reshuffling",
     )
-    parser.add_argument(
-        "--budget", type=int, default=10000, help="Starting budget for each agent"
-    )
-    parser.add_argument(
-        "--no-dynamic-rewards",
-        action="store_true",
-        help="Disable dynamic reward scaling (use simple rewards)",
-    )
-    parser.add_argument(
-        "--reward-type",
-        type=str,
-        default="simple",
-        choices=["simple", "conservative_dynamic", "win_focused", "balanced"],
-        help="Reward scheme to use",
-    )
+
     parser.add_argument(
         "--episodes", type=int, default=100000, help="Total training episodes"
     )
     parser.add_argument(
-        "--eval-episodes", type=int, default=1000, help="Evaluation episodes"
+        "--eval-episodes", type=int, default=2000, help="Evaluation episodes"
+    )
+    parser.add_argument(
+        "--max-episodes-per-stage",
+        type=int,
+        default=20000,
+        help="Maximum episodes per stage before forcing advancement",
+    )
+    parser.add_argument(
+        "--stage-epsilon-reset",
+        action="store_true",
+        help="Reset epsilon when advancing to new curriculum stages",
+    )
+    parser.add_argument(
+        "--progressive-episodes",
+        action="store_true",
+        default=True,
+        help="Use progressive episode allocation (more episodes for later stages)",
     )
     args = parser.parse_args()
 
@@ -79,9 +66,6 @@ if __name__ == "__main__":
             agent_types=args.agent_types,
             deck_type=args.deck_type,
             penetration=args.penetration,
-            budget=args.budget,
-            use_dynamic_rewards=not args.no_dynamic_rewards,
-            reward_type=args.reward_type,
         )
         system.train(total_episodes=args.episodes, eval_episodes=args.eval_episodes)
     else:
@@ -98,12 +82,11 @@ if __name__ == "__main__":
             agent_types=args.agent_types,
             deck_type=args.deck_type,
             penetration=args.penetration,
-            budget=args.budget,
-            use_dynamic_rewards=not args.no_dynamic_rewards,
-            reward_type=args.reward_type,
         )
         final_report = curriculum_system.train_multi_agent_curriculum(
-            total_episodes=args.episodes, eval_episodes=args.eval_episodes
+            total_episodes=args.episodes,
+            eval_episodes=args.eval_episodes,
+            max_episodes_per_stage=args.max_episodes_per_stage,
         )
         curriculum_system.save_agents()
         curriculum_system.create_run_summary()

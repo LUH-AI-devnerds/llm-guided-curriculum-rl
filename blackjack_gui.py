@@ -163,9 +163,13 @@ class BlackjackGUI:
             "stand": SimpleButton(320, 700, 100, 50, "Stand", self.font_medium),
             "double": SimpleButton(440, 700, 100, 50, "Double", self.font_medium),
             "split": SimpleButton(560, 700, 100, 50, "Split", self.font_medium),
-            "new_game": SimpleButton(680, 700, 120, 50, "New Game", self.font_medium),
-            "auto_play": SimpleButton(820, 700, 120, 50, "Auto Play", self.font_medium),
-            "menu": SimpleButton(960, 700, 100, 50, "Menu", self.font_medium),
+            "surrender": SimpleButton(680, 700, 100, 50, "Surrender", self.font_medium),
+            "insurance": SimpleButton(800, 700, 100, 50, "Insurance", self.font_medium),
+            "new_game": SimpleButton(920, 700, 120, 50, "New Game", self.font_medium),
+            "auto_play": SimpleButton(
+                1060, 700, 120, 50, "Auto Play", self.font_medium
+            ),
+            "menu": SimpleButton(1200, 700, 100, 50, "Menu", self.font_medium),
         }
 
     def load_agent(self):
@@ -177,12 +181,16 @@ class BlackjackGUI:
             agent_path = AGENT_PATH
             if os.path.exists(agent_path):
                 print(f"Loading {agent_path}")
-                self.agent = DQNAgent(action_space=[0, 1, 2, 3])
+                self.agent = DQNAgent(
+                    action_space=[0, 1, 2, 3, 4, 5]
+                )  # Include surrender and insurance
                 self.agent.load_model(agent_path)
                 self.agent.epsilon = 0.0
             else:
                 print("Creating demo agent...")
-                self.agent = DQNAgent(action_space=[0, 1, 2, 3])
+                self.agent = DQNAgent(
+                    action_space=[0, 1, 2, 3, 4, 5]
+                )  # Include surrender and insurance
                 # Quick training
                 env = BlackjackEnv(deck_type="infinite", budget=100)
                 for i in range(500):
@@ -271,7 +279,7 @@ class BlackjackGUI:
             return
 
         try:
-            action_names = ["Stand", "Hit", "Double", "Split"]
+            action_names = ["Stand", "Hit", "Double", "Split", "Surrender", "Insurance"]
             print(f"Action: {action_names[action]}")
 
             # Handle special actions with animations
@@ -279,6 +287,10 @@ class BlackjackGUI:
                 self.handle_double_action()
             elif action == 3:  # Split
                 self.handle_split_action()
+            elif action == 4:  # Surrender
+                self.handle_surrender_action()
+            elif action == 5:  # Insurance
+                self.handle_insurance_action()
 
             # Perform action in environment
             state, reward, done = self.env.step(action)
@@ -340,6 +352,26 @@ class BlackjackGUI:
             self.draw_game()
             pygame.display.flip()
             pygame.time.wait(1000)  # Show split message
+
+    def handle_surrender_action(self):
+        """Handle early surrender action with visual feedback."""
+        print(f"🏳️ EARLY SURRENDER on hand {self.current_hand_idx + 1}!")
+        print(f"💰 Lost half bet: ${self.bet_amounts[self.current_hand_idx] * 0.5}")
+
+        # Visual feedback
+        self.draw_game()
+        pygame.display.flip()
+        pygame.time.wait(1000)  # Show surrender message
+
+    def handle_insurance_action(self):
+        """Handle insurance action with visual feedback."""
+        print(f"🛡️ INSURANCE bet placed!")
+        print(f"💰 Insurance bet: ${self.bet_amounts[self.current_hand_idx] * 0.5}")
+
+        # Visual feedback
+        self.draw_game()
+        pygame.display.flip()
+        pygame.time.wait(1000)  # Show insurance message
 
     def move_to_next_hand(self):
         """Move to the next hand if playing multiple hands."""
@@ -549,7 +581,11 @@ class BlackjackGUI:
 
             # Draw game info
             game_info = self.env.get_game_info()
-            budget_info = f"Budget: ${game_info['budget']:.1f}" if 'budget' in game_info else "Budget: $100.0"
+            budget_info = (
+                f"Budget: ${game_info['budget']:.1f}"
+                if "budget" in game_info
+                else "Budget: $100.0"
+            )
             info_texts = [
                 f"Game: {self.current_game}",
                 (
@@ -642,7 +678,14 @@ class BlackjackGUI:
         for button in self.game_buttons.values():
             # Enable/disable buttons based on game state
             if self.state == "playing":
-                if button.text in ["Hit", "Stand", "Double", "Split"]:
+                if button.text in [
+                    "Hit",
+                    "Stand",
+                    "Double",
+                    "Split",
+                    "Surrender",
+                    "Insurance",
+                ]:
                     button.enabled = True
 
                     # Disable hit if current hand has 21 or more
@@ -676,6 +719,23 @@ class BlackjackGUI:
                             button.enabled = (
                                 current_hand[0] == current_hand[1]
                             )  # Only pairs
+                        else:
+                            button.enabled = False
+
+                    # Disable surrender if not first action or dealer has blackjack
+                    if button.text == "Surrender":
+                        current_hand = (
+                            self.player_hands[self.current_hand_idx]
+                            if self.player_hands
+                            else []
+                        )
+                        # Only allow surrender on first action with 2 cards
+                        button.enabled = len(current_hand) == 2
+
+                    # Disable insurance if dealer doesn't show Ace
+                    if button.text == "Insurance":
+                        if self.dealer_cards and len(self.dealer_cards) > 0:
+                            button.enabled = self.dealer_cards[0] == 11  # Ace
                         else:
                             button.enabled = False
                 else:
@@ -719,6 +779,10 @@ class BlackjackGUI:
                                 self.perform_action(2)
                             elif name == "split":
                                 self.perform_action(3)
+                            elif name == "surrender":
+                                self.perform_action(4)  # New action for surrender
+                            elif name == "insurance":
+                                self.perform_action(5)  # New action for insurance
                             elif name == "new_game":
                                 self.new_game()
                             elif name == "auto_play":

@@ -4,60 +4,28 @@ from collections import Counter
 
 
 class BlackjackEnv:
-    """
-    An enhanced Blackjack environment for Reinforcement Learning with full rules.
-    Supports both infinite deck and finite deck (shoe) options.
-
-    Actions: 0=stand, 1=hit, 2=double_down, 3=split
-    Deck Options: infinite, 1-deck, 6-deck, 8-deck (casino standard)
-    """
-
     def __init__(
         self,
         curriculum_stage=3,
         deck_type="infinite",
         penetration=0.75,
-        budget=100,
-        use_dynamic_rewards=True,
-        reward_type="simple",
     ):
-        """
-        Initialize the Blackjack environment.
-
-        Args:
-            curriculum_stage (int): Curriculum stage for action constraints
-            deck_type (str): "infinite", "1-deck", "6-deck", or "8-deck"
-            penetration (float): When to reshuffle (0.75 = reshuffle at 75% through deck)
-            budget (int): Starting budget for the agent (default: 100)
-            use_dynamic_rewards (bool): Whether to use dynamic reward scaling (default: True)
-            reward_type (str): Reward scheme - "simple", "conservative_dynamic", "win_focused", "balanced"
-        """
         self.curriculum_stage = curriculum_stage
-        self.action_space = [0, 1, 2, 3]  # 0: stand, 1: hit, 2: double down, 3: split
-        self.initial_bet = 1
+        self.action_space = [0, 1, 2, 3, 4, 5]
         self.deck_type = deck_type
         self.penetration = penetration
-        self.initial_budget = budget
-        self.budget = budget
-        self.total_winnings = 0
-        self.total_losses = 0
         self.games_played = 0
-        self.use_dynamic_rewards = use_dynamic_rewards
-        self.reward_type = reward_type
 
-        # Initialize deck
         self._initialize_deck()
         self.reset()
 
     def _initialize_deck(self):
-        """Initialize the deck based on deck_type."""
         if self.deck_type == "infinite":
             self.deck = None
             self.cards_remaining = None
             self.total_cards = None
             self.shuffle_point = None
         else:
-            # Parse deck type
             if self.deck_type == "1-deck":
                 num_decks = 1
             elif self.deck_type == "4-deck":
@@ -69,32 +37,23 @@ class BlackjackEnv:
                     f"Invalid deck_type: {self.deck_type}. Use 'infinite', '1-deck', '6-deck', or '8-deck'"
                 )
 
-            # Create standard 52-card deck
-            standard_deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # 4 suits
+            standard_deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4
             self.deck = standard_deck * num_decks
             self.total_cards = len(self.deck)
             self.shuffle_point = int(self.total_cards * self.penetration)
             self._shuffle_deck()
 
     def _shuffle_deck(self):
-        """Shuffle the deck and reset card counting."""
         if self.deck is not None:
             random.shuffle(self.deck)
             self.cards_remaining = self.deck.copy()
             self.card_counts = Counter(self.cards_remaining)
-            # print(f"🃏 Shuffled {self.deck_type} deck ({len(self.deck)} cards)")
 
     def _draw_card(self):
-        """Draw a single card from the deck."""
         if self.deck_type == "infinite":
-            # Infinite deck: random card every time
             return random.choice([2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11])
         else:
-            # Finite deck: draw from remaining cards
             if len(self.cards_remaining) <= self.shuffle_point:
-                # print(
-                #     f"🔄 Reshuffling {self.deck_type} deck at {len(self.cards_remaining)} cards remaining"
-                # )
                 self._shuffle_deck()
 
             if not self.cards_remaining:
@@ -105,7 +64,6 @@ class BlackjackEnv:
             return card
 
     def get_card_counting_info(self):
-        """Get card counting information for finite decks."""
         if self.deck_type == "infinite":
             return {
                 "deck_type": "infinite",
@@ -115,16 +73,13 @@ class BlackjackEnv:
                 "true_count": None,
             }
 
-        # Calculate running count (Hi-Lo system)
         running_count = 0
         for card, count in self.card_counts.items():
             if card in [2, 3, 4, 5, 6]:
-                running_count += count  # Low cards: +1
+                running_count += count
             elif card in [10, 11]:
-                running_count -= count  # High cards: -1
-            # 7, 8, 9 are neutral (0)
+                running_count -= count
 
-        # Calculate true count (running count per deck remaining)
         decks_remaining = len(self.cards_remaining) / 52
         true_count = running_count / decks_remaining if decks_remaining > 0 else 0
 
@@ -138,49 +93,61 @@ class BlackjackEnv:
         }
 
     def reset(self):
-        """Resets the game to a new hand."""
-        self.player_hands = [
-            [self._draw_card(), self._draw_card()]
-        ]  # Support multiple hands for splits
+        self.player_hands = [[self._draw_card(), self._draw_card()]]
         self.dealer_hand = [self._draw_card(), self._draw_card()]
         self.current_hand_idx = 0
-        self.bet_amounts = [self.initial_bet]
         self.doubled_down = [False]
+        self.surrendered_hands = [False]
+        self.insurance_bets = [0]
         self.can_split = self._can_split()
         self.can_double = True
+        self.can_surrender = True
+        self.can_insure = True
         self.game_over = False
         self.games_played += 1
         return self._get_state()
 
     def _can_split(self):
-        """Check if current hand can be split."""
         if self.current_hand_idx >= len(self.player_hands):
             return False
         current_hand = self.player_hands[self.current_hand_idx]
         if len(current_hand) != 2:
             return False
 
-        # Get card values for comparison (treat all 10-value cards as same)
         card1_val = 10 if current_hand[0] == 10 else current_hand[0]
         card2_val = 10 if current_hand[1] == 10 else current_hand[1]
         return card1_val == card2_val
 
+    def _dealer_has_blackjack(self):
+        if len(self.dealer_hand) != 2:
+            return False
+        return self._get_hand_sum(self.dealer_hand) == 21
+
     def _is_valid_action(self, action):
-        """Check if action is valid in current state."""
+        if self.game_over or self.current_hand_idx >= len(self.player_hands):
+            return False
+
         current_hand = self.player_hands[self.current_hand_idx]
 
-        if action == 0:  # Stand - always valid
+        if action == 0:
             return True
-        elif action == 1:  # Hit - valid if not bust
+        elif action == 1:
             return self._get_hand_sum(current_hand) < 21
-        elif action == 2:  # Double down - only with 2 cards
+        elif action == 2:
             return len(current_hand) == 2 and self.can_double
-        elif action == 3:  # Split - only with matching pair
+        elif action == 3:
             return self._can_split() and len(self.player_hands) < 4
+        elif action == 4:
+            return (
+                len(current_hand) == 2
+                and self.can_surrender
+                and not self._dealer_has_blackjack()
+            )
+        elif action == 5:
+            return self.can_insure and self.dealer_hand[0] == 11
         return False
 
     def _get_hand_sum(self, hand):
-        """Calculates the sum of a hand, handling Aces."""
         hand_sum = sum(hand)
         num_aces = hand.count(11)
         while hand_sum > 21 and num_aces:
@@ -188,11 +155,41 @@ class BlackjackEnv:
             num_aces -= 1
         return hand_sum
 
+    def get_reward(self, agent_hand, dealer_hand, has_busted):
+        agent_total = self._get_hand_sum(agent_hand)
+        dealer_total = self._get_hand_sum(dealer_hand)
+
+        if has_busted:
+            return -3.0
+
+        if agent_total == 21 and len(agent_hand) == 2:
+            return 1.0
+
+        if not self.game_over:
+            if agent_total < 12:
+                return 0.01
+            elif 12 <= agent_total <= 16:
+                if dealer_total >= 7:
+                    return -0.01
+                else:
+                    return 0.01
+            elif 17 <= agent_total <= 20:
+                return 0.02
+            else:
+                return 0.0
+
+        if dealer_total > 21:
+            return 1.0
+
+        if agent_total > dealer_total:
+            return 1.0
+        elif agent_total < dealer_total:
+            return -1.0
+        else:
+            return 0.0
+
     def _get_state(self):
-        """Gets the current state of the game."""
-        # Handle case when game is over
         if self.game_over or self.current_hand_idx >= len(self.player_hands):
-            # Return last valid hand state
             if self.player_hands:
                 last_hand = self.player_hands[-1]
                 player_sum = self._get_hand_sum(last_hand)
@@ -205,8 +202,6 @@ class BlackjackEnv:
                     False,
                     False,
                     False,
-                    self.budget,
-                    self.games_played,
                 )
             else:
                 return (
@@ -216,8 +211,6 @@ class BlackjackEnv:
                     False,
                     False,
                     False,
-                    self.budget,
-                    self.games_played,
                 )
 
         current_hand = self.player_hands[self.current_hand_idx]
@@ -225,12 +218,25 @@ class BlackjackEnv:
         dealer_up_card = self.dealer_hand[0]
         has_usable_ace = 11 in current_hand and self._get_hand_sum(current_hand) <= 21
 
-        # Enhanced state representation
-        can_split = (
-            self._can_split() and len(self.player_hands) < 4
-        )  # Limit to 4 hands max
+        can_split = self._can_split() and len(self.player_hands) < 4
         can_double = self.can_double and len(current_hand) == 2
         is_blackjack = len(current_hand) == 2 and player_sum == 21
+        can_surrender = (
+            self.can_surrender
+            and len(current_hand) == 2
+            and not self._dealer_has_blackjack()
+        )
+        can_insure = self.can_insure and self.dealer_hand[0] == 11
+
+        card_count_info = self.get_card_counting_info()
+        running_count = card_count_info.get("running_count", 0)
+        true_count = card_count_info.get("true_count", 0)
+
+        hand_type = 0
+        if can_split:
+            hand_type = 2
+        elif has_usable_ace and player_sum <= 21:
+            hand_type = 1
 
         return (
             player_sum,
@@ -239,238 +245,169 @@ class BlackjackEnv:
             can_split,
             can_double,
             is_blackjack,
-            self.budget,
-            self.games_played,
+            can_surrender,
+            can_insure,
+            running_count,
+            true_count,
+            hand_type,
         )
 
     def step(self, action):
-        """Performs an action and returns the next state, reward, and done flag."""
         if self.game_over:
             return self._get_state(), 0, True
 
-        # Validate action
         if not self._is_valid_action(action):
-            # Invalid action gets small penalty and no state change
             return self._get_state(), -0.1, False
 
         current_hand = self.player_hands[self.current_hand_idx]
 
-        if action == 1:  # Hit
+        if action == 1:
             current_hand.append(self._draw_card())
             player_sum = self._get_hand_sum(current_hand)
-            self.can_double = False  # Can't double after hitting
+            self.can_double = False
 
-            if player_sum > 21:  # Bust
+            if player_sum > 21:
                 return self._move_to_next_hand()
             return self._get_state(), 0, False
 
-        elif action == 2:  # Double Down
+        elif action == 2:
             if not (len(current_hand) == 2 and self.can_double):
-                return self._get_state(), -0.1, False  # Invalid action
+                return self._get_state(), -0.1, False
 
-            self.bet_amounts[self.current_hand_idx] *= 2
             current_hand.append(self._draw_card())
             self.doubled_down[self.current_hand_idx] = True
-            return self._move_to_next_hand()
 
-        elif action == 3:  # Split
+            player_sum = self._get_hand_sum(current_hand)
+            dealer_up = self.dealer_hand[0]
+
+            shaping_reward = 0.0
+
+            original_sum = self._get_hand_sum(current_hand[:-1])
+
+            if original_sum == 11:
+                shaping_reward = 0.1
+            elif original_sum == 10 and dealer_up <= 9:
+                shaping_reward = 0.1
+            elif original_sum == 9 and dealer_up in [3, 4, 5, 6]:
+                shaping_reward = 0.1
+            elif original_sum == 8 and dealer_up in [5, 6]:
+                shaping_reward = 0.05
+            else:
+                shaping_reward = -0.05
+
+            next_state, final_reward, done = self._move_to_next_hand()
+            return next_state, shaping_reward, done
+
+        elif action == 3:
             if not self._can_split():
-                return self._get_state(), -0.1, False  # Invalid action
+                return self._get_state(), -0.1, False
 
-            # Create new hand with second card
             card_to_split = current_hand.pop()
             new_hand = [card_to_split, self._draw_card()]
             current_hand.append(self._draw_card())
 
             self.player_hands.append(new_hand)
-            self.bet_amounts.append(self.initial_bet)
             self.doubled_down.append(False)
+            self.surrendered_hands.append(False)
+            self.insurance_bets.append(0)
 
             return self._get_state(), 0, False
 
-        else:  # Stand (action == 0)
+        elif action == 4:
+            if not (
+                len(current_hand) == 2
+                and self.can_surrender
+                and not self._dealer_has_blackjack()
+            ):
+                return self._get_state(), -0.1, False
+
+            self.surrendered_hands[self.current_hand_idx] = True
+            return self._move_to_next_hand()
+
+        elif action == 5:
+            if not (self.can_insure and self.dealer_hand[0] == 11):
+                return self._get_state(), -0.1, False
+
+            self.insurance_bets[self.current_hand_idx] = 0.5
+            self.can_insure = False
+
+            if self._dealer_has_blackjack():
+                return self._get_state(), 1.0, False
+            else:
+                return self._get_state(), -0.5, False
+
+        else:
             return self._move_to_next_hand()
 
     def _move_to_next_hand(self):
-        """Move to next hand or end player turn."""
         self.current_hand_idx += 1
 
         if self.current_hand_idx >= len(self.player_hands):
-            # All hands played, dealer's turn
             return self._play_dealer_and_calculate_rewards()
         else:
-            # Move to next hand
             self.can_double = True
+            self.can_surrender = True
+            self.can_insure = True
             return self._get_state(), 0, False
 
-    def _calculate_dynamic_reward(self, base_reward, bet_amount):
-        """
-        Calculate dynamic reward based on budget status and performance.
-
-        Args:
-            base_reward (float): Base reward from game outcome
-            bet_amount (float): Amount bet on this hand
-
-        Returns:
-            float: Scaled reward based on budget and performance
-        """
-        # If dynamic rewards are disabled, return base reward
-        if not self.use_dynamic_rewards:
-            return base_reward
-
-        # Choose reward scheme
-        if self.reward_type == "simple":
-            return base_reward
-        elif self.reward_type == "conservative_dynamic":
-            return self._conservative_dynamic_reward(base_reward, bet_amount)
-        elif self.reward_type == "win_focused":
-            return self._win_focused_reward(base_reward, bet_amount)
-        elif self.reward_type == "balanced":
-            return self._balanced_reward(base_reward, bet_amount)
-        else:
-            return base_reward
-
-    def _conservative_dynamic_reward(self, base_reward, bet_amount):
-        """Very conservative dynamic reward scaling."""
-        # Budget-based scaling factors
-        budget_ratio = self.budget / self.initial_budget
-
-        # Performance-based scaling
-        if self.games_played > 1:
-            win_rate = (
-                self.total_winnings / (self.total_winnings + self.total_losses)
-                if (self.total_winnings + self.total_losses) > 0
-                else 0.5
-            )
-        else:
-            win_rate = 0.5
-
-        # Enhanced conservative scaling with stronger signals
-        if base_reward > 0:  # Winning
-            # Meaningful bonus when budget is low (encourages preservation)
-            budget_bonus = 1.0 + (1.0 - budget_ratio) * 0.3  # Max 1.3x bonus
-            # Reward for consistent winning performance
-            performance_bonus = 1.0 + (win_rate - 0.5) * 0.4  # Max 1.2x bonus
-            scaled_reward = base_reward * budget_bonus * performance_bonus
-
-        elif base_reward < 0:  # Losing
-            # Stronger penalty when budget is low (discourages risky play)
-            budget_penalty = 1.0 + (1.0 - budget_ratio) * 0.5  # Max 1.5x penalty
-            # Penalty for poor performance (encourages better strategy)
-            performance_penalty = 1.0 + (0.5 - win_rate) * 0.3  # Max 1.15x penalty
-            scaled_reward = base_reward * budget_penalty * performance_penalty
-
-        else:  # Push
-            scaled_reward = 0.0
-
-        # Very small penalty for going broke
-        if self.budget <= 0:
-            scaled_reward -= 1.0
-
-        # Ensure rewards don't become too extreme
-        scaled_reward = max(-5.0, min(5.0, scaled_reward))
-
-        return scaled_reward
-
-    def _win_focused_reward(self, base_reward, bet_amount):
-        """Reward scheme focused on winning with minimal penalties."""
-        if base_reward > 0:  # Winning
-            # Give consistent positive rewards for wins
-            return base_reward * 1.1  # 10% bonus for wins
-        elif base_reward < 0:  # Losing
-            # Minimal penalty for losses
-            return base_reward * 0.9  # 10% reduction for losses
-        else:  # Push
-            return 0.1  # Small positive reward for pushes
-
-    def _balanced_reward(self, base_reward, bet_amount):
-        """Balanced reward scheme with normalized values."""
-        if base_reward > 0:  # Winning
-            return 1.0  # Standard positive reward
-        elif base_reward < 0:  # Losing
-            return -1.0  # Standard negative reward
-        else:  # Push
-            return 0.0  # Neutral for pushes
-
     def _play_dealer_and_calculate_rewards(self):
-        """Play dealer's turn and calculate final rewards."""
         dealer_sum = self._get_hand_sum(self.dealer_hand)
 
-        # Dealer draws cards
         while dealer_sum < 17:
             self.dealer_hand.append(self._draw_card())
             dealer_sum = self._get_hand_sum(self.dealer_hand)
 
-        # Calculate total reward across all hands
         total_reward = 0
         dealer_busted = dealer_sum > 21
-        dealer_blackjack = len(self.dealer_hand) == 2 and dealer_sum == 21
 
         for i, hand in enumerate(self.player_hands):
+            if self.surrendered_hands[i]:
+                total_reward -= 0.5
+                continue
+
             player_sum = self._get_hand_sum(hand)
-            bet = self.bet_amounts[i]
+            has_busted = player_sum > 21
 
-            if player_sum > 21:  # Player busted
-                hand_reward = -bet
-                self.total_losses += bet
-                self.budget -= bet
-            elif (
-                len(hand) == 2 and player_sum == 21 and not dealer_blackjack
-            ):  # Player blackjack
-                hand_reward = bet * 1.5  # Blackjack pays 3:2
-                self.total_winnings += hand_reward
-                self.budget += hand_reward
-            elif dealer_busted or player_sum > dealer_sum:
-                hand_reward = bet
-                self.total_winnings += hand_reward
-                self.budget += hand_reward
-            elif player_sum < dealer_sum:
-                hand_reward = -bet
-                self.total_losses += bet
-                self.budget -= bet
-            else:  # Push
-                hand_reward = 0
+            hand_reward = self.get_reward(hand, self.dealer_hand, has_busted)
 
-            # Apply dynamic reward scaling
-            scaled_reward = self._calculate_dynamic_reward(hand_reward, bet)
-            total_reward += scaled_reward
+            if self.doubled_down[i]:
+                hand_reward *= 2
+
+            if self.insurance_bets[i] > 0:
+                if self._dealer_has_blackjack():
+                    hand_reward += self.insurance_bets[i] * 2
+                else:
+                    hand_reward -= self.insurance_bets[i]
+
+            total_reward += hand_reward
 
         self.game_over = True
         return self._get_state(), total_reward, True
 
     def get_game_info(self):
-        """Get detailed information about the current game state."""
         info = {
             "deck_info": self.get_card_counting_info(),
             "player_hands": self.player_hands,
             "dealer_hand": self.dealer_hand,
             "current_hand_idx": self.current_hand_idx,
-            "bet_amounts": self.bet_amounts,
             "game_over": self.game_over,
-            "budget": self.budget,
-            "initial_budget": self.initial_budget,
-            "total_winnings": self.total_winnings,
-            "total_losses": self.total_losses,
             "games_played": self.games_played,
-            "budget_ratio": (
-                self.budget / self.initial_budget if self.initial_budget > 0 else 0
-            ),
         }
         return info
 
     def get_detailed_win_stats(self):
-        """Get detailed win statistics that properly account for double down and split scenarios."""
         if not self.game_over:
             return None
 
         stats = {
             "total_hands": len(self.player_hands),
-            "total_bet": sum(self.bet_amounts),
             "hands_won": 0,
             "hands_lost": 0,
             "hands_pushed": 0,
             "double_downs": sum(self.doubled_down),
-            "splits": len(self.player_hands) - 1,  # Original hand + splits
+            "splits": len(self.player_hands) - 1,
+            "surrenders": sum(self.surrendered_hands),
+            "insurance_bets": sum(1 for bet in self.insurance_bets if bet > 0),
             "blackjacks": 0,
             "busts": 0,
             "hand_details": [],
@@ -482,49 +419,66 @@ class BlackjackEnv:
 
         for i, hand in enumerate(self.player_hands):
             player_sum = self._get_hand_sum(hand)
-            bet = self.bet_amounts[i]
             is_doubled = self.doubled_down[i]
+            is_surrendered = self.surrendered_hands[i]
+            insurance_bet = self.insurance_bets[i]
 
             hand_detail = {
                 "hand_index": i,
                 "cards": hand.copy(),
                 "sum": player_sum,
-                "bet": bet,
                 "doubled": is_doubled,
+                "surrendered": is_surrendered,
+                "insurance_bet": insurance_bet,
                 "result": None,
                 "reward": 0,
             }
 
-            # Determine hand result
-            if player_sum > 21:  # Bust
+            if is_surrendered:
+                hand_detail["result"] = "surrender"
+                hand_detail["reward"] = -0.5
+                stats["hands_lost"] += 1
+                stats["hand_details"].append(hand_detail)
+                continue
+
+            if player_sum > 21:
                 hand_detail["result"] = "bust"
-                hand_detail["reward"] = -bet
+                hand_detail["reward"] = -1
                 stats["busts"] += 1
                 stats["hands_lost"] += 1
-            elif (
-                len(hand) == 2 and player_sum == 21 and not dealer_blackjack
-            ):  # Blackjack
+            elif len(hand) == 2 and player_sum == 21 and not dealer_blackjack:
                 hand_detail["result"] = "blackjack"
-                hand_detail["reward"] = bet * 1.5
+                hand_detail["reward"] = 1.5
                 stats["blackjacks"] += 1
                 stats["hands_won"] += 1
-            elif dealer_busted or player_sum > dealer_sum:  # Win
+            elif dealer_busted or player_sum > dealer_sum:
                 hand_detail["result"] = "win"
-                hand_detail["reward"] = bet
+                hand_detail["reward"] = 1
                 stats["hands_won"] += 1
-            elif player_sum < dealer_sum:  # Loss
+            elif player_sum < dealer_sum:
                 hand_detail["result"] = "loss"
-                hand_detail["reward"] = -bet
+                hand_detail["reward"] = -1
                 stats["hands_lost"] += 1
-            else:  # Push
+            else:
                 hand_detail["result"] = "push"
                 hand_detail["reward"] = 0
                 stats["hands_pushed"] += 1
 
+            if is_doubled:
+                hand_detail["reward"] *= 2
+
+            if insurance_bet > 0:
+                if self._dealer_has_blackjack():
+                    hand_detail["reward"] += insurance_bet * 2
+                else:
+                    hand_detail["reward"] -= insurance_bet
+
             stats["hand_details"].append(hand_detail)
 
-        # Calculate win rate considering bet amounts
-        total_wagered = sum(self.bet_amounts)
+        stats["win_rate"] = (
+            stats["hands_won"] / stats["total_hands"] if stats["total_hands"] > 0 else 0
+        )
+
         total_won = sum(
             detail["reward"] for detail in stats["hand_details"] if detail["reward"] > 0
         )
@@ -539,11 +493,5 @@ class BlackjackEnv:
         stats["total_won"] = total_won
         stats["total_lost"] = total_lost
         stats["net_result"] = total_won - total_lost
-        stats["win_rate_by_hands"] = (
-            stats["hands_won"] / stats["total_hands"] if stats["total_hands"] > 0 else 0
-        )
-        stats["win_rate_by_bets"] = (
-            total_won / total_wagered if total_wagered > 0 else 0
-        )
 
         return stats

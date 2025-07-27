@@ -14,12 +14,26 @@ class DQNNetwork(nn.Module):
         super(DQNNetwork, self).__init__()
         self.fc1 = nn.Linear(input_size, hidden_size)
         self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, output_size)
+        self.fc3 = nn.Linear(hidden_size, hidden_size // 2)
+        self.fc4 = nn.Linear(hidden_size // 2, output_size)
+
+        self.dropout = nn.Dropout(0.1)
+
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        for module in self.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.xavier_uniform_(module.weight)
+                nn.init.constant_(module.bias, 0.01)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
+        x = self.dropout(x)
         x = F.relu(self.fc2(x))
-        return self.fc3(x)
+        x = self.dropout(x)
+        x = F.relu(self.fc3(x))
+        return self.fc4(x)
 
 
 class DQNAgent:
@@ -44,10 +58,9 @@ class DQNAgent:
         self.memory_size = memory_size
         self.batch_size = batch_size
         self.target_update = target_update
-        self.curriculum_stage = curriculum_stage  # Add curriculum stage awareness
+        self.curriculum_stage = curriculum_stage
 
-        # Neural networks - use only core game state for learning
-        self.input_size = 6  # Core state: (player_sum, dealer_up, has_ace, can_split, can_double, is_blackjack)
+        self.input_size = 11
         self.output_size = len(action_space)
 
         self.q_network = DQNNetwork(self.input_size, self.output_size)
@@ -59,111 +72,163 @@ class DQNAgent:
         self.update_count = 0
 
     def set_curriculum_stage(self, curriculum_stage):
-        """Set the current curriculum stage for action constraints."""
+        old_stage_id = self.curriculum_stage.stage_id if self.curriculum_stage else 0
         self.curriculum_stage = curriculum_stage
 
+        if curriculum_stage and curriculum_stage.stage_id > old_stage_id:
+            keep_size = max(1000, int(len(self.memory) * 0.2))
+            if len(self.memory) > keep_size:
+                recent_experiences = list(self.memory)[-keep_size:]
+                self.memory.clear()
+                self.memory.extend(recent_experiences)
+                print(
+                    f"  🧹 Cleaned memory: kept {len(self.memory)} recent experiences"
+                )
+
+        if curriculum_stage and curriculum_stage.stage_id > 1:
+            self.epsilon = max(0.3, self.epsilon)
+            print(
+                f"  🔄 Reset epsilon to {self.epsilon:.3f} for stage {curriculum_stage.stage_id}"
+            )
+
+            if curriculum_stage.stage_id >= 3:
+                for param_group in self.optimizer.param_groups:
+                    param_group["lr"] = min(param_group["lr"] * 1.2, 0.005)
+                print(
+                    f"  📈 Increased learning rate to {self.optimizer.param_groups[0]['lr']:.6f}"
+                )
+
+        if curriculum_stage and curriculum_stage.stage_id == 4:
+            print("  🔧 Initializing conservative Q-values for Split action")
+            with torch.no_grad():
+                if hasattr(self.q_network, "fc5"):
+                    self.q_network.fc5.bias[3] -= 0.5
+
     def _state_to_tensor(self, state):
-        """Convert state tuple to tensor, using only core game state for learning."""
-        if len(state) == 3:  # Old state format
+        if len(state) == 3:
             player_sum, dealer_up, has_ace = state
-            return torch.FloatTensor([player_sum, dealer_up, has_ace, 0, 0, 0])
-        elif len(state) == 6:  # Previous state format
-            return torch.FloatTensor(state)
-        else:  # New state format with budget and games_played - use only first 6 elements
-            return torch.FloatTensor(state[:6])
+            full_state = [player_sum, dealer_up, int(has_ace), 0, 0, 0, 0, 0, 0, 0, 0]
+        elif len(state) == 6:
+            full_state = list(state) + [0, 0, 0, 0, 0]
+        elif len(state) == 9:
+            full_state = list(state) + [0, 0]
+        elif len(state) >= 11:
+            full_state = []
+            for i in range(11):
+                val = state[i] if i < len(state) else 0
+                if val is None:
+                    val = 0
+                elif isinstance(val, bool):
+                    val = int(val)
+                full_state.append(float(val))
+        else:
+            full_state = list(state) + [0] * (11 - len(state))
+
+        for i in range(len(full_state)):
+            if not isinstance(full_state[i], (int, float)) or not np.isfinite(
+                full_state[i]
+            ):
+                full_state[i] = 0.0
+
+        return torch.FloatTensor(full_state)
 
     def _get_learning_state(self, state):
-        """Get the core game state for learning (without budget/games_played)."""
-        if len(state) <= 6:
+        if len(state) <= 9:
             return state
         else:
-            return state[:6]  # Only use first 6 elements for learning
+            return state[:9]
 
     def get_action(self, state):
         if random.uniform(0, 1) < self.epsilon:
-            # Get valid actions based on state for exploration
             valid_actions = self._get_valid_actions(state)
+
+            if self.curriculum_stage and self.curriculum_stage.stage_id >= 3:
+                if 2 in valid_actions and random.random() < 0.3:
+                    return 2
+                if (
+                    self.curriculum_stage.stage_id == 4
+                    and 3 in valid_actions
+                    and random.random() < 0.2
+                ):
+                    return 3
+
             return random.choice(valid_actions) if valid_actions else 0
 
-        # Get valid actions and choose best Q-value among them
         valid_actions = self._get_valid_actions(state)
         if not valid_actions:
-            return 0  # Default to stand if no valid actions
+            return 0
 
-        # Use core state for Q-value calculation
         learning_state = self._get_learning_state(state)
         state_tensor = self._state_to_tensor(learning_state)
+        state_tensor = state_tensor.unsqueeze(0)
+
+        self.q_network.eval()
         with torch.no_grad():
             q_values = self.q_network(state_tensor)
+            q_values = q_values.squeeze(0)
+        self.q_network.train()
 
-        # Only consider valid actions
         valid_q_values = [q_values[action] for action in valid_actions]
         best_valid_idx = valid_q_values.index(max(valid_q_values))
         return valid_actions[best_valid_idx]
 
     def _get_valid_actions(self, state):
-        """Get valid actions based on current state and curriculum constraints."""
-        if (
-            len(state) == 3
-        ):  # Old state format (player_sum, dealer_up_card, has_usable_ace)
-            base_actions = [0, 1]  # Only stand and hit for backward compatibility
+        if len(state) == 3:
+            base_actions = [0, 1]
         else:
-            # Handle different state formats
-            if len(state) == 6:
-                (
-                    player_sum,
-                    dealer_up_card,
-                    has_usable_ace,
-                    can_split,
-                    can_double,
-                    is_blackjack,
-                ) = state
-            else:  # New format with budget and games_played
-                (
-                    player_sum,
-                    dealer_up_card,
-                    has_usable_ace,
-                    can_split,
-                    can_double,
-                    is_blackjack,
-                    budget,
-                    games_played,
-                ) = state
+            player_sum = state[0] if len(state) > 0 else 0
+            dealer_up_card = state[1] if len(state) > 1 else 0
+            has_usable_ace = state[2] if len(state) > 2 else False
+            can_split = state[3] if len(state) > 3 else False
+            can_double = state[4] if len(state) > 4 else False
+            is_blackjack = state[5] if len(state) > 5 else False
+            can_surrender = state[6] if len(state) > 6 else False
+            can_insure = state[7] if len(state) > 7 else False
 
-            base_actions = [0]  # Stand is always valid
+            base_actions = [0]
 
             if player_sum < 21 and not is_blackjack:
-                base_actions.append(1)  # Hit
+                base_actions.append(1)
 
             if can_double:
-                base_actions.append(2)  # Double down
+                base_actions.append(2)
 
             if can_split:
-                base_actions.append(3)  # Split
+                base_actions.append(3)
 
-        # Apply curriculum stage constraints if available
+            if can_surrender:
+                base_actions.append(4)
+
+            if can_insure:
+                base_actions.append(5)
+
         if self.curriculum_stage is not None:
-            # Filter actions based on curriculum stage
             valid_actions = [
                 a for a in base_actions if a in self.curriculum_stage.available_actions
             ]
-            return valid_actions if valid_actions else [0]  # Always allow stand
+            return valid_actions if valid_actions else [0]
         else:
             return base_actions
 
     def remember(self, state, action, reward, next_state, done):
-        """Store experience in replay memory."""
-        # Store core states for learning
         learning_state = self._get_learning_state(state)
         learning_next_state = self._get_learning_state(next_state)
         self.memory.append((learning_state, action, reward, learning_next_state, done))
 
     def replay(self):
-        """Train the network on a batch of experiences."""
         if len(self.memory) < self.batch_size:
             return
 
-        batch = random.sample(self.memory, self.batch_size)
+        if self.curriculum_stage and self.curriculum_stage.stage_id > 1:
+            recent_size = min(len(self.memory) // 2, self.batch_size // 2)
+            recent_batch = random.sample(
+                list(self.memory)[-len(self.memory) // 2 :], recent_size
+            )
+            older_batch = random.sample(self.memory, self.batch_size - recent_size)
+            batch = recent_batch + older_batch
+        else:
+            batch = random.sample(self.memory, self.batch_size)
+
         states = torch.stack([self._state_to_tensor(s[0]) for s in batch])
         actions = torch.LongTensor([s[1] for s in batch])
         rewards = torch.FloatTensor([s[2] for s in batch])
@@ -180,6 +245,9 @@ class DQNAgent:
 
         self.optimizer.zero_grad()
         loss.backward()
+
+        torch.nn.utils.clip_grad_norm_(self.q_network.parameters(), max_norm=1.0)
+
         self.optimizer.step()
 
         self.update_count += 1
@@ -187,7 +255,12 @@ class DQNAgent:
             self.target_network.load_state_dict(self.q_network.state_dict())
 
     def decay_epsilon(self):
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
+        if self.curriculum_stage:
+            stage_factor = 1.0 + (self.curriculum_stage.stage_id - 1) * 0.1
+            adjusted_decay = self.epsilon_decay**stage_factor
+            self.epsilon = max(self.epsilon_min, self.epsilon * adjusted_decay)
+        else:
+            self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
 
     def save_model(self, filename):
         torch.save(
@@ -223,7 +296,6 @@ class DQNAgent:
                 state = next_state
                 total_reward += reward
 
-            # Decay epsilon after each episode
             self.decay_epsilon()
 
             if episode % 1000 == 0:
@@ -234,7 +306,6 @@ class DQNAgent:
     def evaluate(self, env, episodes):
         total_rewards = 0
         total_wins = 0
-        # Save current epsilon and set to 0 for pure exploitation during evaluation
         original_epsilon = self.epsilon
         self.epsilon = 0.0
 
@@ -249,10 +320,9 @@ class DQNAgent:
                 episode_reward += reward
 
             total_rewards += episode_reward
-            if episode_reward > 0:  # Any positive reward counts as a win
+            if episode_reward > 0:
                 total_wins += 1
 
-        # Restore original epsilon
         self.epsilon = original_epsilon
 
         final_win_rate = (total_wins / episodes) * 100
@@ -279,94 +349,81 @@ class QLearningAgent:
         self.epsilon = exploration_rate
         self.epsilon_decay = exploration_decay
         self.epsilon_min = 0.01
-        self.curriculum_stage = curriculum_stage  # Add curriculum stage awareness
-
-    def set_curriculum_stage(self, curriculum_stage):
-        """Set the current curriculum stage for action constraints."""
         self.curriculum_stage = curriculum_stage
 
+    def set_curriculum_stage(self, curriculum_stage):
+        self.curriculum_stage = curriculum_stage
+
+        if curriculum_stage and curriculum_stage.stage_id > 1:
+            self.epsilon = max(0.2, self.epsilon)
+            print(
+                f"   Reset epsilon to {self.epsilon:.3f} for stage {curriculum_stage.stage_id}"
+            )
+
     def _get_learning_state(self, state):
-        """Get the core game state for learning (without budget/games_played)."""
         if len(state) <= 6:
             return state
         else:
-            return state[:6]  # Only use first 6 elements for learning
+            return state[:6]
 
     def get_action(self, state):
         if random.uniform(0, 1) < self.epsilon:
-            # Get valid actions based on state for exploration
             valid_actions = self._get_valid_actions(state)
             return random.choice(valid_actions) if valid_actions else 0
 
-        # Get valid actions and choose best Q-value among them
         valid_actions = self._get_valid_actions(state)
         if not valid_actions:
-            return 0  # Default to stand if no valid actions
+            return 0
 
-        # Use core state for Q-value lookup
         learning_state = self._get_learning_state(state)
         return max(
             valid_actions, key=lambda a: self.q_table.get((learning_state, a), 0)
         )
 
     def _get_valid_actions(self, state):
-        """Get valid actions based on current state and curriculum constraints."""
-        if (
-            len(state) == 3
-        ):  # Old state format (player_sum, dealer_up_card, has_usable_ace)
-            base_actions = [0, 1]  # Only stand and hit for backward compatibility
+        if len(state) == 3:
+            base_actions = [0, 1]
         else:
-            # Handle different state formats
-            if len(state) == 6:
-                (
-                    player_sum,
-                    dealer_up_card,
-                    has_usable_ace,
-                    can_split,
-                    can_double,
-                    is_blackjack,
-                ) = state
-            else:  # New format with budget and games_played
-                (
-                    player_sum,
-                    dealer_up_card,
-                    has_usable_ace,
-                    can_split,
-                    can_double,
-                    is_blackjack,
-                    budget,
-                    games_played,
-                ) = state
+            player_sum = state[0] if len(state) > 0 else 0
+            dealer_up_card = state[1] if len(state) > 1 else 0
+            has_usable_ace = state[2] if len(state) > 2 else False
+            can_split = state[3] if len(state) > 3 else False
+            can_double = state[4] if len(state) > 4 else False
+            is_blackjack = state[5] if len(state) > 5 else False
+            can_surrender = state[6] if len(state) > 6 else False
+            can_insure = state[7] if len(state) > 7 else False
 
-            base_actions = [0]  # Stand is always valid
+            base_actions = [0]
 
             if player_sum < 21 and not is_blackjack:
-                base_actions.append(1)  # Hit
+                base_actions.append(1)
 
             if can_double:
-                base_actions.append(2)  # Double down
+                base_actions.append(2)
 
             if can_split:
-                base_actions.append(3)  # Split
+                base_actions.append(3)
 
-        # Apply curriculum stage constraints if available
+            if can_surrender:
+                base_actions.append(4)
+
+            if can_insure:
+                base_actions.append(5)
+
         if self.curriculum_stage is not None:
-            # Filter actions based on curriculum stage
             valid_actions = [
                 a for a in base_actions if a in self.curriculum_stage.available_actions
             ]
-            return valid_actions if valid_actions else [0]  # Always allow stand
+            return valid_actions if valid_actions else [0]
         else:
             return base_actions
 
     def update(self, state, action, reward, next_state):
-        # Use core states for Q-value updates
         learning_state = self._get_learning_state(state)
         learning_next_state = self._get_learning_state(next_state)
 
         old_value = self.q_table.get((learning_state, action), 0)
 
-        # Only consider valid actions for next state
         valid_next_actions = self._get_valid_actions(learning_next_state)
         if valid_next_actions:
             next_max = max(
@@ -389,7 +446,6 @@ class QLearningAgent:
     def evaluate(self, env, episodes):
         total_rewards = 0
         total_wins = 0
-        # Save current epsilon and set to 0 for pure exploitation during evaluation
         original_epsilon = self.epsilon
         self.epsilon = 0.0
 
@@ -404,10 +460,9 @@ class QLearningAgent:
                 episode_reward += reward
 
             total_rewards += episode_reward
-            if episode_reward > 0:  # Any positive reward counts as a win
+            if episode_reward > 0:
                 total_wins += 1
 
-        # Restore original epsilon
         self.epsilon = original_epsilon
 
         final_win_rate = (total_wins / episodes) * 100

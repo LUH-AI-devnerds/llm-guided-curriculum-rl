@@ -9,33 +9,21 @@ from BlackJackENV import BlackjackEnv
 
 
 class CurriculumBlackjackEnv(BlackjackEnv):
-    """Extended BlackjackEnv that enforces curriculum stage constraints."""
-
     def __init__(
         self,
         curriculum_stage,
         deck_type="infinite",
         penetration=0.75,
-        budget=100,
-        use_dynamic_rewards=True,
-        reward_type="simple",
     ):
         super().__init__(
             curriculum_stage=curriculum_stage.stage_id,
             deck_type=deck_type,
             penetration=penetration,
-            budget=budget,
-            use_dynamic_rewards=use_dynamic_rewards,
-            reward_type=reward_type,
         )
         self.stage = curriculum_stage
 
     def step(self, action):
-        """Override step to enforce curriculum stage action constraints."""
-
-        # Check if action is allowed in current curriculum stage
         if action not in self.stage.available_actions:
-            # Force to stand if action not allowed
             print(
                 f"⚠️  Curriculum constraint: Action {action} not allowed in stage {self.stage.stage_id}. Forcing stand."
             )
@@ -45,8 +33,6 @@ class CurriculumBlackjackEnv(BlackjackEnv):
 
 
 class MultiAgentCurriculumSystem:
-    """Manages multiple RL agents learning through curriculum stages."""
-
     def __init__(
         self,
         llm_api_key,
@@ -54,40 +40,32 @@ class MultiAgentCurriculumSystem:
         agent_types=None,
         deck_type="infinite",
         penetration=0.9,
-        budget=10000,
-        use_dynamic_rewards=True,
-        reward_type="simple",
     ):
         self.llm_curriculum = LLMGuidedCurriculum(llm_api_key)
         self.num_agents = num_agents
         self.agent_types = agent_types or ["dqn", "tabular", "dqn"]
         self.deck_type = deck_type
         self.penetration = penetration
-        self.budget = budget
-        self.use_dynamic_rewards = use_dynamic_rewards
-        self.reward_type = reward_type
 
-        # Setup logging directory
         self.setup_logging_directory(deck_type, penetration)
 
-        # Initialize agents
         self.agents = []
         for i, agent_type in enumerate(self.agent_types):
             if agent_type == "dqn":
                 agent = DQNAgent(
-                    action_space=[0, 1, 2, 3],
-                    learning_rate=0.001,
+                    action_space=[0, 1, 2, 3, 4, 5],
+                    learning_rate=0.0005,
                     exploration_rate=1.0,
-                    exploration_decay=0.9999,  # Faster decay for better learning
-                    memory_size=50000,  # Larger memory
-                    batch_size=64,  # Larger batch size
+                    exploration_decay=0.99995,
+                    memory_size=100000,
+                    batch_size=128,
                 )
-            else:  # tabular
+            else:
                 agent = QLearningAgent(
-                    action_space=[0, 1, 2, 3],
-                    learning_rate=0.1,  # Higher learning rate
+                    action_space=[0, 1, 2, 3, 4, 5],
+                    learning_rate=0.1,
                     exploration_rate=1.0,
-                    exploration_decay=0.9999,  # Faster decay
+                    exploration_decay=0.9999,
                 )
 
             agent.agent_id = i
@@ -96,26 +74,19 @@ class MultiAgentCurriculumSystem:
             agent.stage_performance = []
             self.agents.append(agent)
 
-        # Generate curriculum
         self.curriculum_stages = self.llm_curriculum.generate_curriculum_stages()
         self.global_performance_log = []
 
     def setup_logging_directory(self, deck_type, penetration):
-        """Setup the logging directory structure for this training run."""
-        # Create logs directory if it doesn't exist
         if not os.path.exists("logs"):
             os.makedirs("logs")
 
-        # Create date-based subdirectory
         date_str = datetime.now().strftime("%Y%m%d")
-        reward_type = "dynamic" if self.use_dynamic_rewards else "simple"
-        self.log_dir = f"logs/logs-{date_str}-{deck_type}-{penetration}-budget{self.budget}-{self.reward_type}"
+        self.log_dir = f"logs/logs-{date_str}-{deck_type}-{penetration}"
 
-        # Create the directory if it doesn't exist
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
 
-        # Create subdirectories for different types of logs
         self.eval_log_dir = os.path.join(self.log_dir, "evaluation")
         self.training_log_dir = os.path.join(self.log_dir, "training")
         self.report_log_dir = os.path.join(self.log_dir, "reports")
@@ -129,19 +100,24 @@ class MultiAgentCurriculumSystem:
         print(f"  - Training logs: {self.training_log_dir}")
         print(f"  - Report logs: {self.report_log_dir}")
 
-    def train_multi_agent_curriculum(self, total_episodes=50000, eval_episodes=1000):
-        """Train multiple agents through curriculum stages."""
-
+    def train_multi_agent_curriculum(
+        self, total_episodes=50000, eval_episodes=1000, max_episodes_per_stage=20000
+    ):
         print(f"\n🎓 MULTI-AGENT CURRICULUM LEARNING")
         print("=" * 60)
         print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
         print(f"Curriculum Stages: {len(self.curriculum_stages)}")
         print(f"Total Episodes: {total_episodes}")
-        print(f"Budget per agent: ${self.budget}")
-        print(f"Dynamic Rewards: {'ON' if self.use_dynamic_rewards else 'OFF'}")
-        print(f"Reward Type: {self.reward_type}")
+        print(f"Max Episodes per Stage: {max_episodes_per_stage}")
 
-        for stage_idx, stage in enumerate(self.curriculum_stages):
+        stage_idx = 0
+        agent_stage_attempts = {
+            agent.agent_id: {stage.stage_id: 0 for stage in self.curriculum_stages}
+            for agent in self.agents
+        }
+
+        while stage_idx < len(self.curriculum_stages):
+            stage = self.curriculum_stages[stage_idx]
             print(f"\n📚 STAGE {stage.stage_id}: {stage.name}")
             print(f"Available Actions: {stage.available_actions}")
             print(f"Description: {stage.description}")
@@ -151,29 +127,32 @@ class MultiAgentCurriculumSystem:
             stage_results = {}
 
             for agent_idx, agent in enumerate(self.agents):
-                if agent.current_stage <= stage_idx:
+                if agent.current_stage == stage_idx:
+                    current_attempts = agent_stage_attempts[agent.agent_id][
+                        stage.stage_id
+                    ]
+                    if current_attempts >= max_episodes_per_stage:
+                        print(
+                            f"⚠️  Agent {agent_idx} reached maximum training attempts ({max_episodes_per_stage}) for Stage {stage.stage_id}"
+                        )
+                        print(f"   📊 Forcing advancement to next stage...")
+                        agent.current_stage += 1
+                        continue
                     print(
                         f"\n🤖 Training Agent {agent_idx} ({agent.agent_type.upper()})"
                     )
 
-                    # Create environment for current stage with deck configuration and budget
                     env = CurriculumBlackjackEnv(
                         stage,
                         deck_type=self.deck_type,
                         penetration=self.penetration,
-                        budget=self.budget,
-                        use_dynamic_rewards=self.use_dynamic_rewards,
-                        reward_type=self.reward_type,
                     )
 
-                    # Set curriculum stage for the agent
                     agent.set_curriculum_stage(stage)
 
-                    # Load strategies from previous stages if available
                     if stage.stage_id > 1 and hasattr(agent, "stage_models"):
                         self._load_previous_stage_strategies(agent, stage)
 
-                    # Validate agent curriculum stage awareness
                     print(
                         f"  🔍 Agent {agent_idx} curriculum stage set to: {agent.curriculum_stage.stage_id if agent.curriculum_stage else 'None'}"
                     )
@@ -181,29 +160,68 @@ class MultiAgentCurriculumSystem:
                         f"  🔍 Available actions for agent: {agent.curriculum_stage.available_actions if agent.curriculum_stage else 'None'}"
                     )
 
-                    # Train agent on current stage
-                    stage_episodes = total_episodes // len(self.curriculum_stages)
+                    base_episodes = total_episodes // len(self.curriculum_stages)
+                    stage_multiplier = 1.0 + (stage.stage_id - 1) * 0.2
+                    stage_episodes = int(base_episodes * stage_multiplier)
+
+                    print(
+                        f"  📊 Stage {stage.stage_id} allocated {stage_episodes} episodes (multiplier: {stage_multiplier:.1f})"
+                    )
+
                     agent_performance = self._train_agent_on_stage(
                         agent, env, stage, stage_episodes, eval_episodes
                     )
 
-                    # Get LLM recommendations for this agent
+                    agent_stage_attempts[agent.agent_id][
+                        stage.stage_id
+                    ] += stage_episodes
+
                     recommendations = self.llm_curriculum.adapt_curriculum(
                         agent_performance, stage, self.curriculum_stages
                     )
 
-                    # Apply LLM-guided action focus
                     if "recommended_actions" in recommendations:
                         self._apply_action_focus(
                             agent, recommendations["recommended_actions"]
                         )
 
-                    # Check if agent should advance
-                    if recommendations.get("advance_stage", False):
-                        agent.current_stage += 1
-                        print(f"✅ Agent {agent_idx} advanced to next stage!")
+                    llm_advance = recommendations.get("advance_stage", False)
+                    episode_win_rate = agent_performance.get("win_rate", 0)
 
-                        # Preserve learned strategies when advancing stages
+                    threshold_advance = episode_win_rate >= stage.success_threshold
+
+                    if isinstance(llm_advance, str):
+                        llm_advance = llm_advance.lower() == "true"
+
+                    current_attempts = agent_stage_attempts[agent.agent_id][
+                        stage.stage_id
+                    ]
+                    max_attempts_reached = current_attempts >= max_episodes_per_stage
+                    should_advance = (
+                        llm_advance and threshold_advance
+                    ) or max_attempts_reached
+
+                    if should_advance:
+                        agent.current_stage += 1
+                        if max_attempts_reached:
+                            print(
+                                f"⚠️  Agent {agent_idx} forced to advance (max attempts reached)"
+                            )
+                            print(
+                                f"   📊 Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
+                            )
+                            print(
+                                f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
+                            )
+                        else:
+                            print(f"✅ Agent {agent_idx} advanced to next stage!")
+                            print(
+                                f"   📊 Win Rate: {episode_win_rate:.3f} >= {stage.success_threshold}"
+                            )
+                            print(
+                                f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
+                            )
+
                         self._preserve_learned_strategies(
                             agent, stage, agent_performance
                         )
@@ -211,9 +229,24 @@ class MultiAgentCurriculumSystem:
                         print(
                             f"🔄 Agent {agent_idx} needs more training on current stage"
                         )
+                        print(
+                            f"   📊 Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
+                        )
+                        print(
+                            f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
+                        )
+                        if not llm_advance:
+                            print(f"   🤖 LLM recommendation: Do not advance")
+                        if not threshold_advance:
+                            print(f"   🎯 Success threshold not met")
 
                     stage_results[f"agent_{agent_idx}"] = agent_performance
                     agent.stage_performance.append(agent_performance)
+
+                else:
+                    print(
+                        f"⏭️  Agent {agent_idx} ({agent.agent_type.upper()}) - Stage {agent.current_stage} not completed yet"
+                    )
 
             self.global_performance_log.append(
                 {
@@ -223,17 +256,25 @@ class MultiAgentCurriculumSystem:
                 }
             )
 
-        return self._generate_final_report()
+            all_agents_completed = all(
+                agent.current_stage > stage_idx for agent in self.agents
+            )
 
-        # Generate stage comparison summary
-        self._generate_stage_comparison_summary()
+            if all_agents_completed:
+                print(
+                    f"\n🎉 All agents completed Stage {stage.stage_id}! Moving to next stage..."
+                )
+                stage_idx += 1
+            else:
+                print(
+                    f"\n🔄 Some agents still need to complete Stage {stage.stage_id}. Continuing training..."
+                )
 
         return self._generate_final_report()
 
     def _validate_curriculum_constraints(
         self, agent, stage, action, context="training"
     ):
-        """Validate and log curriculum constraint violations."""
         if action not in stage.available_actions:
             print(
                 f"⚠️  {context.upper()}: Agent {agent.agent_id} ({agent.agent_type}) "
@@ -244,7 +285,6 @@ class MultiAgentCurriculumSystem:
         return True
 
     def _analyze_stage_performance(self, agent, stage, episode_rewards, wins, episodes):
-        """Analyze performance patterns for curriculum stage debugging."""
         print(
             f"\n📊 STAGE {stage.stage_id} ANALYSIS for Agent {agent.agent_id} ({agent.agent_type}):"
         )
@@ -255,7 +295,6 @@ class MultiAgentCurriculumSystem:
         print(f"  Average Reward: {np.mean(episode_rewards):.4f}")
         print(f"  Reward Std: {np.std(episode_rewards):.4f}")
 
-        # Analyze reward distribution
         positive_rewards = [r for r in episode_rewards if r > 0]
         negative_rewards = [r for r in episode_rewards if r < 0]
         zero_rewards = [r for r in episode_rewards if r == 0]
@@ -275,7 +314,6 @@ class MultiAgentCurriculumSystem:
         if negative_rewards:
             print(f"  Avg Negative Reward: {np.mean(negative_rewards):.4f}")
 
-        # Stage-specific insights
         if stage.stage_id == 3:
             print(
                 f"  🔍 Stage 3 (Double Available): Agents should be learning double strategy"
@@ -289,19 +327,15 @@ class MultiAgentCurriculumSystem:
             )
 
     def _train_agent_on_stage(self, agent, env, stage, episodes, eval_episodes):
-        """Train a single agent on a curriculum stage."""
         start_time = time.time()
         episode_rewards = []
         wins = 0
-        window_wins = 0  # Track wins for current 1000-episode window
-        window_start = 0  # Track start of current window
+        window_wins = 0
+        window_start = 0
 
-        # Calculate logging interval based on total episodes across all stages
-        # This ensures consistent logging frequency regardless of stage division
         total_episodes_across_stages = episodes * len(self.curriculum_stages)
         every_n_episodes_to_log = total_episodes_across_stages // 100
 
-        # Training episode logging (log every 1000th episode for efficiency)
         training_log = {
             "agent_id": agent.agent_id,
             "agent_type": agent.agent_type,
@@ -310,13 +344,22 @@ class MultiAgentCurriculumSystem:
             "total_episodes": episodes,
             "timestamp": datetime.now().isoformat(),
             "logged_episodes": [],
-            "action_usage_summary": {0: 0, 1: 0, 2: 0, 3: 0},  # Track action usage
+            "action_usage_summary": {
+                0: 0,
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                5: 0,
+            },
             "action_rewards_summary": {
                 0: [],
                 1: [],
                 2: [],
                 3: [],
-            },  # Track action rewards
+                4: [],
+                5: [],
+            },
         }
 
         for episode in range(episodes):
@@ -341,51 +384,25 @@ class MultiAgentCurriculumSystem:
             while not done:
                 action = agent.get_action(state)
 
-                # Validate curriculum constraints
                 self._validate_curriculum_constraints(agent, stage, action, "training")
 
-                # Track action usage and rewards
                 if action in stage.available_actions:
                     training_log["action_usage_summary"][action] += 1
 
                 next_state, reward, done = env.step(action)
 
-                # Track action rewards
                 if action in stage.available_actions:
                     training_log["action_rewards_summary"][action].append(reward)
 
-                # Log state and action if this episode is being logged
-                if should_log_episode:
-                    episode_log["states"].append(
-                        {
-                            "player_sum": state[0],
-                            "dealer_up": state[1],
-                            "has_ace": state[2],
-                            "can_split": state[3],
-                            "can_double": state[4],
-                            "is_blackjack": state[5],
-                        }
-                    )
-                    episode_log["actions"].append(action)
-                    episode_log["rewards"].append(reward)
-
-                    # Log detailed game info (player hands, dealer hand, etc.)
-                    game_info = env.get_game_info()
-                    episode_log["game_info"].append(
-                        {
-                            "player_hands": game_info["player_hands"].copy(),
-                            "dealer_hand": game_info["dealer_hand"].copy(),
-                            "current_hand_idx": game_info["current_hand_idx"],
-                            "bet_amounts": game_info["bet_amounts"].copy(),
-                            "game_over": game_info["game_over"],
-                        }
-                    )
-
-                # Update agent based on type
-                if hasattr(agent, "remember"):  # DQN
+                if hasattr(agent, "remember"):
                     agent.remember(state, action, reward, next_state, done)
-                    agent.replay()
-                else:  # Tabular
+
+                    if episode < episodes // 2:
+                        agent.replay()
+                    else:
+                        if episode % 3 == 0:
+                            agent.replay()
+                else:
                     agent.update(state, action, reward, next_state)
 
                 state = next_state
@@ -393,17 +410,14 @@ class MultiAgentCurriculumSystem:
 
             episode_rewards.append(total_reward)
 
-            # Get detailed win stats for this episode
             detailed_stats = env.get_detailed_win_stats()
             if detailed_stats:
-                # Count wins based on individual hand results and bet amounts
                 episode_wins = 0
                 for hand_detail in detailed_stats["hand_details"]:
                     if (
                         hand_detail["result"] == "win"
                         or hand_detail["result"] == "blackjack"
                     ):
-                        # Count wins based on bet amount (accounts for double downs)
                         bet_multiplier = 2 if hand_detail["doubled"] else 1
                         episode_wins += bet_multiplier
 
@@ -411,7 +425,6 @@ class MultiAgentCurriculumSystem:
                     wins += episode_wins
                     window_wins += episode_wins
 
-                # Log detailed stats occasionally for debugging
                 if should_log_episode and detailed_stats["total_hands"] > 1:
                     print(
                         f"    Episode {episode} - Hands: {detailed_stats['total_hands']}, "
@@ -421,11 +434,9 @@ class MultiAgentCurriculumSystem:
                         f"Episode Wins: {episode_wins}"
                     )
 
-                # Add final result to logged episode
                 if should_log_episode and episode_log:
                     episode_log["final_result"] = {
                         "episode_wins": episode_wins,
-                        "net_result": detailed_stats["net_result"],
                         "total_hands": detailed_stats["total_hands"],
                         "hands_won": detailed_stats["hands_won"],
                         "hands_lost": detailed_stats["hands_lost"],
@@ -433,12 +444,10 @@ class MultiAgentCurriculumSystem:
                         "splits": detailed_stats["splits"],
                     }
 
-                    # Add final game state
                     final_game_info = env.get_game_info()
                     episode_log["final_game_state"] = {
                         "player_hands": final_game_info["player_hands"].copy(),
                         "dealer_hand": final_game_info["dealer_hand"].copy(),
-                        "bet_amounts": final_game_info["bet_amounts"].copy(),
                         "detailed_stats": detailed_stats,
                     }
 
@@ -447,24 +456,17 @@ class MultiAgentCurriculumSystem:
             agent.decay_epsilon()
 
             if should_log_episode:
-                # Calculate win rate for current 1000-episode window
                 window_episodes = episode - window_start + 1
                 recent_win_rate = (window_wins / window_episodes) * 100
 
-                # Get budget information
-                budget_info = env.get_game_info()
-                budget = budget_info.get("budget", 0)
-
                 print(
                     f"  Episode {episode}: Win Rate: {recent_win_rate:.1f}%, "
-                    f"Total Wins: {wins}, Epsilon: {agent.epsilon:.4f}, Budget: ${budget:.1f}"
+                    f"Total Wins: {wins}, Epsilon: {agent.epsilon:.4f}"
                 )
 
-                # Reset window counters for next 1000 episodes
                 window_wins = 0
                 window_start = episode + 1
 
-        # Save training log to JSON file
         training_log["summary"] = {
             "total_wins": wins,
             "win_rate": wins / episodes,
@@ -482,7 +484,6 @@ class MultiAgentCurriculumSystem:
             },
         }
 
-        # Analyze stage performance for debugging
         self._analyze_stage_performance(agent, stage, episode_rewards, wins, episodes)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -495,16 +496,14 @@ class MultiAgentCurriculumSystem:
 
         print(f"  📊 Training log saved to: {training_filename}")
 
-        # Evaluation phase
         evaluation_results = self._evaluate_agent(agent, env, eval_episodes, stage)
         end_time = time.time()
         time_taken = end_time - start_time
         print(f"Time taken: {time_taken:.2f} seconds")
         return {
             "win_rate": evaluation_results["win_rate"],
-            "avg_reward": evaluation_results["avg_reward"],
-            # "episodes": episodes,
-            "total_wins": wins,  # Add total wins count
+            "avg_reward": evaluation_results.get("avg_reward", 0),
+            "total_wins": wins,
             "stage_id": stage.stage_id,
             "agent_type": agent.agent_type,
             "poor_actions": evaluation_results.get("poor_actions", []),
@@ -512,11 +511,8 @@ class MultiAgentCurriculumSystem:
         }
 
     def _get_llm_guided_action(self, agent, state, stage):
-        """Get LLM guidance for action selection during training."""
-
         valid_actions = self._get_valid_actions_for_stage(state, stage)
 
-        # Convert state to human-readable format
         player_sum, dealer_up, has_ace, can_split, can_double, is_blackjack = state
 
         state_description = f"Player sum: {player_sum}, Dealer up card: {dealer_up}"
@@ -544,75 +540,75 @@ class MultiAgentCurriculumSystem:
 
         try:
             response = self.llm_curriculum.llm.generate_response(prompt)
-            # Extract number from response
             action = int("".join(filter(str.isdigit, response))[:1])
             if action in valid_actions:
                 return action
         except:
             pass
 
-        # Fallback to agent's own decision
         return agent.get_action(state)
 
     def _get_valid_actions_for_stage(self, state, stage):
-        """Get valid actions for current state within curriculum stage constraints."""
-
-        # Get all valid actions from environment
-        player_sum, dealer_up, has_ace, can_split, can_double, is_blackjack = state
-        valid_actions = [0]  # Stand always valid
+        (
+            player_sum,
+            dealer_up,
+            has_ace,
+            can_split,
+            can_double,
+            is_blackjack,
+            can_surrender,
+            can_insure,
+        ) = state[:8]
+        valid_actions = [0]
 
         if player_sum < 21 and not is_blackjack:
-            valid_actions.append(1)  # Hit
+            valid_actions.append(1)
         if can_double:
-            valid_actions.append(2)  # Double
+            valid_actions.append(2)
         if can_split:
-            valid_actions.append(3)  # Split
+            valid_actions.append(3)
+        if can_surrender:
+            valid_actions.append(4)
+        if can_insure:
+            valid_actions.append(5)
 
-        # Filter by curriculum stage
         stage_valid_actions = [a for a in valid_actions if a in stage.available_actions]
 
-        return stage_valid_actions if stage_valid_actions else [0]  # Always allow stand
+        return stage_valid_actions if stage_valid_actions else [0]
 
     def _apply_action_focus(self, agent, recommended_actions):
-        """Apply LLM recommendations to focus training on specific actions."""
-
-        # Temporarily adjust exploration to favor recommended actions
         if hasattr(agent, "action_focus_weight"):
             agent.action_focus_weight = {}
         else:
             agent.action_focus_weight = {}
 
         for action in recommended_actions:
-            agent.action_focus_weight[action] = 1.5  # Increase probability
+            agent.action_focus_weight[action] = 1.5
 
         print(f"  🎯 Focusing on actions: {recommended_actions}")
 
     def _preserve_learned_strategies(self, agent, stage, agent_performance):
-        """Preserve learned strategies from the previous stage to the new stage."""
         print(
             f"  💾 Preserving learned strategies for Agent {agent.agent_id} (Stage {stage.stage_id})"
         )
 
-        # Create models directory if it doesn't exist
         models_dir = os.path.join(self.log_dir, "models")
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
 
-        # Save current stage model
         if agent.agent_type == "dqn":
             model_path = os.path.join(
                 models_dir, f"agent_{agent.agent_id}_stage_{stage.stage_id}.pth"
             )
             agent.save_model(model_path)
             print(f"    DQN model saved to: {model_path}")
-        else:  # tabular
+        else:
             model_path = os.path.join(
                 models_dir, f"agent_{agent.agent_id}_stage_{stage.stage_id}.pkl"
             )
             agent.save_model(model_path)
             print(f"    Q-table saved to: {model_path}")
 
-        # Store stage performance for reference
         agent.stage_models = getattr(agent, "stage_models", {})
         agent.stage_models[stage.stage_id] = {
             "model_path": model_path,
@@ -621,7 +617,6 @@ class MultiAgentCurriculumSystem:
         }
 
     def _load_previous_stage_strategies(self, agent, stage):
-        """Load and merge strategies from previous stages to the current agent."""
         print(
             f"  💾 Loading strategies from previous stages for Agent {agent.agent_id} (Stage {stage.stage_id})"
         )
@@ -631,16 +626,14 @@ class MultiAgentCurriculumSystem:
             print(f"    Loading strategies from Stage {previous_stage_id}")
             print(f"    Available Actions: {previous_stage_data['available_actions']}")
 
-            # Load the model
             model_path = previous_stage_data["model_path"]
             if agent.agent_type == "dqn":
                 agent.load_model(model_path)
                 print(f"    DQN model loaded from: {model_path}")
-            else:  # tabular
+            else:
                 agent.load_model(model_path)
                 print(f"    Q-table loaded from: {model_path}")
 
-            # Merge available actions
             current_available_actions = set(stage.available_actions)
             previous_available_actions = set(previous_stage_data["available_actions"])
             new_available_actions = list(
@@ -649,30 +642,39 @@ class MultiAgentCurriculumSystem:
             agent.action_space = new_available_actions
             print(f"    Merged available actions: {new_available_actions}")
 
-            # Update action space for the agent's RL model
             if hasattr(agent, "action_space"):
                 agent.action_space = new_available_actions
                 print(f"    Agent action_space updated to: {agent.action_space}")
 
-            # Update action_space attribute for the agent's RL model
             if hasattr(agent, "action_space"):
                 agent.action_space = new_available_actions
                 print(f"    Agent action_space updated to: {agent.action_space}")
 
     def _evaluate_agent(self, agent, env, episodes, stage=None):
-        """Evaluate agent performance and identify weak actions."""
-
         original_epsilon = agent.epsilon
-        agent.epsilon = 0.0  # Pure exploitation
+        agent.epsilon = 0.05
+
+        # Create a separate evaluation environment with different seed
+        eval_env = (
+            CurriculumBlackjackEnv(
+                stage,
+                deck_type=self.deck_type,
+                penetration=self.penetration,
+            )
+            if stage
+            else BlackjackEnv(
+                deck_type=self.deck_type,
+                penetration=self.penetration,
+            )
+        )
 
         total_rewards = []
         wins = 0
-        action_rewards = {0: [], 1: [], 2: [], 3: []}
+        action_rewards = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
 
-        # Enhanced statistics tracking
-        state_action_stats = {}  # Track actions per state
-        state_win_stats = {}  # Track wins per state
-        state_reward_stats = {}  # Track rewards per state
+        state_action_stats = {}
+        state_win_stats = {}
+        state_reward_stats = {}
         game_outcomes = {
             "wins": 0,
             "losses": 0,
@@ -681,7 +683,6 @@ class MultiAgentCurriculumSystem:
             "blackjacks": 0,
         }
 
-        # Detailed evaluation logging
         evaluation_log = {
             "agent_id": agent.agent_id,
             "stage_id": stage.stage_id if stage else None,
@@ -692,12 +693,11 @@ class MultiAgentCurriculumSystem:
         }
 
         for episode_idx in range(episodes):
-            state = env.reset()
+            state = eval_env.reset()
             done = False
             episode_reward = 0
             episode_actions = []
 
-            # Episode logging
             episode_log = {
                 "episode": episode_idx,
                 "actions": [],
@@ -712,30 +712,24 @@ class MultiAgentCurriculumSystem:
                 action = agent.get_action(state)
                 episode_actions.append(action)
 
-                # Validate curriculum constraints during evaluation
-                if stage:
-                    self._validate_curriculum_constraints(
-                        agent, stage, action, "evaluation"
-                    )
+                self._validate_curriculum_constraints(
+                    agent, stage, action, "evaluation"
+                )
 
-                # Create state key for statistics
                 player_sum = state[0]
                 dealer_up = state[1]
                 has_ace = state[2]
                 state_key = f"P{player_sum}_D{dealer_up}_A{has_ace}"
 
-                # Track state-action statistics
                 if state_key not in state_action_stats:
-                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0}
+                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
                 state_action_stats[state_key][action] += 1
 
-                # Track state-reward statistics
                 if state_key not in state_reward_stats:
                     state_reward_stats[state_key] = []
                 if state_key not in state_win_stats:
                     state_win_stats[state_key] = {"wins": 0, "total": 0}
 
-                # Log state and action
                 episode_log["states"].append(
                     {
                         "player_sum": state[0],
@@ -748,45 +742,37 @@ class MultiAgentCurriculumSystem:
                 )
                 episode_log["actions"].append(action)
 
-                # Log detailed game info (player hands, dealer hand, etc.)
-                game_info = env.get_game_info()
+                game_info = eval_env.get_game_info()
                 episode_log["game_info"].append(
                     {
                         "player_hands": game_info["player_hands"].copy(),
                         "dealer_hand": game_info["dealer_hand"].copy(),
                         "current_hand_idx": game_info["current_hand_idx"],
-                        "bet_amounts": game_info["bet_amounts"].copy(),
                         "game_over": game_info["game_over"],
                     }
                 )
 
-                state, reward, done = env.step(action)
+                state, reward, done = eval_env.step(action)
                 episode_reward += reward
                 episode_log["rewards"].append(reward)
 
-                # Track state rewards
                 state_reward_stats[state_key].append(reward)
 
             total_rewards.append(episode_reward)
 
-            # Get detailed win stats for this episode
-            detailed_stats = env.get_detailed_win_stats()
+            detailed_stats = eval_env.get_detailed_win_stats()
             if detailed_stats:
-                # Count wins based on individual hand results and bet amounts
                 episode_wins = 0
                 for hand_detail in detailed_stats["hand_details"]:
                     if (
                         hand_detail["result"] == "win"
                         or hand_detail["result"] == "blackjack"
                     ):
-                        # Count wins based on bet amount (accounts for double downs)
-                        bet_multiplier = 2 if hand_detail["doubled"] else 1
-                        episode_wins += bet_multiplier
+                        episode_wins += 1
 
                 if episode_wins > 0:
                     wins += episode_wins
 
-                # Track game outcomes
                 for hand_detail in detailed_stats["hand_details"]:
                     result = hand_detail["result"]
                     if result == "win":
@@ -800,17 +786,14 @@ class MultiAgentCurriculumSystem:
                     elif result == "bust":
                         game_outcomes["busts"] += 1
 
-                # Track state win statistics
                 for state_key in state_win_stats:
                     state_win_stats[state_key]["total"] += 1
                     if episode_wins > 0:
                         state_win_stats[state_key]["wins"] += 1
 
-                # Log detailed stats and final game state
                 episode_log["detailed_stats"] = detailed_stats
                 episode_log["final_result"] = {
                     "episode_wins": episode_wins,
-                    "net_result": detailed_stats["net_result"],
                     "total_hands": detailed_stats["total_hands"],
                     "hands_won": detailed_stats["hands_won"],
                     "hands_lost": detailed_stats["hands_lost"],
@@ -818,31 +801,25 @@ class MultiAgentCurriculumSystem:
                     "splits": detailed_stats["splits"],
                 }
 
-                # Add final game state
-                final_game_info = env.get_game_info()
+                final_game_info = eval_env.get_game_info()
                 episode_log["final_game_state"] = {
                     "player_hands": final_game_info["player_hands"].copy(),
                     "dealer_hand": final_game_info["dealer_hand"].copy(),
-                    "bet_amounts": final_game_info["bet_amounts"].copy(),
                     "detailed_stats": detailed_stats,
                 }
 
-            # Add episode to evaluation log
-            # evaluation_log["episodes"].append(episode_log)
+            evaluation_log["episodes"].append(episode_log)
 
-            # Track action performance
             for action in episode_actions:
                 action_rewards[action].append(episode_reward)
 
         agent.epsilon = original_epsilon
 
-        # Identify poor performing actions
         poor_actions = []
         for action, rewards in action_rewards.items():
-            if rewards and np.mean(rewards) < -0.2:  # Threshold for poor performance
+            if rewards and np.mean(rewards) < -0.2:
                 poor_actions.append(action)
 
-        # Calculate game outcome percentages
         total_hands = sum(game_outcomes.values())
         game_outcome_percentages = {}
         if total_hands > 0:
@@ -852,19 +829,16 @@ class MultiAgentCurriculumSystem:
                 "bust_percent": (game_outcomes["busts"] / total_hands) * 100,
                 "push_percent": (game_outcomes["pushes"] / total_hands) * 100,
                 "blackjack_percent": (game_outcomes["blackjacks"] / total_hands) * 100,
-                "net_wins_percent": (
+                "win_loss_ratio": (
                     (
-                        game_outcomes["wins"]
-                        + game_outcomes["blackjacks"]
-                        - game_outcomes["losses"]
-                        - game_outcomes["busts"]
+                        (game_outcomes["wins"] + game_outcomes["blackjacks"])
+                        / (game_outcomes["losses"] + game_outcomes["busts"])
                     )
-                    / total_hands
-                )
-                * 100,
+                    if (game_outcomes["losses"] + game_outcomes["busts"]) > 0
+                    else float("inf")
+                ),
             }
 
-        # Create strategy table data
         strategy_table = {}
         for state_key, action_counts in state_action_stats.items():
             total_actions = sum(action_counts.values())
@@ -891,21 +865,12 @@ class MultiAgentCurriculumSystem:
                     ),
                 }
 
-        # Save evaluation log to JSON file
         evaluation_log["summary"] = {
             "win_rate": wins / episodes,
             "avg_reward": np.mean(total_rewards),
             "std_reward": np.std(total_rewards),
-            "total_wins": wins,  # Add total wins count
+            "total_wins": wins,
             "poor_actions": poor_actions,
-            "action_performance": {
-                action: {
-                    "count": len(rewards),
-                    "avg_reward": np.mean(rewards) if rewards else 0,
-                    "std_reward": np.std(rewards) if rewards else 0,
-                }
-                for action, rewards in action_rewards.items()
-            },
             "game_outcomes": game_outcomes,
             "game_outcome_percentages": game_outcome_percentages,
             "strategy_table": strategy_table,
@@ -918,7 +883,6 @@ class MultiAgentCurriculumSystem:
             },
         }
 
-        # Save to file with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = os.path.join(
             self.eval_log_dir,
@@ -933,7 +897,7 @@ class MultiAgentCurriculumSystem:
             "win_rate": wins / episodes,
             "avg_reward": np.mean(total_rewards),
             "std_reward": np.std(total_rewards),
-            "total_wins": wins,  # Add total wins count
+            "total_wins": wins,
             "poor_actions": poor_actions,
             "game_outcomes": game_outcomes,
             "game_outcome_percentages": game_outcome_percentages,
@@ -948,11 +912,9 @@ class MultiAgentCurriculumSystem:
         }
 
     def _generate_stage_comparison_summary(self):
-        """Generate a summary comparing Stage 3 vs Stage 4 performance."""
         print(f"\n📊 STAGE 3 vs STAGE 4 COMPARISON SUMMARY")
         print("=" * 60)
 
-        # Find Stage 3 and Stage 4 results
         stage3_results = None
         stage4_results = None
 
@@ -1010,8 +972,6 @@ class MultiAgentCurriculumSystem:
         print(f"  4. This is normal curriculum learning behavior")
 
     def _generate_final_report(self):
-        """Generate comprehensive training report."""
-
         report = {
             "training_summary": {
                 "total_agents": self.num_agents,
@@ -1024,7 +984,6 @@ class MultiAgentCurriculumSystem:
             "global_performance_log": self.global_performance_log,
         }
 
-        # Summarize each agent's final performance
         for agent in self.agents:
             final_performance = (
                 agent.stage_performance[-1] if agent.stage_performance else {}
@@ -1039,7 +998,6 @@ class MultiAgentCurriculumSystem:
                 }
             )
 
-        # Save report
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         report_filename = os.path.join(
             self.report_log_dir, f"curriculum_training_report_{timestamp}.json"
@@ -1061,8 +1019,6 @@ class MultiAgentCurriculumSystem:
         return report
 
     def save_agents(self, prefix="curriculum_agent"):
-        """Save all trained agents."""
-        # Create models directory
         models_dir = os.path.join(self.log_dir, "models")
         if not os.path.exists(models_dir):
             os.makedirs(models_dir)
@@ -1078,7 +1034,6 @@ class MultiAgentCurriculumSystem:
             print(f"Saved {filename} to {model_path}")
 
     def create_run_summary(self):
-        """Create a summary of all logs and files for this training run."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         summary = {
             "run_timestamp": timestamp,
@@ -1089,8 +1044,7 @@ class MultiAgentCurriculumSystem:
                 "deck_type": self.deck_type,
                 "penetration": self.penetration,
                 "curriculum_stages": len(self.curriculum_stages),
-                "use_dynamic_rewards": self.use_dynamic_rewards,
-                "reward_type": self.reward_type,
+                "reward_type": "simplified",
             },
             "directory_structure": {
                 "evaluation_logs": self.eval_log_dir,
@@ -1106,7 +1060,6 @@ class MultiAgentCurriculumSystem:
             },
         }
 
-        # Scan directories and list files
         for log_type, dir_path in summary["directory_structure"].items():
             if os.path.exists(dir_path):
                 files = [
@@ -1118,10 +1071,42 @@ class MultiAgentCurriculumSystem:
                     log_type.replace("_logs", "").replace("_log", "")
                 ] = files
 
-        # Save summary
         summary_filename = os.path.join(self.log_dir, f"run_summary_{timestamp}.json")
         with open(summary_filename, "w") as f:
             json.dump(summary, f, indent=2)
 
         print(f"📋 Run summary saved to: {summary_filename}")
+
+        self._run_automatic_analysis(summary_filename)
+
         return summary
+
+    def _run_automatic_analysis(self, summary_filename):
+        try:
+            import subprocess
+            import sys
+
+            print(f"\n🔍 Running automatic analysis...")
+
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            analyze_script = os.path.join(script_dir, "analyze_logs.py")
+
+            cmd = [sys.executable, analyze_script, summary_filename]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+
+            if result.returncode == 0:
+                print(f"✅ Automatic analysis completed successfully!")
+                if result.stdout:
+                    print(result.stdout)
+            else:
+                print(f"⚠️  Analysis completed with warnings:")
+                if result.stderr:
+                    print(result.stderr)
+                if result.stdout:
+                    print(result.stdout)
+
+        except Exception as e:
+            print(f"⚠️  Could not run automatic analysis: {e}")
+            print(
+                f"   You can manually run: python scripts/analyze_logs.py {summary_filename}"
+            )

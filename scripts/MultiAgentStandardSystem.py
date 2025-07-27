@@ -8,31 +8,23 @@ from BlackJackENV import BlackjackEnv
 
 
 class MultiAgentStandardSystem:
-    """Trains multiple RL agents on the full Blackjack environment (no curriculum)."""
-
     def __init__(
         self,
         num_agents=3,
         agent_types=None,
         deck_type="infinite",
         penetration=0.9,
-        budget=100,
-        use_dynamic_rewards=True,
-        reward_type="simple",
     ):
         self.num_agents = num_agents
         self.agent_types = agent_types or ["dqn", "tabular", "dqn"]
         self.deck_type = deck_type
         self.penetration = penetration
-        self.budget = budget
-        self.use_dynamic_rewards = use_dynamic_rewards
-        self.reward_type = reward_type
         self.setup_logging_directory(deck_type, penetration)
         self.agents = []
         for i, agent_type in enumerate(self.agent_types):
             if agent_type == "dqn":
                 agent = DQNAgent(
-                    action_space=[0, 1, 2, 3],
+                    action_space=[0, 1, 2, 3, 4, 5],
                     learning_rate=0.001,
                     exploration_rate=1.0,
                     exploration_decay=0.9999,
@@ -41,7 +33,7 @@ class MultiAgentStandardSystem:
                 )
             else:
                 agent = QLearningAgent(
-                    action_space=[0, 1, 2, 3],
+                    action_space=[0, 1, 2, 3, 4, 5],
                     learning_rate=0.1,
                     exploration_rate=1.0,
                     exploration_decay=0.9999,
@@ -55,7 +47,9 @@ class MultiAgentStandardSystem:
         if not os.path.exists("logs"):
             os.makedirs("logs")
         date_str = datetime.now().strftime("%Y%m%d")
-        self.log_dir = f"logs/logs-{date_str}-standard-{deck_type}-{penetration}-no-curriculum-budget{self.budget}-{self.reward_type}"
+        self.log_dir = (
+            f"logs/logs-{date_str}-standard-{deck_type}-{penetration}-no-curriculum"
+        )
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
         self.eval_log_dir = os.path.join(self.log_dir, "evaluation")
@@ -72,17 +66,12 @@ class MultiAgentStandardSystem:
         print("=" * 60)
         print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
         print(f"Total Episodes: {total_episodes}")
-        print(f"Budget per agent: ${self.budget}")
-        print(f"Dynamic Rewards: {'ON' if self.use_dynamic_rewards else 'OFF'}")
-        print(f"Reward Type: {self.reward_type}")
+
         for agent_idx, agent in enumerate(self.agents):
             print(f"\nTraining Agent {agent_idx} ({agent.agent_type.upper()})")
             env = BlackjackEnv(
                 deck_type=self.deck_type,
                 penetration=self.penetration,
-                budget=self.budget,
-                use_dynamic_rewards=self.use_dynamic_rewards,
-                reward_type=self.reward_type,
             )
             episode_rewards = []
             wins = 0
@@ -110,9 +99,8 @@ class MultiAgentStandardSystem:
                             wins += bet_multiplier
                 agent.decay_epsilon()
                 if episode % every_n_episodes_to_log == 0:
-                    budget_info = env.get_game_info()
                     print(
-                        f"  Episode {episode}: Win Rate: {(wins/(episode+1))*100:.1f}%, Epsilon: {agent.epsilon:.4f}, Budget: ${budget_info['budget']:.1f}"
+                        f"  Episode {episode}: Win Rate: {(wins/(episode+1))*100:.1f}%, Epsilon: {agent.epsilon:.4f}"
                     )
             # Save agent model
             models_dir = os.path.join(self.log_dir, "models")
@@ -174,7 +162,7 @@ class MultiAgentStandardSystem:
         agent.epsilon = 0.0
         total_rewards = []
         wins = 0
-        action_rewards = {0: [], 1: [], 2: [], 3: []}
+        action_rewards = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
 
         # Enhanced statistics tracking
         state_action_stats = {}  # Track actions per state
@@ -207,7 +195,7 @@ class MultiAgentStandardSystem:
 
                 # Track state-action statistics
                 if state_key not in state_action_stats:
-                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0}
+                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
                 state_action_stats[state_key][action] += 1
 
                 # Track state-reward statistics
@@ -268,16 +256,14 @@ class MultiAgentStandardSystem:
                 "bust_percent": (game_outcomes["busts"] / total_hands) * 100,
                 "push_percent": (game_outcomes["pushes"] / total_hands) * 100,
                 "blackjack_percent": (game_outcomes["blackjacks"] / total_hands) * 100,
-                "net_wins_percent": (
+                "win_loss_ratio": (
                     (
-                        game_outcomes["wins"]
-                        + game_outcomes["blackjacks"]
-                        - game_outcomes["losses"]
-                        - game_outcomes["busts"]
+                        (game_outcomes["wins"] + game_outcomes["blackjacks"])
+                        / (game_outcomes["losses"] + game_outcomes["busts"])
                     )
-                    / total_hands
-                )
-                * 100,
+                    if (game_outcomes["losses"] + game_outcomes["busts"]) > 0
+                    else float("inf")
+                ),
             }
 
         # Create strategy table data

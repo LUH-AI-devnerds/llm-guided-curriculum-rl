@@ -1,6 +1,7 @@
 import json
 from LLM import LLM
 
+
 class CurriculumStage:
     """Defines a curriculum stage with available actions and learning objectives."""
 
@@ -41,10 +42,12 @@ class LLMGuidedCurriculum:
             1: "Hit - Draw another card",
             2: "Double Down - Double bet and draw one card",
             3: "Split - Split pair into two hands",
+            4: "Early Surrender - Give up hand and lose half bet",
+            5: "Insurance - Bet dealer has blackjack when showing Ace",
         }
         self.curriculum_history = []
 
-    def generate_curriculum_stages(self, num_stages=4):
+    def generate_curriculum_stages(self):
         """Generate curriculum stages using LLM guidance."""
 
         prompt = f"""
@@ -53,12 +56,12 @@ class LLMGuidedCurriculum:
         Available actions:
         {self.action_descriptions}
         
-        Design {num_stages} progressive curriculum stages for training RL agents in Blackjack.
+        Design the number of stages that is needed to train RL agents in Blackjack.
         Each stage should gradually increase complexity and introduce new actions.
         
         For each stage, specify:
         1. Stage name
-        2. Available actions (list of action indices: 0, 1, 2, 3)
+        2. Available actions (list of action indices: 0, 1, 2, 3, 4, 5)
         3. Description of learning objectives
         4. Difficulty level (1-5 scale)
         5. Success threshold (win rate 0.0-1.0 to advance)
@@ -80,6 +83,8 @@ class LLMGuidedCurriculum:
         }}
         
         Focus on progressive skill building and realistic success thresholds.
+        Consider that early surrender (action 4) and insurance (action 5) are advanced strategies
+        that should be introduced in later stages after basic strategy is mastered.
         """
 
         try:
@@ -110,8 +115,7 @@ class LLMGuidedCurriculum:
 
         except Exception as e:
             print(f"LLM curriculum generation failed: {e}")
-            # Fallback to default curriculum
-            return self._default_curriculum_stages()
+            raise e
 
     def adapt_curriculum(self, agent_performance, current_stage, stages):
         """Use LLM to adapt curriculum based on agent performance."""
@@ -180,25 +184,3 @@ class LLMGuidedCurriculum:
                 "curriculum_modifications": {},
                 "reasoning": "Fallback decision due to LLM error",
             }
-
-    def _default_curriculum_stages(self):
-        """Fallback curriculum if LLM fails."""
-        return [
-            CurriculumStage(
-                1, "Basic Play", [0, 1], "Learn basic stand/hit decisions", 1, 0.35
-            ),
-            CurriculumStage(
-                2, "Strategic Play", [0, 1], "Master basic strategy", 2, 0.40
-            ),
-            CurriculumStage(
-                3, "Advanced Betting", [0, 1, 2], "Learn double down strategy", 3, 0.42
-            ),
-            CurriculumStage(
-                4,
-                "Expert Play",
-                [0, 1, 2, 3],
-                "Master all actions including splits",
-                4,
-                0.45,
-            ),
-        ]
