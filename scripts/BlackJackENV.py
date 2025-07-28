@@ -135,14 +135,8 @@ class BlackjackEnv:
         # For soft hands (has usable ace), different rules apply
         if has_usable_ace:
             # Soft double down rules
-            if player_sum >= 20:  # Soft 20+ (A-9, A-10, A-A)
+            if player_sum >= 17:  # Soft 20+ (A-9, A-10, A-A)
                 return False  # Never double soft 20+
-            elif player_sum == 19:  # Soft 19 (A-8)
-                return dealer_up == 6  # Only double soft 19 vs dealer 6
-            elif player_sum == 18:  # Soft 18 (A-7)
-                return dealer_up in [2, 3, 4, 5, 6]  # Double soft 18 vs dealer 2-6
-            elif player_sum == 17:  # Soft 17 (A-6)
-                return dealer_up in [3, 4, 5, 6]  # Double soft 17 vs dealer 3-6
             elif player_sum == 16:  # Soft 16 (A-5)
                 return dealer_up in [4, 5, 6]  # Double soft 16 vs dealer 4-6
             elif player_sum == 15:  # Soft 15 (A-4)
@@ -350,7 +344,11 @@ class BlackjackEnv:
         )
 
         can_split = self._can_split() and len(self.player_hands) < 4
-        can_double = self.can_double and len(current_hand) == 2
+        can_double = (
+            self.can_double
+            and len(current_hand) == 2
+            and self._is_valid_double_down(player_sum, dealer_up_card, has_usable_ace)
+        )
         is_blackjack = len(current_hand) == 2 and player_sum == 21
         can_surrender = (
             self.can_surrender
@@ -428,7 +426,7 @@ class BlackjackEnv:
             # NUCLEAR OPTION: COMPLETELY BLOCK invalid double downs
             if not was_valid:
                 # Return massive penalty and DON'T execute the action
-                return self._get_state(), -50.0, False
+                return self._get_state(), -5.0, False
 
             # Valid double down - proceed normally
             current_hand.append(self._draw_card())

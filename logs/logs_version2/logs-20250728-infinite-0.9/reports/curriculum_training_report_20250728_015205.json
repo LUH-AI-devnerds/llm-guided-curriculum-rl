@@ -1,0 +1,472 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 5,
+    "completion_time": "2025-07-28T01:52:05.391024"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental strategy of when to hit and stand. Agent learns to avoid busting and aims for hand values close to 21.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Adding Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce doubling down on favorable hands (e.g., hard 11, soft 17). Agent learns to recognize situations where doubling maximizes expected value.",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Introducing Splits",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Allow splitting of pairs. Agent learns the optimal strategy for splitting different pairs against various dealer upcards.",
+      "difficulty": 3,
+      "success_threshold": 0.43
+    },
+    {
+      "stage_id": 4,
+      "name": "Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Early surrender is allowed. Agent learns when surrender is the best option when facing a likely losing hand against a strong dealer upcard (e.g., hard 16 vs. dealer 10).",
+      "difficulty": 4,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 5,
+      "name": "Insurance",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Insurance is available when the dealer shows an Ace. The agent must determine if it is advantageous to take insurance based on hand and upcard.",
+      "difficulty": 5,
+      "success_threshold": 0.46
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 5,
+      "final_win_rate": 0.4588,
+      "stage_progression": 6
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 5,
+      "final_win_rate": 0.3972,
+      "stage_progression": 10
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental strategy of when to hit and stand. Agent learns to avoid busting and aims for hand values close to 21.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42172,
+          "avg_reward": -0.112305,
+          "total_wins": 15202,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 89.38506174087524
+        },
+        "agent_1": {
+          "win_rate": 0.38343,
+          "avg_reward": -0.51076,
+          "total_wins": 15227,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 3.8435940742492676
+        }
+      },
+      "timestamp": "2025-07-28T01:32:02.388888"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Adding Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce doubling down on favorable hands (e.g., hard 11, soft 17). Agent learns to recognize situations where doubling maximizes expected value.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42238,
+          "avg_reward": -0.115975,
+          "total_wins": 20372,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 123.05745220184326
+        },
+        "agent_1": {
+          "win_rate": 0.38948,
+          "avg_reward": -0.510385,
+          "total_wins": 18539,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 3.984038829803467
+        }
+      },
+      "timestamp": "2025-07-28T01:34:12.835798"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Adding Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce doubling down on favorable hands (e.g., hard 11, soft 17). Agent learns to recognize situations where doubling maximizes expected value.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.37894,
+          "avg_reward": -0.559545,
+          "total_wins": 18209,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 4.0421528816223145
+        }
+      },
+      "timestamp": "2025-07-28T01:34:18.685299"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Adding Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce doubling down on favorable hands (e.g., hard 11, soft 17). Agent learns to recognize situations where doubling maximizes expected value.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38683,
+          "avg_reward": -0.516555,
+          "total_wins": 18741,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 4.027000904083252
+        }
+      },
+      "timestamp": "2025-07-28T01:34:24.320541"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Introducing Splits",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Allow splitting of pairs. Agent learns the optimal strategy for splitting different pairs against various dealer upcards.",
+        "difficulty": 3,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.47865,
+          "avg_reward": -0.197714,
+          "total_wins": 25792,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 177.46261501312256
+        },
+        "agent_1": {
+          "win_rate": 0.39674,
+          "avg_reward": -0.524805,
+          "total_wins": 22151,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 4.150739908218384
+        }
+      },
+      "timestamp": "2025-07-28T01:37:28.913340"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Introducing Splits",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Allow splitting of pairs. Agent learns the optimal strategy for splitting different pairs against various dealer upcards.",
+        "difficulty": 3,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38497,
+          "avg_reward": -0.570304,
+          "total_wins": 22055,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 4.190965890884399
+        }
+      },
+      "timestamp": "2025-07-28T01:37:34.709677"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Early surrender is allowed. Agent learns when surrender is the best option when facing a likely losing hand against a strong dealer upcard (e.g., hard 16 vs. dealer 10).",
+        "difficulty": 4,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4554,
+          "avg_reward": -0.23502199999999998,
+          "total_wins": 29065,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 236.55413603782654
+        },
+        "agent_1": {
+          "win_rate": 0.38737,
+          "avg_reward": -0.5707909999999999,
+          "total_wins": 24618,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 4.331223249435425
+        }
+      },
+      "timestamp": "2025-07-28T01:41:39.192521"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Early surrender is allowed. Agent learns when surrender is the best option when facing a likely losing hand against a strong dealer upcard (e.g., hard 16 vs. dealer 10).",
+        "difficulty": 4,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.37906,
+          "avg_reward": -0.560076,
+          "total_wins": 24558,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 4.286505937576294
+        }
+      },
+      "timestamp": "2025-07-28T01:41:45.630177"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Insurance",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Insurance is available when the dealer shows an Ace. The agent must determine if it is advantageous to take insurance based on hand and upcard.",
+        "difficulty": 5,
+        "success_threshold": 0.46
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44359,
+          "avg_reward": -0.273859,
+          "total_wins": 33249,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 296.0188000202179
+        },
+        "agent_1": {
+          "win_rate": 0.36716,
+          "avg_reward": -0.643842,
+          "total_wins": 27392,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 4.501332998275757
+        }
+      },
+      "timestamp": "2025-07-28T01:46:49.180622"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Insurance",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Insurance is available when the dealer shows an Ace. The agent must determine if it is advantageous to take insurance based on hand and upcard.",
+        "difficulty": 5,
+        "success_threshold": 0.46
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4588,
+          "avg_reward": -0.285298,
+          "total_wins": 33000,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 308.79291701316833
+        },
+        "agent_1": {
+          "win_rate": 0.3972,
+          "avg_reward": -0.560575,
+          "total_wins": 27940,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 4.515871047973633
+        }
+      },
+      "timestamp": "2025-07-28T01:52:05.390983"
+    }
+  ]
+}
