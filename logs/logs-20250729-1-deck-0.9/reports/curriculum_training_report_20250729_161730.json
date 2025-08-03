@@ -1,0 +1,247 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 4,
+    "completion_time": "2025-07-29T16:17:30.196290"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn basic strategy: when to hit and when to stand. Agent learns the value of hands and dealer's upcard significance.",
+      "difficulty": 1,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the Double Down action. Agent learns to identify favorable situations to double its bet, balancing risk and reward. The agent should now have a solid grasp on the odds.",
+      "difficulty": 3,
+      "success_threshold": 0.43
+    },
+    {
+      "stage_id": 3,
+      "name": "Strategic Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "description": "Introduce Early Surrender. Agent must identify situations where surrendering minimizes long-term losses. This stage requires a deeper understanding of hand probabilities and dealer's upcard.",
+      "difficulty": 4,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 4,
+      "name": "The Insurance Gamble",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Final stage: Agent learns when to take Insurance. This action requires understanding of dealer's likelihood of having Blackjack. Agent masters complex risk assessment.",
+      "difficulty": 5,
+      "success_threshold": 0.46
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 4,
+      "final_win_rate": 0.44665,
+      "stage_progression": 4
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 4,
+      "final_win_rate": 0.36553,
+      "stage_progression": 4
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic strategy: when to hit and when to stand. Agent learns the value of hands and dealer's upcard significance.",
+        "difficulty": 1,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43384,
+          "avg_reward": -0.190515,
+          "total_wins": 52124,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 1133.3649179935455
+        },
+        "agent_1": {
+          "win_rate": 0.38188,
+          "avg_reward": -0.55549,
+          "total_wins": 47405,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 22.90359592437744
+        }
+      },
+      "timestamp": "2025-07-29T15:41:33.334316"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the Double Down action. Agent learns to identify favorable situations to double its bet, balancing risk and reward. The agent should now have a solid grasp on the odds.",
+        "difficulty": 3,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43596,
+          "avg_reward": -0.188125,
+          "total_wins": 64716,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 517.2759761810303
+        },
+        "agent_1": {
+          "win_rate": 0.36911,
+          "avg_reward": -0.614735,
+          "total_wins": 57299,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.630022764205933
+        }
+      },
+      "timestamp": "2025-07-29T15:50:22.128996"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Strategic Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "description": "Introduce Early Surrender. Agent must identify situations where surrendering minimizes long-term losses. This stage requires a deeper understanding of hand probabilities and dealer's upcard.",
+        "difficulty": 4,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.39084,
+          "avg_reward": -0.149885,
+          "total_wins": 68217,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 602.8195922374725
+        },
+        "agent_1": {
+          "win_rate": 0.36868,
+          "avg_reward": -0.556455,
+          "total_wins": 66235,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 8.360445976257324
+        }
+      },
+      "timestamp": "2025-07-29T16:00:38.414649"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "The Insurance Gamble",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Final stage: Agent learns when to take Insurance. This action requires understanding of dealer's likelihood of having Blackjack. Agent masters complex risk assessment.",
+        "difficulty": 5,
+        "success_threshold": 0.46
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44665,
+          "avg_reward": -0.5204835000000001,
+          "total_wins": 88039,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 999.5545971393585
+        },
+        "agent_1": {
+          "win_rate": 0.36553,
+          "avg_reward": -0.6815564999999999,
+          "total_wins": 75080,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 8.87417984008789
+        }
+      },
+      "timestamp": "2025-07-29T16:17:30.196252"
+    }
+  ]
+}

@@ -3,6 +3,7 @@
 Log Analysis Script for Blackjack RL Training
 Generates visual summaries similar to strategy tables and performance metrics
 Now properly handles curriculum stages with stage-specific analysis
+Most of this file is generated with google Gemini 2.5 pro
 """
 
 import json
@@ -603,6 +604,623 @@ def create_state_value_analysis(log_data, output_dir, stage_info="", deck_type="
     print(f"📊 State value analysis saved to: {output_path}")
 
 
+def create_insurance_analysis(log_data, output_dir, stage_info="", deck_type=""):
+    """Create insurance analysis charts showing when and how often the agent takes insurance."""
+    strategy_table = log_data["summary"].get("strategy_table", {})
+
+    if not strategy_table:
+        print(f"  ⚠️  No strategy table available for insurance analysis")
+        return
+
+    # Check if insurance action is available in this stage
+    stage_id = log_data.get("stage_id", "unknown")
+    print(f"  🔍 Analyzing insurance for Stage {stage_id}")
+
+    # Extract insurance data from strategy table
+    insurance_data = {}
+    total_insurance_opportunities = 0
+    total_insurance_taken = 0
+
+    for state_key, stats in strategy_table.items():
+        parts = state_key.split("_")
+        player_sum = int(parts[0][1:])
+        dealer_card = int(parts[1][1:])
+        has_ace = parts[2] == "ATrue"
+
+        # Only consider states where dealer shows Ace (11)
+        if dealer_card == 11:
+            total_insurance_opportunities += stats.get("total_actions", 0)
+            insurance_taken = (
+                stats.get("insurance_percent", 0) * stats.get("total_actions", 0) / 100
+            )
+            total_insurance_taken += insurance_taken
+
+            insurance_data[(player_sum, has_ace)] = {
+                "insurance_percent": stats.get("insurance_percent", 0),
+                "total_actions": stats.get("total_actions", 0),
+                "insurance_taken": insurance_taken,
+                "avg_reward": stats.get("avg_reward", 0),
+            }
+
+    if not insurance_data:
+        print(f"  ⚠️  No insurance opportunities found in strategy table")
+        return
+
+    # Create insurance analysis charts
+    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+
+    # Separate hard and soft hands
+    hard_insurance = {k: v for k, v in insurance_data.items() if not k[1]}
+    soft_insurance = {k: v for k, v in insurance_data.items() if k[1]}
+
+    # 1. Insurance percentage heatmap for hard hands
+    if hard_insurance:
+        player_sums = sorted(list(set([k[0] for k in hard_insurance.keys()])))
+        insurance_matrix = np.zeros((len(player_sums), 1))  # Only dealer Ace
+
+        for (player_sum, has_ace), data in hard_insurance.items():
+            p_idx = player_sums.index(player_sum)
+            insurance_matrix[p_idx, 0] = data["insurance_percent"]
+
+        sns.heatmap(
+            insurance_matrix,
+            annot=True,
+            fmt=".1f",
+            cmap="Reds",
+            xticklabels=["Dealer Ace"],
+            yticklabels=player_sums,
+            ax=axes[0, 0],
+            cbar_kws={"label": "Insurance %"},
+        )
+        axes[0, 0].set_title("Insurance Rate - Hard Hands")
+        axes[0, 0].set_xlabel("Dealer Up Card")
+        axes[0, 0].set_ylabel("Player Sum")
+
+    # 2. Insurance percentage heatmap for soft hands
+    if soft_insurance:
+        player_sums = sorted(list(set([k[0] for k in soft_insurance.keys()])))
+        insurance_matrix = np.zeros((len(player_sums), 1))  # Only dealer Ace
+
+        for (player_sum, has_ace), data in soft_insurance.items():
+            p_idx = player_sums.index(player_sum)
+            insurance_matrix[p_idx, 0] = data["insurance_percent"]
+
+        sns.heatmap(
+            insurance_matrix,
+            annot=True,
+            fmt=".1f",
+            cmap="Reds",
+            xticklabels=["Dealer Ace"],
+            yticklabels=player_sums,
+            ax=axes[0, 1],
+            cbar_kws={"label": "Insurance %"},
+        )
+        axes[0, 1].set_title("Insurance Rate - Soft Hands")
+        axes[0, 1].set_xlabel("Dealer Up Card")
+        axes[0, 1].set_ylabel("Player Sum")
+
+    # 3. Insurance frequency bar chart
+    all_player_sums = sorted(list(set([k[0] for k in insurance_data.keys()])))
+    hard_freq = []
+    soft_freq = []
+
+    for player_sum in all_player_sums:
+        hard_data = hard_insurance.get((player_sum, False), {"insurance_percent": 0})
+        soft_data = soft_insurance.get((player_sum, True), {"insurance_percent": 0})
+        hard_freq.append(hard_data["insurance_percent"])
+        soft_freq.append(soft_data["insurance_percent"])
+
+    x = np.arange(len(all_player_sums))
+    width = 0.35
+
+    bars1 = axes[1, 0].bar(
+        x - width / 2, hard_freq, width, label="Hard Hands", color="#2196F3", alpha=0.7
+    )
+    bars2 = axes[1, 0].bar(
+        x + width / 2, soft_freq, width, label="Soft Hands", color="#4CAF50", alpha=0.7
+    )
+
+    axes[1, 0].set_title("Insurance Rate by Player Sum")
+    axes[1, 0].set_xlabel("Player Sum")
+    axes[1, 0].set_ylabel("Insurance Rate (%)")
+    axes[1, 0].set_xticks(x)
+    axes[1, 0].set_xticklabels(all_player_sums)
+    axes[1, 0].legend()
+    axes[1, 0].grid(True, alpha=0.3)
+
+    # 4. Insurance summary statistics
+    summary_stats = [
+        ["Metric", "Value"],
+        ["Total Insurance Opportunities", f"{total_insurance_opportunities}"],
+        ["Total Insurance Taken", f"{total_insurance_taken:.0f}"],
+        [
+            "Overall Insurance Rate",
+            f"{total_insurance_taken/total_insurance_opportunities*100:.1f}%",
+        ],
+        [
+            "Hard Hands Insurance Rate",
+            f"{np.mean([v['insurance_percent'] for v in hard_insurance.values()]):.1f}%",
+        ],
+        [
+            "Soft Hands Insurance Rate",
+            f"{np.mean([v['insurance_percent'] for v in soft_insurance.values()]):.1f}%",
+        ],
+        ["Strategic Note", "Insurance pays 2:1 when dealer has blackjack"],
+        ["Expected Value", "Insurance is typically -EV (house edge ~7.7%)"],
+    ]
+
+    axes[1, 1].axis("tight")
+    axes[1, 1].axis("off")
+
+    table = axes[1, 1].table(
+        cellText=summary_stats[1:],
+        colLabels=summary_stats[0],
+        cellLoc="center",
+        loc="center",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(12)
+    table.scale(1.2, 2)
+
+    # Style the table
+    for i in range(len(summary_stats[0])):
+        table[(0, i)].set_facecolor("#4CAF50")
+        table[(0, i)].set_text_props(weight="bold", color="white")
+
+    for i in range(1, len(summary_stats)):
+        for j in range(len(summary_stats[0])):
+            if i % 2 == 0:
+                table[(i, j)].set_facecolor("#f0f0f0")
+
+    axes[1, 1].set_title("Insurance Summary Statistics", fontsize=14, pad=20)
+
+    title = f"{log_data['agent_type'].upper()} Agent"
+    if deck_type:
+        title += f" ({deck_type})"
+    if stage_info:
+        title += f" - {stage_info}"
+    fig.suptitle(title, fontsize=16)
+
+    plt.tight_layout()
+    output_path = os.path.join(output_dir, "insurance_analysis.png")
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"📊 Insurance analysis saved to: {output_path}")
+
+
+def create_surrender_analysis(log_data, output_dir, stage_info="", deck_type=""):
+    """Create surrender analysis charts showing when and how often the agent surrenders."""
+    strategy_table = log_data["summary"].get("strategy_table", {})
+
+    if not strategy_table:
+        print(f"  ⚠️  No strategy table available for surrender analysis")
+        return
+
+    # Check if surrender action is available in this stage
+    stage_id = log_data.get("stage_id", "unknown")
+    print(f"  🔍 Analyzing surrender for Stage {stage_id}")
+
+    # Extract surrender data from strategy table
+    surrender_data = {}
+    total_surrender_opportunities = 0
+    total_surrenders = 0
+
+    for state_key, stats in strategy_table.items():
+        parts = state_key.split("_")
+        player_sum = int(parts[0][1:])
+        dealer_card = int(parts[1][1:])
+        has_ace = parts[2] == "ATrue"
+
+        # Only consider states where surrender is possible (2 cards, not blackjack)
+        if player_sum < 21:  # Surrender only available on first two cards
+            total_surrender_opportunities += stats.get("total_actions", 0)
+            surrenders = (
+                stats.get("surrender_percent", 0) * stats.get("total_actions", 0) / 100
+            )
+            total_surrenders += surrenders
+
+            surrender_data[(player_sum, dealer_card, has_ace)] = {
+                "surrender_percent": stats.get("surrender_percent", 0),
+                "total_actions": stats.get("total_actions", 0),
+                "surrenders": surrenders,
+                "avg_reward": stats.get("avg_reward", 0),
+            }
+
+    if not surrender_data:
+        print(f"  ⚠️  No surrender opportunities found in strategy table")
+        return
+
+    # Create surrender analysis charts
+    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+
+    # Separate hard and soft hands
+    hard_surrender = {k: v for k, v in surrender_data.items() if not k[2]}
+    soft_surrender = {k: v for k, v in surrender_data.items() if k[2]}
+
+    # 1. Surrender percentage heatmap for hard hands
+    if hard_surrender:
+        player_sums = sorted(list(set([k[0] for k in hard_surrender.keys()])))
+        dealer_cards = sorted(list(set([k[1] for k in hard_surrender.keys()])))
+        surrender_matrix = np.zeros((len(player_sums), len(dealer_cards)))
+
+        for (player_sum, dealer_card, has_ace), data in hard_surrender.items():
+            p_idx = player_sums.index(player_sum)
+            d_idx = dealer_cards.index(dealer_card)
+            surrender_matrix[p_idx, d_idx] = data["surrender_percent"]
+
+        sns.heatmap(
+            surrender_matrix,
+            annot=True,
+            fmt=".1f",
+            cmap="Reds",
+            xticklabels=dealer_cards,
+            yticklabels=player_sums,
+            ax=axes[0, 0],
+            cbar_kws={"label": "Surrender %"},
+        )
+        axes[0, 0].set_title("Surrender Rate - Hard Hands")
+        axes[0, 0].set_xlabel("Dealer Up Card")
+        axes[0, 0].set_ylabel("Player Sum")
+
+    # 2. Surrender percentage heatmap for soft hands
+    if soft_surrender:
+        player_sums = sorted(list(set([k[0] for k in soft_surrender.keys()])))
+        dealer_cards = sorted(list(set([k[1] for k in soft_surrender.keys()])))
+        surrender_matrix = np.zeros((len(player_sums), len(dealer_cards)))
+
+        for (player_sum, dealer_card, has_ace), data in soft_surrender.items():
+            p_idx = player_sums.index(player_sum)
+            d_idx = dealer_cards.index(dealer_card)
+            surrender_matrix[p_idx, d_idx] = data["surrender_percent"]
+
+        sns.heatmap(
+            surrender_matrix,
+            annot=True,
+            fmt=".1f",
+            cmap="Reds",
+            xticklabels=dealer_cards,
+            yticklabels=player_sums,
+            ax=axes[0, 1],
+            cbar_kws={"label": "Surrender %"},
+        )
+        axes[0, 1].set_title("Surrender Rate - Soft Hands")
+        axes[0, 1].set_xlabel("Dealer Up Card")
+        axes[0, 1].set_ylabel("Player Sum")
+
+    # 3. Surrender frequency by player sum
+    all_player_sums = sorted(list(set([k[0] for k in surrender_data.keys()])))
+    hard_freq = []
+    soft_freq = []
+
+    for player_sum in all_player_sums:
+        # Average surrender rate across all dealer cards for this player sum
+        hard_rates = [
+            v["surrender_percent"]
+            for k, v in hard_surrender.items()
+            if k[0] == player_sum
+        ]
+        soft_rates = [
+            v["surrender_percent"]
+            for k, v in soft_surrender.items()
+            if k[0] == player_sum
+        ]
+
+        hard_freq.append(np.mean(hard_rates) if hard_rates else 0)
+        soft_freq.append(np.mean(soft_rates) if soft_rates else 0)
+
+    x = np.arange(len(all_player_sums))
+    width = 0.35
+
+    bars1 = axes[1, 0].bar(
+        x - width / 2, hard_freq, width, label="Hard Hands", color="#2196F3", alpha=0.7
+    )
+    bars2 = axes[1, 0].bar(
+        x + width / 2, soft_freq, width, label="Soft Hands", color="#4CAF50", alpha=0.7
+    )
+
+    axes[1, 0].set_title("Average Surrender Rate by Player Sum")
+    axes[1, 0].set_xlabel("Player Sum")
+    axes[1, 0].set_ylabel("Surrender Rate (%)")
+    axes[1, 0].set_xticks(x)
+    axes[1, 0].set_xticklabels(all_player_sums)
+    axes[1, 0].legend()
+    axes[1, 0].grid(True, alpha=0.3)
+
+    # 4. Surrender summary statistics
+    summary_stats = [
+        ["Metric", "Value"],
+        ["Total Surrender Opportunities", f"{total_surrender_opportunities}"],
+        ["Total Surrenders", f"{total_surrenders:.0f}"],
+        [
+            "Overall Surrender Rate",
+            f"{total_surrenders/total_surrender_opportunities*100:.1f}%",
+        ],
+        [
+            "Hard Hands Surrender Rate",
+            f"{np.mean([v['surrender_percent'] for v in hard_surrender.values()]):.1f}%",
+        ],
+        [
+            "Soft Hands Surrender Rate",
+            f"{np.mean([v['surrender_percent'] for v in soft_surrender.values()]):.1f}%",
+        ],
+        ["Strategic Note", "Surrender loses half bet vs potential full loss"],
+        ["Best Surrender Hands", "15 vs 10, 16 vs 9/10/A, 14 vs 10"],
+    ]
+
+    axes[1, 1].axis("tight")
+    axes[1, 1].axis("off")
+
+    table = axes[1, 1].table(
+        cellText=summary_stats[1:],
+        colLabels=summary_stats[0],
+        cellLoc="center",
+        loc="center",
+    )
+    table.auto_set_font_size(False)
+    table.set_fontsize(12)
+    table.scale(1.2, 2)
+
+    # Style the table
+    for i in range(len(summary_stats[0])):
+        table[(0, i)].set_facecolor("#4CAF50")
+        table[(0, i)].set_text_props(weight="bold", color="white")
+
+    for i in range(1, len(summary_stats)):
+        for j in range(len(summary_stats[0])):
+            if i % 2 == 0:
+                table[(i, j)].set_facecolor("#f0f0f0")
+
+    axes[1, 1].set_title("Surrender Summary Statistics", fontsize=14, pad=20)
+
+    title = f"{log_data['agent_type'].upper()} Agent"
+    if deck_type:
+        title += f" ({deck_type})"
+    if stage_info:
+        title += f" - {stage_info}"
+    fig.suptitle(title, fontsize=16)
+
+    plt.tight_layout()
+    output_path = os.path.join(output_dir, "surrender_analysis.png")
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"📊 Surrender analysis saved to: {output_path}")
+
+
+def create_strategic_value_analysis(agent_stage_data, output_dir):
+    """Create analysis showing the strategic value of surrender and insurance actions."""
+    print(f"📊 Creating strategic value analysis...")
+
+    # Collect data from all stages
+    all_surrender_data = []
+    all_insurance_data = []
+
+    for agent_key, agent_data in agent_stage_data.items():
+        training_data = agent_data.get("training", {})
+        deck_type = agent_data.get("deck_type", "")
+
+        for stage_id, stage_data in training_data.items():
+            if stage_id == "unknown":
+                continue
+
+            # Analyze logged episodes for detailed hand data
+            logged_episodes = stage_data.get("logged_episodes", [])
+
+            for episode in logged_episodes:
+                final_game_state = episode.get("final_game_state", {})
+                detailed_stats = final_game_state.get("detailed_stats", {})
+                hand_details = detailed_stats.get("hand_details", [])
+
+                for hand_detail in hand_details:
+                    # Analyze surrender strategic value
+                    if hand_detail.get("surrendered", False):
+                        surrender_reward = hand_detail.get("reward", -0.5)
+                        player_sum = hand_detail.get("sum", 0)
+                        dealer_up = hand_detail.get("dealer_up", 0)
+
+                        # Analyze what would have happened if not surrendered
+                        # Look for the actual outcome in the episode data
+                        episode_outcome = episode.get("episode_reward", 0)
+                        episode_length = episode.get("episode_length", 0)
+
+                        # Try to find the actual game result from the episode
+                        game_result = hand_detail.get("result", "unknown")
+
+                        # For surrendered hands, just record the data without complex analysis
+                        surrender_beneficial = False  # We'll just show the raw data
+
+                        all_surrender_data.append(
+                            {
+                                "agent": agent_key,
+                                "stage": stage_id,
+                                "deck_type": deck_type,
+                                "player_sum": player_sum,
+                                "dealer_up": dealer_up,
+                                "surrender_reward": surrender_reward,
+                                "game_result": game_result,
+                                "surrender_beneficial": surrender_beneficial,
+                                "episode_reward": episode_outcome,
+                            }
+                        )
+
+                    # Analyze insurance strategic value
+                    if hand_detail.get("insurance_bet", 0) > 0:
+                        insurance_reward = hand_detail.get("reward", 0)
+                        dealer_blackjack = detailed_stats.get("dealer_blackjack", False)
+                        player_sum = hand_detail.get("sum", 0)
+                        dealer_up = hand_detail.get("dealer_up", 0)
+
+                        # Insurance is beneficial if dealer has blackjack (pays 2:1)
+                        # Insurance is not beneficial if dealer doesn't have blackjack (loses the bet)
+                        insurance_beneficial = dealer_blackjack  # Simple: beneficial if dealer has blackjack
+
+                        all_insurance_data.append(
+                            {
+                                "agent": agent_key,
+                                "stage": stage_id,
+                                "deck_type": deck_type,
+                                "player_sum": player_sum,
+                                "dealer_up": dealer_up,
+                                "insurance_reward": insurance_reward,
+                                "dealer_blackjack": dealer_blackjack,
+                                "insurance_beneficial": insurance_beneficial,
+                                "insurance_bet": hand_detail.get("insurance_bet", 0),
+                            }
+                        )
+
+    print(
+        f"  📊 Found {len(all_surrender_data)} surrender actions and {len(all_insurance_data)} insurance actions"
+    )
+
+    if not all_surrender_data and not all_insurance_data:
+        print(f"  ⚠️  No surrender or insurance data found for strategic analysis")
+        return
+
+    # Create strategic value analysis charts
+    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+
+    # 1. Surrender strategic value
+    if all_surrender_data:
+        surrender_rewards = [d["surrender_reward"] for d in all_surrender_data]
+        surrender_beneficial = [d["surrender_beneficial"] for d in all_surrender_data]
+        game_results = [d["game_result"] for d in all_surrender_data]
+
+        # Surrender reward distribution
+        axes[0, 0].hist(
+            surrender_rewards, bins=20, alpha=0.7, color="#FF9800", edgecolor="black"
+        )
+        axes[0, 0].axvline(
+            x=-0.5, color="red", linestyle="--", label="Surrender Reward (-0.5)"
+        )
+        axes[0, 0].axvline(
+            x=-1.0, color="blue", linestyle="--", label="Full Loss (-1.0)"
+        )
+        axes[0, 0].set_title("Surrender Reward Distribution")
+        axes[0, 0].set_xlabel("Reward")
+        axes[0, 0].set_ylabel("Frequency")
+        axes[0, 0].legend()
+        axes[0, 0].grid(True, alpha=0.3)
+
+        # Surrender strategic value summary
+        total_surrenders = len(all_surrender_data)
+        beneficial_surrenders = sum(surrender_beneficial)
+        avg_surrender_reward = np.mean(surrender_rewards)
+
+        # Count game results
+        result_counts = {}
+        for result in game_results:
+            result_counts[result] = result_counts.get(result, 0) + 1
+
+        print(f"  📊 Surrender Analysis: {total_surrenders} surrenders found")
+
+        summary_stats = [
+            ["Metric", "Value"],
+            ["Total Surrenders", f"{total_surrenders}"],
+            ["Average Surrender Reward", f"{avg_surrender_reward:.3f}"],
+            ["Surrender Rate", f"{total_surrenders/total_surrenders*100:.1f}%"],
+            ["Game Results", f"See chart below"],
+        ]
+
+        axes[0, 1].axis("tight")
+        axes[0, 1].axis("off")
+
+        table = axes[0, 1].table(
+            cellText=summary_stats[1:],
+            colLabels=summary_stats[0],
+            cellLoc="center",
+            loc="center",
+        )
+        table.auto_set_font_size(False)
+        table.set_fontsize(12)
+        table.scale(1.2, 2)
+
+        # Style the table
+        for i in range(len(summary_stats[0])):
+            table[(0, i)].set_facecolor("#4CAF50")
+            table[(0, i)].set_text_props(weight="bold", color="white")
+
+        for i in range(1, len(summary_stats)):
+            for j in range(len(summary_stats[0])):
+                if i % 2 == 0:
+                    table[(i, j)].set_facecolor("#f0f0f0")
+
+        axes[0, 1].set_title("Surrender Summary", fontsize=14, pad=20)
+
+    # 2. Insurance strategic value
+    if all_insurance_data:
+        insurance_beneficial = [d["insurance_beneficial"] for d in all_insurance_data]
+        insurance_rewards = [d["insurance_reward"] for d in all_insurance_data]
+        dealer_blackjacks = [d["dealer_blackjack"] for d in all_insurance_data]
+
+        # Insurance beneficial rate
+        beneficial_rate = sum(insurance_beneficial) / len(insurance_beneficial) * 100
+        non_beneficial_rate = 100 - beneficial_rate
+
+        labels = ["Insurance Success", "Insurance Failure"]
+        sizes = [beneficial_rate, non_beneficial_rate]
+        colors = ["#4CAF50", "#f44336"]
+
+        axes[1, 0].pie(
+            sizes, labels=labels, colors=colors, autopct="%1.1f%%", startangle=90
+        )
+        axes[1, 0].set_title("Insurance Success Rate")
+
+        # Insurance reward distribution
+        axes[1, 1].hist(
+            insurance_rewards, bins=20, alpha=0.7, color="#2196F3", edgecolor="black"
+        )
+        axes[1, 1].axvline(x=0, color="red", linestyle="--", label="Break Even")
+        axes[1, 1].set_title("Insurance Reward Distribution")
+        axes[1, 1].set_xlabel("Reward")
+        axes[1, 1].set_ylabel("Frequency")
+        axes[1, 1].legend()
+        axes[1, 1].grid(True, alpha=0.3)
+
+        # Add insurance summary to the chart
+        total_insurance = len(all_insurance_data)
+        beneficial_insurance = sum(insurance_beneficial)
+        avg_insurance_reward = np.mean(insurance_rewards)
+        dealer_blackjack_count = sum(dealer_blackjacks)
+
+        print(f"  📊 Insurance Analysis: {total_insurance} insurance bets found")
+
+        summary_text = f"""
+Insurance Summary:
+Total Insurance Bets: {total_insurance}
+Dealer Blackjacks: {dealer_blackjack_count}
+Success Rate: {beneficial_rate:.1f}%
+Average Reward: {avg_insurance_reward:.3f}
+        """
+
+        axes[1, 1].text(
+            0.02,
+            0.98,
+            summary_text,
+            transform=axes[1, 1].transAxes,
+            verticalalignment="top",
+            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.8),
+        )
+
+    # Overall title
+    title = "Surrender & Insurance Analysis"
+    deck_types = set(
+        [
+            d["deck_type"]
+            for d in all_surrender_data + all_insurance_data
+            if d["deck_type"] != "unknown"
+        ]
+    )
+    if deck_types:
+        title += f" ({', '.join(deck_types)})"
+
+    fig.suptitle(title, fontsize=16)
+
+    plt.tight_layout()
+    output_path = os.path.join(output_dir, "strategic_value_analysis.png")
+    plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"📊 Strategic value analysis saved to: {output_path}")
+
+
 def create_stage_progression_charts(agent_stage_data, output_dir):
     """Create charts showing performance progression across stages."""
 
@@ -1086,6 +1704,8 @@ def analyze_agent_stages(agent_key, agent_data, output_dir):
             stage_data, stage_output_dir, stage_info, deck_type
         )
         create_state_value_analysis(stage_data, stage_output_dir, stage_info, deck_type)
+        create_insurance_analysis(stage_data, stage_output_dir, stage_info, deck_type)
+        create_surrender_analysis(stage_data, stage_output_dir, stage_info, deck_type)
 
     # Create stage progression charts
     create_stage_progression_charts({agent_key: agent_data}, agent_output_dir)
@@ -1151,6 +1771,10 @@ def main():
             ):
                 print(f"\n📊 Creating comparative analysis...")
                 create_comparative_analysis(agent_stage_data, output_dir)
+
+            # Create strategic value analysis
+            print(f"\n📊 Creating strategic value analysis...")
+            create_strategic_value_analysis(agent_stage_data, output_dir)
 
             # Print run summary
             print(f"\n✅ RUN ANALYSIS COMPLETE!")
@@ -1281,6 +1905,18 @@ def main():
                 print("  ✅ State value analysis created")
             except Exception as e:
                 print(f"  ❌ Error creating state value analysis: {e}")
+
+            try:
+                create_insurance_analysis(log_data, output_dir, stage_info, deck_type)
+                print("  ✅ Insurance analysis created")
+            except Exception as e:
+                print(f"  ❌ Error creating insurance analysis: {e}")
+
+            try:
+                create_surrender_analysis(log_data, output_dir, stage_info, deck_type)
+                print("  ✅ Surrender analysis created")
+            except Exception as e:
+                print(f"  ❌ Error creating surrender analysis: {e}")
 
             print(f"\n✅ Analysis complete! All visualizations saved to: {output_dir}")
 

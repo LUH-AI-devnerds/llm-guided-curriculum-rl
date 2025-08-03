@@ -198,6 +198,7 @@ class BlackjackEnv:
                 len(current_hand) == 2
                 and self.can_surrender
                 and not self._dealer_has_blackjack()
+                and player_sum < 21  # Can't surrender blackjack
             )
         elif action == 5:
             return self.can_insure and self.dealer_hand[0] == 11
@@ -268,6 +269,8 @@ class BlackjackEnv:
             base_reward = 1.5  # Blackjack pays 3:2
         elif dealer_total > 21:
             base_reward = 1.0  # Dealer bust
+            if agent_total < 17 and agent_total > 11:
+                base_reward *= 0.5
             if self.doubled_down[hand_index]:
                 base_reward *= 2.1
         elif agent_total > dealer_total:
@@ -294,14 +297,22 @@ class BlackjackEnv:
         # 2. Insurance evaluation
         if self.insurance_bets[hand_index] > 0:
             if self._dealer_has_blackjack():
-                strategic_bonus += 0.2  # Successful insurance
+                strategic_bonus += 0.5  # Successful insurance (2:1 payout)
             else:
-                strategic_bonus -= 0.1  # Failed insurance
+                strategic_bonus -= 1.5  # Failed insurance (lose half bet)
+        
+        if self.surrendered_hands[hand_index]:
+            strategic_bonus -= 0.5  # Surrender gives -0.5 reward, which is often better than playing out a bad hand
+            if agent_total > 17 and agent_total < 21:
+                strategic_bonus -= 1.5
 
         # 3. Split evaluation
         if len(self.player_hands) > 1 and hand_index > 0:
             if agent_total <= 21 and (dealer_total > 21 or agent_total > dealer_total):
                 strategic_bonus += 0.2  # Successful split
+
+        # 4. Surrender evaluation (handled in _play_dealer_and_calculate_rewards)
+        # Surrender gives -0.5 reward, which is often better than playing out a bad hand
 
         return base_reward + strategic_bonus
 
@@ -323,6 +334,11 @@ class BlackjackEnv:
                     False,
                     False,
                     False,
+                    False,
+                    False,
+                    0,
+                    0,
+                    0,
                 )
             else:
                 return (
@@ -332,6 +348,11 @@ class BlackjackEnv:
                     False,
                     False,
                     False,
+                    False,
+                    False,
+                    0,
+                    0,
+                    0,
                 )
 
         current_hand = self.player_hands[self.current_hand_idx]
@@ -386,7 +407,7 @@ class BlackjackEnv:
             return self._get_state(), 0, True
 
         if not self._is_valid_action(action):
-            return self._get_state(), -0.1, False
+            return self._get_state(), -1, False
 
         current_hand = self.player_hands[self.current_hand_idx]
 
@@ -451,10 +472,12 @@ class BlackjackEnv:
             return self._get_state(), 0, False
 
         elif action == 4:
+            # Surrender: only available on first two cards, not blackjack, dealer not blackjack
             if not (
                 len(current_hand) == 2
                 and self.can_surrender
                 and not self._dealer_has_blackjack()
+                and self._get_hand_sum(current_hand) < 21  # Can't surrender blackjack
             ):
                 return self._get_state(), -0.1, False
 
@@ -462,6 +485,7 @@ class BlackjackEnv:
             return self._move_to_next_hand()
 
         elif action == 5:
+            # Insurance: only available when dealer shows Ace (11)
             if not (self.can_insure and self.dealer_hand[0] == 11):
                 return self._get_state(), -0.1, False
 
@@ -482,7 +506,8 @@ class BlackjackEnv:
         else:
             self.can_double = True
             self.can_surrender = True
-            self.can_insure = True
+            # Insurance is only available on the first hand when dealer shows Ace
+            # Don't reset can_insure for subsequent hands
             return self._get_state(), 0, False
 
     def _play_dealer_and_calculate_rewards(self):

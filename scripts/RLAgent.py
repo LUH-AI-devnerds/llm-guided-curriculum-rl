@@ -149,6 +149,18 @@ class DQNAgent:
                     and random.random() < 0.2
                 ):
                     return 3
+                if (
+                    self.curriculum_stage.stage_id >= 4
+                    and 4 in valid_actions
+                    and random.random() < 0.1
+                ):
+                    return 4
+                if (
+                    self.curriculum_stage.stage_id >= 5
+                    and 5 in valid_actions
+                    and random.random() < 0.1
+                ):
+                    return 5
 
             return random.choice(valid_actions) if valid_actions else 0
 

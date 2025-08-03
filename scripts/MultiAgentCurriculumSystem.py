@@ -845,6 +845,8 @@ class MultiAgentCurriculumSystem:
                     "hit_percent": (action_counts[1] / total_actions) * 100,
                     "double_percent": (action_counts[2] / total_actions) * 100,
                     "split_percent": (action_counts[3] / total_actions) * 100,
+                    "surrender_percent": (action_counts[4] / total_actions) * 100,
+                    "insurance_percent": (action_counts[5] / total_actions) * 100,
                     "total_actions": total_actions,
                     "win_rate": (
                         (

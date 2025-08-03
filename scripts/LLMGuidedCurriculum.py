@@ -120,6 +120,29 @@ class LLMGuidedCurriculum:
             print(f"LLM Generated Curriculum with {len(stages)} stages:")
             print(f"Rationale: {curriculum_data.get('rationale', 'Not provided')}")
 
+            # Validate that all actions are included in the curriculum
+            all_actions_in_curriculum = set()
+            for stage in stages:
+                all_actions_in_curriculum.update(stage.available_actions)
+
+            missing_actions = set([0, 1, 2, 3, 4, 5]) - all_actions_in_curriculum
+            if missing_actions:
+                print(f"⚠️  WARNING: Curriculum is missing actions: {missing_actions}")
+                print(f"   Adding missing actions to final stage...")
+
+                # Add missing actions to the final stage
+                if stages:
+                    final_stage = stages[-1]
+                    final_stage.available_actions.extend(list(missing_actions))
+                    final_stage.available_actions = list(
+                        set(final_stage.available_actions)
+                    )  # Remove duplicates
+                    print(
+                        f"   Final stage now has actions: {final_stage.available_actions}"
+                    )
+            else:
+                print(f"✅ All actions (0,1,2,3,4,5) are included in the curriculum")
+
             return stages
 
         except Exception as e:
