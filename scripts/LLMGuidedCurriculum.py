@@ -63,7 +63,7 @@ class LLMGuidedCurriculum:
         1. Stage name
         2. Available actions (list of action indices: 0, 1, 2, 3, 4, 5)
         3. Description of learning objectives
-        4. Difficulty level (1-5 scale)
+        4. Difficulty level (1-3 scale)
         5. Success threshold (win rate 0.0-1.0 to advance)
         
         You arent forced to use actions in the order of the list. You can use actions in any order you want.
@@ -71,10 +71,10 @@ class LLMGuidedCurriculum:
         The complexity of actions are as follows:
         - Stand: 1
         - Hit: 1
-        - Early Surrender: 3
-        - Insurance: 3
-        - Double Down: 4
-        - Split: 4
+        - Early Surrender: 2
+        - Insurance: 2
+        - Double Down: 3
+        - Split: 3
         Respond in this exact JSON format:
         {{
             "stages": [
