@@ -162,17 +162,31 @@ class MultiAgentStandardSystem:
         print("\n✅ STANDARD TRAINING COMPLETE!")
         print(f"📁 All logs and models saved to: {self.log_dir}")
 
-    def evaluate(self, agent, env, episodes):
+    def evaluate(self, agent, env, episodes, heavy_stats_threshold=20000):
         original_epsilon = agent.epsilon
         agent.epsilon = 0.0
-        total_rewards = []
-        wins = 0
-        action_rewards = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
 
-        # Enhanced statistics tracking
-        state_action_stats = {}  # Track actions per state
-        state_win_stats = {}  # Track wins per state
-        state_reward_stats = {}  # Track rewards per state
+        # Automatically switch to lightweight evaluation for very large episode counts
+        collect_heavy_stats = episodes <= heavy_stats_threshold
+
+        total_rewards_sum = 0.0
+        total_rewards = []  # kept only to compute std if heavy; otherwise unused
+        wins = 0
+
+        if collect_heavy_stats:
+            action_rewards = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
+            state_action_stats = {}
+            state_win_stats = {}
+            state_reward_stats = {}
+        else:
+            # O(1) aggregations per action: count, sum, sum_sq
+            action_aggs = {
+                a: {"count": 0, "sum": 0.0, "sum_sq": 0.0} for a in [0, 1, 2, 3, 4, 5]
+            }
+            state_action_stats = {}
+            state_win_stats = {}
+            state_reward_stats = {}
+
         game_outcomes = {
             "wins": 0,
             "losses": 0,
@@ -181,12 +195,15 @@ class MultiAgentStandardSystem:
             "blackjacks": 0,
         }
 
-        for _ in range(episodes):
+        log_every = max(1, episodes // 20)
+
+        for episode_idx in range(episodes):
             state = env.reset()
             done = False
             episode_reward = 0
             episode_actions = []
             episode_wins = 0
+            visited_states = set() if collect_heavy_stats else None
 
             while not done:
                 action = agent.get_action(state)
@@ -198,16 +215,25 @@ class MultiAgentStandardSystem:
                 has_ace = state[2]
                 state_key = f"P{player_sum}_D{dealer_up}_A{has_ace}"
 
-                # Track state-action statistics
-                if state_key not in state_action_stats:
-                    state_action_stats[state_key] = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
-                state_action_stats[state_key][action] += 1
+                if collect_heavy_stats:
+                    # Track state-action statistics
+                    if state_key not in state_action_stats:
+                        state_action_stats[state_key] = {
+                            0: 0,
+                            1: 0,
+                            2: 0,
+                            3: 0,
+                            4: 0,
+                            5: 0,
+                        }
+                    state_action_stats[state_key][action] += 1
 
-                # Track state-reward statistics
-                if state_key not in state_reward_stats:
-                    state_reward_stats[state_key] = []
-                if state_key not in state_win_stats:
-                    state_win_stats[state_key] = {"wins": 0, "total": 0}
+                    # Track state-reward statistics
+                    if state_key not in state_reward_stats:
+                        state_reward_stats[state_key] = []
+                    if state_key not in state_win_stats:
+                        state_win_stats[state_key] = {"wins": 0, "total": 0}
+                    visited_states.add(state_key)
 
                 state, reward, done = env.step(action)
                 episode_reward += reward
@@ -215,11 +241,19 @@ class MultiAgentStandardSystem:
                 # Track state rewards
                 state_reward_stats[state_key].append(reward)
 
-            total_rewards.append(episode_reward)
-
-            # Track action performance
-            for action in episode_actions:
-                action_rewards[action].append(episode_reward)
+            total_rewards_sum += episode_reward
+            if collect_heavy_stats:
+                total_rewards.append(episode_reward)
+                # Track action performance (heavy mode keeps per-episode arrays)
+                for action in episode_actions:
+                    action_rewards[action].append(episode_reward)
+            else:
+                # Lightweight: aggregate per action
+                for action in episode_actions:
+                    agg = action_aggs[action]
+                    agg["count"] += 1
+                    agg["sum"] += episode_reward
+                    agg["sum_sq"] += episode_reward * episode_reward
 
             detailed_stats = env.get_detailed_win_stats()
             if detailed_stats:
@@ -247,11 +281,24 @@ class MultiAgentStandardSystem:
                     elif result == "bust":
                         game_outcomes["busts"] += 1
 
-                # Track state win statistics
-                for state_key in state_win_stats:
-                    state_win_stats[state_key]["total"] += 1
-                    if episode_wins > 0:
-                        state_win_stats[state_key]["wins"] += 1
+                if collect_heavy_stats:
+                    # Track state win statistics only for states visited in this episode
+                    for state_key in visited_states:
+                        state_win_stats[state_key]["total"] += 1
+                        if episode_wins > 0:
+                            state_win_stats[state_key]["wins"] += 1
+
+            # Periodic progress logging during evaluation to avoid appearing stuck
+            if (episode_idx + 1) % log_every == 0:
+                avg_reward_so_far = (
+                    (total_rewards_sum / (episode_idx + 1))
+                    if (episode_idx + 1) > 0
+                    else 0.0
+                )
+                print(
+                    f"  [Eval] Episode {episode_idx + 1}/{episodes} | Avg Reward: {avg_reward_so_far:.3f}",
+                    flush=True,
+                )
 
         agent.epsilon = original_epsilon
 
@@ -277,53 +324,77 @@ class MultiAgentStandardSystem:
 
         # Create strategy table data
         strategy_table = {}
-        for state_key, action_counts in state_action_stats.items():
-            total_actions = sum(action_counts.values())
-            if total_actions > 0:
-                strategy_table[state_key] = {
-                    "stand_percent": (action_counts[0] / total_actions) * 100,
-                    "hit_percent": (action_counts[1] / total_actions) * 100,
-                    "double_percent": (action_counts[2] / total_actions) * 100,
-                    "split_percent": (action_counts[3] / total_actions) * 100,
-                    "surrender_percent": (action_counts[4] / total_actions) * 100,
-                    "insurance_percent": (action_counts[5] / total_actions) * 100,
-                    "total_actions": total_actions,
-                    "win_rate": (
-                        (
-                            state_win_stats[state_key]["wins"]
-                            / state_win_stats[state_key]["total"]
-                        )
-                        * 100
-                        if state_win_stats[state_key]["total"] > 0
-                        else 0
-                    ),
-                    "avg_reward": (
-                        np.mean(state_reward_stats[state_key])
-                        if state_reward_stats[state_key]
-                        else 0
-                    ),
-                }
+        if collect_heavy_stats:
+            for state_key, action_counts in state_action_stats.items():
+                total_actions = sum(action_counts.values())
+                if total_actions > 0:
+                    strategy_table[state_key] = {
+                        "stand_percent": (action_counts[0] / total_actions) * 100,
+                        "hit_percent": (action_counts[1] / total_actions) * 100,
+                        "double_percent": (action_counts[2] / total_actions) * 100,
+                        "split_percent": (action_counts[3] / total_actions) * 100,
+                        "surrender_percent": (action_counts[4] / total_actions) * 100,
+                        "insurance_percent": (action_counts[5] / total_actions) * 100,
+                        "total_actions": total_actions,
+                        "win_rate": (
+                            (
+                                state_win_stats[state_key]["wins"]
+                                / state_win_stats[state_key]["total"]
+                            )
+                            * 100
+                            if state_win_stats[state_key]["total"] > 0
+                            else 0
+                        ),
+                        "avg_reward": (
+                            np.mean(state_reward_stats[state_key])
+                            if state_reward_stats[state_key]
+                            else 0
+                        ),
+                    }
 
         # Add action performance to return
-        return {
-            "win_rate": wins / episodes,
-            "avg_reward": np.mean(total_rewards),
-            "action_performance": {
+        if collect_heavy_stats:
+            action_performance = {
                 action: {
                     "count": len(rewards),
                     "avg_reward": np.mean(rewards) if rewards else 0,
                     "std_reward": np.std(rewards) if rewards else 0,
                 }
                 for action, rewards in action_rewards.items()
-            },
-            "game_outcomes": game_outcomes,
-            "game_outcome_percentages": game_outcome_percentages,
-            "strategy_table": strategy_table,
-            "state_action_stats": state_action_stats,
-            "state_win_stats": state_win_stats,
-            "state_reward_stats": {
+            }
+            avg_reward = np.mean(total_rewards) if total_rewards else 0.0
+            state_reward_stats_summary = {
                 k: {"avg": np.mean(v), "std": np.std(v), "count": len(v)}
                 for k, v in state_reward_stats.items()
                 if v
-            },
+            }
+        else:
+            # Compute performance from aggregates
+            action_performance = {}
+            for a, agg in action_aggs.items():
+                if agg["count"] > 0:
+                    mean = agg["sum"] / agg["count"]
+                    var = max(agg["sum_sq"] / agg["count"] - mean * mean, 0.0)
+                    std = np.sqrt(var)
+                else:
+                    mean = 0.0
+                    std = 0.0
+                action_performance[a] = {
+                    "count": agg["count"],
+                    "avg_reward": mean,
+                    "std_reward": std,
+                }
+            avg_reward = total_rewards_sum / episodes if episodes > 0 else 0.0
+            state_reward_stats_summary = {}
+
+        return {
+            "win_rate": wins / episodes,
+            "avg_reward": avg_reward,
+            "action_performance": action_performance,
+            "game_outcomes": game_outcomes,
+            "game_outcome_percentages": game_outcome_percentages,
+            "strategy_table": strategy_table if collect_heavy_stats else {},
+            "state_action_stats": state_action_stats if collect_heavy_stats else {},
+            "state_win_stats": state_win_stats if collect_heavy_stats else {},
+            "state_reward_stats": state_reward_stats_summary,
         }

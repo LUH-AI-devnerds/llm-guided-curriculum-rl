@@ -1,0 +1,305 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 5,
+    "completion_time": "2025-08-09T21:06:42.830659"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit or Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental policy of hitting or standing based on the player's hand and the dealer's upcard. Focus on mastering basic strategy without additional complexities. The agent needs to learn when to take a card and when to stop based on the risk of busting versus the potential reward.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Adding Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent needs to learn when doubling down is strategically advantageous (e.g., hard 11, or a soft 17 or 18 against a low dealer upcard). This stage builds on the basic hit/stand strategy, requiring the agent to evaluate risk/reward more thoroughly. This action is not always available, so the agent needs to learn when to use it.",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Adding Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "description": "Introduce 'Early Surrender' as an option. The agent needs to learn in which situations early surrender is a good choice to minimize loses. Early surrender is most effective when facing a high dealer up card with a particularly bad hand (e.g., a hard 15 or 16 against a dealer's 10 or Ace).",
+      "difficulty": 2,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Adding Splits",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Introduce the 'Split' action. The agent must learn the conditions under which splitting pairs is advantageous. This requires understanding probabilities and expected value in different scenarios. This action is not always available, so the agent needs to learn when to use it. This builds upon the previous skills in Stages 1-3.",
+      "difficulty": 3,
+      "success_threshold": 0.44
+    },
+    {
+      "stage_id": 5,
+      "name": "Insurance and Full Strategy",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Introduce 'Insurance' as an action, and enable all actions. The agent should now learn the complete Blackjack strategy, including when taking insurance is correct. This is the most complex stage and requires the agent to combine all the skills learned in the previous stages. The agent must learn when taking insurance is advantageous, and when it is not. The agent also has to consider the implications of all previous actions when combined together.",
+      "difficulty": 3,
+      "success_threshold": 0.46
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 5,
+      "final_win_rate": 0.4524,
+      "stage_progression": 5
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 5,
+      "final_win_rate": 0.37815,
+      "stage_progression": 5
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental policy of hitting or standing based on the player's hand and the dealer's upcard. Focus on mastering basic strategy without additional complexities. The agent needs to learn when to take a card and when to stop based on the risk of busting versus the potential reward.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42172,
+          "avg_reward": -0.21321,
+          "total_wins": 40669,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 286.11203479766846
+        },
+        "agent_1": {
+          "win_rate": 0.38561,
+          "avg_reward": -0.52386,
+          "total_wins": 38248,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.182403802871704
+        }
+      },
+      "timestamp": "2025-08-09T20:24:31.215465"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Adding Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent needs to learn when doubling down is strategically advantageous (e.g., hard 11, or a soft 17 or 18 against a low dealer upcard). This stage builds on the basic hit/stand strategy, requiring the agent to evaluate risk/reward more thoroughly. This action is not always available, so the agent needs to learn when to use it.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42347,
+          "avg_reward": -0.17938,
+          "total_wins": 50974,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 395.9113550186157
+        },
+        "agent_1": {
+          "win_rate": 0.37361,
+          "avg_reward": -0.585525,
+          "total_wins": 45847,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.44846510887146
+        }
+      },
+      "timestamp": "2025-08-09T20:31:18.083268"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Adding Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          4
+        ],
+        "description": "Introduce 'Early Surrender' as an option. The agent needs to learn in which situations early surrender is a good choice to minimize loses. Early surrender is most effective when facing a high dealer up card with a particularly bad hand (e.g., a hard 15 or 16 against a dealer's 10 or Ace).",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.36539,
+          "avg_reward": -0.146705,
+          "total_wins": 51963,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 403.90951204299927
+        },
+        "agent_1": {
+          "win_rate": 0.37192,
+          "avg_reward": -0.59714,
+          "total_wins": 52592,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 7.798404216766357
+        }
+      },
+      "timestamp": "2025-08-09T20:38:13.260152"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Adding Splits",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Introduce the 'Split' action. The agent must learn the conditions under which splitting pairs is advantageous. This requires understanding probabilities and expected value in different scenarios. This action is not always available, so the agent needs to learn when to use it. This builds upon the previous skills in Stages 1-3.",
+        "difficulty": 3,
+        "success_threshold": 0.44
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43281,
+          "avg_reward": -0.36420850000000005,
+          "total_wins": 68202,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 854.9669427871704
+        },
+        "agent_1": {
+          "win_rate": 0.38385,
+          "avg_reward": -0.5901455,
+          "total_wins": 60880,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.386579990386963
+        }
+      },
+      "timestamp": "2025-08-09T20:52:40.563097"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Insurance and Full Strategy",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Introduce 'Insurance' as an action, and enable all actions. The agent should now learn the complete Blackjack strategy, including when taking insurance is correct. This is the most complex stage and requires the agent to combine all the skills learned in the previous stages. The agent must learn when taking insurance is advantageous, and when it is not. The agent also has to consider the implications of all previous actions when combined together.",
+        "difficulty": 3,
+        "success_threshold": 0.46
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4524,
+          "avg_reward": -0.478445,
+          "total_wins": 78323,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 829.7181487083435
+        },
+        "agent_1": {
+          "win_rate": 0.37815,
+          "avg_reward": -0.612946,
+          "total_wins": 68697,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 8.87108302116394
+        }
+      },
+      "timestamp": "2025-08-09T21:06:42.830596"
+    }
+  ]
+}

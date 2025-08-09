@@ -1,0 +1,307 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 5,
+    "completion_time": "2025-08-08T20:45:09.936701"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit or Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental decision-making of when to hit or stand based on the player's hand and the dealer's upcard. Focus is on understanding basic strategy without more complex actions.",
+      "difficulty": 1,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 2,
+      "name": "Adding Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent should learn when doubling down is advantageous based on the current hand and dealer's upcard. This stage requires a more nuanced understanding of probabilities.",
+      "difficulty": 2,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 3,
+      "name": "Introducing Splitting Pairs",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the 'Split' action. The agent needs to learn when splitting pairs is strategically beneficial. This stage requires understanding when creating two hands improves the expected value, making decision on each hand.",
+      "difficulty": 2,
+      "success_threshold": 0.43
+    },
+    {
+      "stage_id": 4,
+      "name": "Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Introduce the 'Early Surrender' option. The agent will learn to recognize situations where surrendering is the best course of action, minimizing potential losses.",
+      "difficulty": 3,
+      "success_threshold": 0.44
+    },
+    {
+      "stage_id": 5,
+      "name": "Adding Insurance",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Introduce the 'Insurance' bet. The agent must determine when taking insurance is a reasonable strategy, understanding the odds and minimizing losses.",
+      "difficulty": 3,
+      "success_threshold": 0.45
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 5,
+      "final_win_rate": 0.44056,
+      "stage_progression": 5
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 5,
+      "final_win_rate": 0.37555,
+      "stage_progression": 5
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental decision-making of when to hit or stand based on the player's hand and the dealer's upcard. Focus is on understanding basic strategy without more complex actions.",
+        "difficulty": 1,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42269,
+          "avg_reward": -0.19925,
+          "total_wins": 40496,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 267.31209993362427
+        },
+        "agent_1": {
+          "win_rate": 0.38119,
+          "avg_reward": -0.54532,
+          "total_wins": 38096,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.208764314651489
+        }
+      },
+      "timestamp": "2025-08-08T19:14:29.971382"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Adding Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn when doubling down is advantageous based on the current hand and dealer's upcard. This stage requires a more nuanced understanding of probabilities.",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42446,
+          "avg_reward": -0.19555,
+          "total_wins": 50854,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 384.57794213294983
+        },
+        "agent_1": {
+          "win_rate": 0.38451,
+          "avg_reward": -0.54978,
+          "total_wins": 46222,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.781825065612793
+        }
+      },
+      "timestamp": "2025-08-08T19:21:07.264460"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Introducing Splitting Pairs",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the 'Split' action. The agent needs to learn when splitting pairs is strategically beneficial. This stage requires understanding when creating two hands improves the expected value, making decision on each hand.",
+        "difficulty": 2,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.47856,
+          "avg_reward": -0.3483734999999999,
+          "total_wins": 64662,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 525.0479679107666
+        },
+        "agent_1": {
+          "win_rate": 0.38815,
+          "avg_reward": -0.596566,
+          "total_wins": 55028,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.14130711555481
+        }
+      },
+      "timestamp": "2025-08-08T19:30:05.055805"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Introduce the 'Early Surrender' option. The agent will learn to recognize situations where surrendering is the best course of action, minimizing potential losses.",
+        "difficulty": 3,
+        "success_threshold": 0.44
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43206,
+          "avg_reward": -0.253489,
+          "total_wins": 68871,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 3618.424751996994
+        },
+        "agent_1": {
+          "win_rate": 0.35907,
+          "avg_reward": -0.63082,
+          "total_wins": 61437,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.716986894607544
+        }
+      },
+      "timestamp": "2025-08-08T20:30:36.948867"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Adding Insurance",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Introduce the 'Insurance' bet. The agent must determine when taking insurance is a reasonable strategy, understanding the odds and minimizing losses.",
+        "difficulty": 3,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44056,
+          "avg_reward": -0.38627,
+          "total_wins": 78973,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 859.6324098110199
+        },
+        "agent_1": {
+          "win_rate": 0.37555,
+          "avg_reward": -0.6209805,
+          "total_wins": 67799,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 9.349052906036377
+        }
+      },
+      "timestamp": "2025-08-08T20:45:09.936673"
+    }
+  ]
+}
