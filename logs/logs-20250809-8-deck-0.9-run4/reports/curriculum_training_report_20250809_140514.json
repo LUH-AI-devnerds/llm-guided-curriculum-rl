@@ -1,0 +1,475 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 7,
+    "completion_time": "2025-08-09T14:05:14.008111"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental Blackjack actions of hitting and standing. The agent should learn to hit when the hand total is low and the dealer's upcard is high, and to stand when the hand total is high or the dealer's upcard is low.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent should learn to double down on advantageous hands (e.g., hard 11, or hard 10 against low dealer upcards).",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Introducing Split",
+      "available_actions": [
+        0,
+        1,
+        3
+      ],
+      "description": "Introduce the 'Split' action, without Double Down. The agent should learn when to split pairs like 8s and Aces, and when not to split (e.g., 10s).",
+      "difficulty": 2,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Split and Double Down",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Integrate both 'Double Down' and 'Split' actions. The agent now must learn to make decisions about all combinations of hand totals, dealer upcards, pairs, and doubling opportunities.",
+      "difficulty": 3,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 5,
+      "name": "Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Introduce 'Early Surrender'. The agent learns to identify very unfavorable situations where surrendering is statistically beneficial.",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    },
+    {
+      "stage_id": 6,
+      "name": "Insurance",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "description": "Introduce 'Insurance'. The agent learns to evaluate the conditions where taking insurance might be advantageous, mainly depends on the card counting.",
+      "difficulty": 3,
+      "success_threshold": 0.48
+    },
+    {
+      "stage_id": 7,
+      "name": "Full Blackjack",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Full Blackjack with all actions available. The agent must master all strategies to maximize its return.",
+      "difficulty": 3,
+      "success_threshold": 0.49
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 7,
+      "final_win_rate": 0.4513,
+      "stage_progression": 7
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 7,
+      "final_win_rate": 0.37482,
+      "stage_progression": 9
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental Blackjack actions of hitting and standing. The agent should learn to hit when the hand total is low and the dealer's upcard is high, and to stand when the hand total is high or the dealer's upcard is low.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42424,
+          "avg_reward": -0.194225,
+          "total_wins": 28129,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 209.11173701286316
+        },
+        "agent_1": {
+          "win_rate": 0.38529,
+          "avg_reward": -0.5259,
+          "total_wins": 27190,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.621758222579956
+        }
+      },
+      "timestamp": "2025-08-09T11:16:38.741648"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn to double down on advantageous hands (e.g., hard 11, or hard 10 against low dealer upcards).",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42548,
+          "avg_reward": -0.189885,
+          "total_wins": 36231,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 306.9314548969269
+        },
+        "agent_1": {
+          "win_rate": 0.37573,
+          "avg_reward": -0.58724,
+          "total_wins": 33032,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.936229228973389
+        }
+      },
+      "timestamp": "2025-08-09T11:21:57.055144"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn to double down on advantageous hands (e.g., hard 11, or hard 10 against low dealer upcards).",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.39249,
+          "avg_reward": -0.53645,
+          "total_wins": 33010,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.950228929519653
+        }
+      },
+      "timestamp": "2025-08-09T11:22:06.922794"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Introducing Split",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Introduce the 'Split' action, without Double Down. The agent should learn when to split pairs like 8s and Aces, and when not to split (e.g., 10s).",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44636,
+          "avg_reward": -0.24360900000000002,
+          "total_wins": 44565,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 412.64303708076477
+        },
+        "agent_1": {
+          "win_rate": 0.37852,
+          "avg_reward": -0.601546,
+          "total_wins": 38404,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.371659994125366
+        }
+      },
+      "timestamp": "2025-08-09T11:29:12.558336"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Introducing Split",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Introduce the 'Split' action, without Double Down. The agent should learn when to split pairs like 8s and Aces, and when not to split (e.g., 10s).",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.39333,
+          "avg_reward": -0.52357,
+          "total_wins": 39130,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.438669919967651
+        }
+      },
+      "timestamp": "2025-08-09T11:29:22.545020"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Split and Double Down",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Integrate both 'Double Down' and 'Split' actions. The agent now must learn to make decisions about all combinations of hand totals, dealer upcards, pairs, and doubling opportunities.",
+        "difficulty": 3,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.45494,
+          "avg_reward": -0.26989949999999996,
+          "total_wins": 52497,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 680.1219499111176
+        },
+        "agent_1": {
+          "win_rate": 0.38324,
+          "avg_reward": -0.5937720000000001,
+          "total_wins": 44744,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.754565715789795
+        }
+      },
+      "timestamp": "2025-08-09T11:40:55.223579"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Introduce 'Early Surrender'. The agent learns to identify very unfavorable situations where surrendering is statistically beneficial.",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.41471,
+          "avg_reward": -0.285907,
+          "total_wins": 51950,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 600.5389020442963
+        },
+        "agent_1": {
+          "win_rate": 0.39716,
+          "avg_reward": -0.535168,
+          "total_wins": 49735,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 9.49518895149231
+        }
+      },
+      "timestamp": "2025-08-09T11:51:09.123863"
+    },
+    {
+      "stage": {
+        "stage_id": 6,
+        "name": "Insurance",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ],
+        "description": "Introduce 'Insurance'. The agent learns to evaluate the conditions where taking insurance might be advantageous, mainly depends on the card counting.",
+        "difficulty": 3,
+        "success_threshold": 0.48
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.46989,
+          "avg_reward": -0.54322,
+          "total_wins": 67680,
+          "stage_id": 6,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 1789.692997932434
+        },
+        "agent_1": {
+          "win_rate": 0.39202,
+          "avg_reward": -0.5893055,
+          "total_wins": 54945,
+          "stage_id": 6,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 9.632779121398926
+        }
+      },
+      "timestamp": "2025-08-09T12:21:11.931244"
+    },
+    {
+      "stage": {
+        "stage_id": 7,
+        "name": "Full Blackjack",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Full Blackjack with all actions available. The agent must master all strategies to maximize its return.",
+        "difficulty": 3,
+        "success_threshold": 0.49
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4513,
+          "avg_reward": -0.41395449999999995,
+          "total_wins": 69953,
+          "stage_id": 7,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 6228.249521255493
+        },
+        "agent_1": {
+          "win_rate": 0.37482,
+          "avg_reward": -0.6004605000000001,
+          "total_wins": 61030,
+          "stage_id": 7,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 9.981872320175171
+        }
+      },
+      "timestamp": "2025-08-09T14:05:14.008086"
+    }
+  ]
+}

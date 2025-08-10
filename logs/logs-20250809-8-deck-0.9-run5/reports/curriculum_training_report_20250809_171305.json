@@ -1,0 +1,476 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 7,
+    "completion_time": "2025-08-09T17:13:05.621435"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Beginner - Hit or Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamental strategy of when to hit or stand based on the player's hand and the dealer's upcard. Focus on exceeding the dealer's score without busting.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Advanced Beginner - Introduction to Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action in advantageous situations (e.g., hard 11 vs. dealer's upcard 2-10). Refine hit/stand decisions based on the optimal strategy. Learning to make use of the double down action to maximize profits.",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Intermediate - Introduction to Splitting Pairs",
+      "available_actions": [
+        0,
+        1,
+        3
+      ],
+      "description": "Learn when to split pairs based on the dealer's upcard (e.g., splitting 8s and Aces). Practice hit/stand and splitting strategies to improve overall win rate. Agent learns to calculate the probability of winning with split hands.",
+      "difficulty": 2,
+      "success_threshold": 0.43
+    },
+    {
+      "stage_id": 4,
+      "name": "Advanced - Doubling and Splitting",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Combine knowledge of hitting/standing, doubling down, and splitting pairs. Refine strategies based on more complex scenarios and dealer upcards. Implement strategy that maximizes expected return in the long run.",
+      "difficulty": 2,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 5,
+      "name": "Expert - Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Introduce 'Early Surrender' to minimize losses in unfavorable situations (e.g., hard 16 vs. dealer's 9, 10, or Ace). Requires an understanding of negative expected value hands. Improves loss-minimization, but requires mastery of other strategies.",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    },
+    {
+      "stage_id": 6,
+      "name": "Master - Insurance",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "description": "Introduce 'Insurance' when the dealer shows an Ace. Learn when taking insurance offers positive expected value. This requires advanced knowledge of card counting (not strictly necessary, but helpful) and risk tolerance.",
+      "difficulty": 3,
+      "success_threshold": 0.48
+    },
+    {
+      "stage_id": 7,
+      "name": "Blackjack Master - All Actions",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Master all actions and strategies. Fine-tune decision-making in all situations to achieve optimal performance. This stage aims to achieve high win rate by employing the best possible strategy in all situations.",
+      "difficulty": 3,
+      "success_threshold": 0.49
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 7,
+      "final_win_rate": 0.44625,
+      "stage_progression": 7
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 7,
+      "final_win_rate": 0.39417,
+      "stage_progression": 9
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Beginner - Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamental strategy of when to hit or stand based on the player's hand and the dealer's upcard. Focus on exceeding the dealer's score without busting.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42326,
+          "avg_reward": -0.17577,
+          "total_wins": 28418,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 204.87449860572815
+        },
+        "agent_1": {
+          "win_rate": 0.37928,
+          "avg_reward": -0.548725,
+          "total_wins": 26857,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 7.43044900894165
+        }
+      },
+      "timestamp": "2025-08-09T16:09:29.669539"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Advanced Beginner - Introduction to Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action in advantageous situations (e.g., hard 11 vs. dealer's upcard 2-10). Refine hit/stand decisions based on the optimal strategy. Learning to make use of the double down action to maximize profits.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42394,
+          "avg_reward": -0.19712,
+          "total_wins": 36374,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 307.32556796073914
+        },
+        "agent_1": {
+          "win_rate": 0.38251,
+          "avg_reward": -0.553575,
+          "total_wins": 33257,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.01040506362915
+        }
+      },
+      "timestamp": "2025-08-09T16:14:48.930651"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Advanced Beginner - Introduction to Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action in advantageous situations (e.g., hard 11 vs. dealer's upcard 2-10). Refine hit/stand decisions based on the optimal strategy. Learning to make use of the double down action to maximize profits.",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38055,
+          "avg_reward": -0.54914,
+          "total_wins": 32650,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 8.061009168624878
+        }
+      },
+      "timestamp": "2025-08-09T16:14:58.933600"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Intermediate - Introduction to Splitting Pairs",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Learn when to split pairs based on the dealer's upcard (e.g., splitting 8s and Aces). Practice hit/stand and splitting strategies to improve overall win rate. Agent learns to calculate the probability of winning with split hands.",
+        "difficulty": 2,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.46658,
+          "avg_reward": -0.28470199999999996,
+          "total_wins": 46079,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 441.0346360206604
+        },
+        "agent_1": {
+          "win_rate": 0.38672,
+          "avg_reward": -0.591315,
+          "total_wins": 38698,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.747007846832275
+        }
+      },
+      "timestamp": "2025-08-09T16:22:32.255049"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Intermediate - Introduction to Splitting Pairs",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Learn when to split pairs based on the dealer's upcard (e.g., splitting 8s and Aces). Practice hit/stand and splitting strategies to improve overall win rate. Agent learns to calculate the probability of winning with split hands.",
+        "difficulty": 2,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.39069,
+          "avg_reward": -0.533532,
+          "total_wins": 38512,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 8.794307947158813
+        }
+      },
+      "timestamp": "2025-08-09T16:22:43.185419"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Advanced - Doubling and Splitting",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Combine knowledge of hitting/standing, doubling down, and splitting pairs. Refine strategies based on more complex scenarios and dealer upcards. Implement strategy that maximizes expected return in the long run.",
+        "difficulty": 2,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.47436,
+          "avg_reward": -0.306219,
+          "total_wins": 53157,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 566.3212769031525
+        },
+        "agent_1": {
+          "win_rate": 0.38703,
+          "avg_reward": -0.5771769999999999,
+          "total_wins": 44257,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 9.176892042160034
+        }
+      },
+      "timestamp": "2025-08-09T16:32:22.559786"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Expert - Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Introduce 'Early Surrender' to minimize losses in unfavorable situations (e.g., hard 16 vs. dealer's 9, 10, or Ace). Requires an understanding of negative expected value hands. Improves loss-minimization, but requires mastery of other strategies.",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4127,
+          "avg_reward": -0.2733835,
+          "total_wins": 53057,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 593.9514257907867
+        },
+        "agent_1": {
+          "win_rate": 0.38645,
+          "avg_reward": -0.577906,
+          "total_wins": 49162,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 9.278207302093506
+        }
+      },
+      "timestamp": "2025-08-09T16:42:31.073233"
+    },
+    {
+      "stage": {
+        "stage_id": 6,
+        "name": "Master - Insurance",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          5
+        ],
+        "description": "Introduce 'Insurance' when the dealer shows an Ace. Learn when taking insurance offers positive expected value. This requires advanced knowledge of card counting (not strictly necessary, but helpful) and risk tolerance.",
+        "difficulty": 3,
+        "success_threshold": 0.48
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43959,
+          "avg_reward": -0.7423085,
+          "total_wins": 64678,
+          "stage_id": 6,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 837.9875206947327
+        },
+        "agent_1": {
+          "win_rate": 0.38448,
+          "avg_reward": -0.6326094999999999,
+          "total_wins": 56321,
+          "stage_id": 6,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 9.670178174972534
+        }
+      },
+      "timestamp": "2025-08-09T16:56:41.982806"
+    },
+    {
+      "stage": {
+        "stage_id": 7,
+        "name": "Blackjack Master - All Actions",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Master all actions and strategies. Fine-tune decision-making in all situations to achieve optimal performance. This stage aims to achieve high win rate by employing the best possible strategy in all situations.",
+        "difficulty": 3,
+        "success_threshold": 0.49
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44625,
+          "avg_reward": -0.39567699999999995,
+          "total_wins": 68917,
+          "stage_id": 7,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 970.6726651191711
+        },
+        "agent_1": {
+          "win_rate": 0.39417,
+          "avg_reward": -0.5822235,
+          "total_wins": 61348,
+          "stage_id": 7,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 9.948682069778442
+        }
+      },
+      "timestamp": "2025-08-09T17:13:05.621415"
+    }
+  ]
+}
