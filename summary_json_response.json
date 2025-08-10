@@ -1,0 +1,95 @@
+{
+    "curriculum_stages": [
+        {
+            "stage_id": 1,
+            "name": "Basic Hit & Stand",
+            "available_actions": [
+                0,
+                1
+            ],
+            "description": "Learn the fundamental actions of hitting and standing. Agent should learn to hit when the hand total is low and stand when it's high, based on the dealer's upcard. Focus on memorizing the most basic actions for each hand.",
+            "difficulty": 1,
+            "success_threshold": 0.4
+        },
+        {
+            "stage_id": 2,
+            "name": "Introduction to Doubling Down",
+            "available_actions": [
+                0,
+                1,
+                2
+            ],
+            "description": "Introduce the 'Double Down' action. Agent should learn to recognize advantageous situations for doubling down (e.g., hard 11, hard 10 against low dealer upcards).",
+            "difficulty": 2,
+            "success_threshold": 0.42
+        },
+        {
+            "stage_id": 3,
+            "name": "Splitting Pairs",
+            "available_actions": [
+                0,
+                1,
+                3
+            ],
+            "description": "Introduce the 'Split' action. Focus on learning when to split pairs (e.g., splitting aces and eights almost always, but learn to avoid splitting 10s). The game is simplified to avoid 'Double Down' to allow better focus on the newly introduced action.",
+            "difficulty": 3,
+            "success_threshold": 0.43
+        },
+        {
+            "stage_id": 4,
+            "name": "Full Basic Strategy",
+            "available_actions": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "description": "Combine all basic actions (Hit, Stand, Double Down, and Split). Agent must now master a comprehensive basic strategy, choosing the optimal action in various situations. This stage will require the agent to balance all the actions they know, and use them efficiently. It is not expected to become an expert, but to understand how each action should be used in different circumstances.",
+            "difficulty": 4,
+            "success_threshold": 0.45
+        },
+        {
+            "stage_id": 5,
+            "name": "Insurance Decision",
+            "available_actions": [
+                0,
+                1,
+                2,
+                3,
+                5
+            ],
+            "description": "Introduce 'Insurance'. The agent should learn that insurance is generally a bad bet except in very specific card counting scenarios, which are not available now. Agent should learn to almost always decline Insurance. This stage is about learning the expected value of this advanced action.",
+            "difficulty": 4,
+            "success_threshold": 0.45
+        },
+        {
+            "stage_id": 6,
+            "name": "Early Surrender",
+            "available_actions": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "description": "Introduce the 'Early Surrender' action. The agent should learn when early surrender is advantageous, which typically involves giving up unfavorable hands against a strong dealer upcard.",
+            "difficulty": 4,
+            "success_threshold": 0.46
+        },
+        {
+            "stage_id": 7,
+            "name": "All Actions Master",
+            "available_actions": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "description": "The agent can now choose any action in all situations. Mastering all actions requires the agent to intelligently combine all strategies learned to create a holistic and performant strategy.",
+            "difficulty": 5,
+            "success_threshold": 0.47
+        }
+    ]
+}

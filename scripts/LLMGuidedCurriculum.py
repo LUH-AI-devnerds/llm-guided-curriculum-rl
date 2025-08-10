@@ -189,8 +189,8 @@ class LLMGuidedCurriculum:
         - Hit: 1
         - Early Surrender: 3
         - Insurance: 3
-        - Double Down: 4
-        - Split: 4
+        - Double Down: 2
+        - Split: 2
         
         Respond in JSON format:
         {{
