@@ -9,8 +9,8 @@ python run_multi_seed_evaluation.py \
     --mode no-curriculum \
     --seeds 10 \
     --episodes 500000 \
-    --eval-episodes 50000 \
-    --deck-types 1-deck 4-deck 8-deck infinite
+    --eval-episodes 100000 \
+    --deck-types 8-deck 
 
 echo ""
 echo "✅ NO-CURRICULUM evaluation completed!"
