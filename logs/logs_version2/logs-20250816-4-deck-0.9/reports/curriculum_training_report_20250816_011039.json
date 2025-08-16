@@ -1,0 +1,412 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 6,
+    "completion_time": "2025-08-16T01:10:39.732554"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit or Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn basic strategy of when to hit or stand based on hand value and dealer's upcard. Focus on avoiding busting and understanding expected value.",
+      "difficulty": 1,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the Double Down action in advantageous situations (e.g., hard 11 against a weak dealer upcard). Learn to identify situations where doubling down maximizes expected value.",
+      "difficulty": 2,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 3,
+      "name": "Advanced Hit/Stand/Double",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Hone strategy for Hit/Stand/Double situations. Increase training episodes and explore different exploration rates to find optimal solutions.",
+      "difficulty": 2,
+      "success_threshold": 0.44
+    },
+    {
+      "stage_id": 4,
+      "name": "Adding Splitting Pairs",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Introduce the Split action. Learn when to split pairs based on dealer's upcard (e.g., splitting Aces and eights is typically optimal).",
+      "difficulty": 3,
+      "success_threshold": 0.46
+    },
+    {
+      "stage_id": 5,
+      "name": "Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "description": "Introduce Early Surrender in unfavorable situations. Learn to identify spots where surrendering minimizes expected loss. This is usually when the player has a very poor hand (e.g., hard 16) against a strong dealer upcard (e.g., 10 or Ace).",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    },
+    {
+      "stage_id": 6,
+      "name": "Insurance",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Introduce Insurance bet when the dealer shows an Ace. Learn the conditions where insurance might be advantageous, and understand the trade-offs. (Insurance is generally a bad bet, so the agent might learn to rarely use it.)",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 6,
+      "final_win_rate": 0.44464,
+      "stage_progression": 6
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 6,
+      "final_win_rate": 0.3797,
+      "stage_progression": 8
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic strategy of when to hit or stand based on hand value and dealer's upcard. Focus on avoiding busting and understanding expected value.",
+        "difficulty": 1,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42068,
+          "avg_reward": -0.20407,
+          "total_wins": 33434,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 216.48281598091125
+        },
+        "agent_1": {
+          "win_rate": 0.3687,
+          "avg_reward": -0.59186,
+          "total_wins": 31791,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 4.648432016372681
+        }
+      },
+      "timestamp": "2025-08-16T00:22:07.759999"
+    },
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic strategy of when to hit or stand based on hand value and dealer's upcard. Focus on avoiding busting and understanding expected value.",
+        "difficulty": 1,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38342,
+          "avg_reward": -0.53565,
+          "total_wins": 31453,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 4.687510967254639
+        }
+      },
+      "timestamp": "2025-08-16T00:22:13.896110"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the Double Down action in advantageous situations (e.g., hard 11 against a weak dealer upcard). Learn to identify situations where doubling down maximizes expected value.",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42918,
+          "avg_reward": -0.17707,
+          "total_wins": 42338,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 316.83086109161377
+        },
+        "agent_1": {
+          "win_rate": 0.38322,
+          "avg_reward": -0.53947,
+          "total_wins": 38767,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 5.151055097579956
+        }
+      },
+      "timestamp": "2025-08-16T00:27:39.529849"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the Double Down action in advantageous situations (e.g., hard 11 against a weak dealer upcard). Learn to identify situations where doubling down maximizes expected value.",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38606,
+          "avg_reward": -0.51033,
+          "total_wins": 37988,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 5.082568883895874
+        }
+      },
+      "timestamp": "2025-08-16T00:27:46.186803"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Advanced Hit/Stand/Double",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Hone strategy for Hit/Stand/Double situations. Increase training episodes and explore different exploration rates to find optimal solutions.",
+        "difficulty": 2,
+        "success_threshold": 0.44
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42642,
+          "avg_reward": -0.19072,
+          "total_wins": 49797,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 366.26245403289795
+        },
+        "agent_1": {
+          "win_rate": 0.37394,
+          "avg_reward": -0.58761,
+          "total_wins": 45013,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 5.471292018890381
+        }
+      },
+      "timestamp": "2025-08-16T00:34:00.945674"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Adding Splitting Pairs",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Introduce the Split action. Learn when to split pairs based on dealer's upcard (e.g., splitting Aces and eights is typically optimal).",
+        "difficulty": 3,
+        "success_threshold": 0.46
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48622,
+          "avg_reward": -0.31132200000000004,
+          "total_wins": 63978,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 590.1331539154053
+        },
+        "agent_1": {
+          "win_rate": 0.37552,
+          "avg_reward": -0.609571,
+          "total_wins": 50992,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 5.990325689315796
+        }
+      },
+      "timestamp": "2025-08-16T00:44:00.326666"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "description": "Introduce Early Surrender in unfavorable situations. Learn to identify spots where surrendering minimizes expected loss. This is usually when the player has a very poor hand (e.g., hard 16) against a strong dealer upcard (e.g., 10 or Ace).",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43738,
+          "avg_reward": -0.304818,
+          "total_wins": 65903,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 702.6088891029358
+        },
+        "agent_1": {
+          "win_rate": 0.37272,
+          "avg_reward": -0.614764,
+          "total_wins": 57512,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 6.448841094970703
+        }
+      },
+      "timestamp": "2025-08-16T00:55:53.043912"
+    },
+    {
+      "stage": {
+        "stage_id": 6,
+        "name": "Insurance",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Introduce Insurance bet when the dealer shows an Ace. Learn the conditions where insurance might be advantageous, and understand the trade-offs. (Insurance is generally a bad bet, so the agent might learn to rarely use it.)",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.44464,
+          "avg_reward": -0.48628600000000005,
+          "total_wins": 71411,
+          "stage_id": 6,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 875.1111800670624
+        },
+        "agent_1": {
+          "win_rate": 0.3797,
+          "avg_reward": -0.594515,
+          "total_wins": 63131,
+          "stage_id": 6,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 6.8938751220703125
+        }
+      },
+      "timestamp": "2025-08-16T01:10:39.732527"
+    }
+  ]
+}

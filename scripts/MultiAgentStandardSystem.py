@@ -80,7 +80,10 @@ class MultiAgentStandardSystem:
                 state = env.reset()
                 done = False
                 total_reward = 0
-                while not done:
+                step_count = 0
+                max_steps_per_episode = 1000
+
+                while not done and step_count < max_steps_per_episode:
                     action = agent.get_action(state)
                     next_state, reward, done = env.step(action)
                     if hasattr(agent, "remember"):
@@ -90,6 +93,13 @@ class MultiAgentStandardSystem:
                         agent.update(state, action, reward, next_state)
                     state = next_state
                     total_reward += reward
+                    step_count += 1
+
+                if step_count >= max_steps_per_episode:
+                    print(
+                        f"  [Train] Episode {episode} exceeded max steps ({max_steps_per_episode}), forcing termination",
+                        flush=True,
+                    )
                 episode_rewards.append(total_reward)
                 detailed_stats = env.get_detailed_win_stats()
                 if detailed_stats:
@@ -195,7 +205,9 @@ class MultiAgentStandardSystem:
             "blackjacks": 0,
         }
 
-        log_every = max(1, episodes // 20)
+        log_every = max(1, min(episodes // 20, 1000))
+
+        print(f"  [Eval] Starting evaluation of {episodes} episodes...", flush=True)
 
         for episode_idx in range(episodes):
             state = env.reset()
@@ -205,7 +217,10 @@ class MultiAgentStandardSystem:
             episode_wins = 0
             visited_states = set() if collect_heavy_stats else None
 
-            while not done:
+            step_count = 0
+            max_steps_per_episode = 1000
+
+            while not done and step_count < max_steps_per_episode:
                 action = agent.get_action(state)
                 episode_actions.append(action)
 
@@ -237,9 +252,17 @@ class MultiAgentStandardSystem:
 
                 state, reward, done = env.step(action)
                 episode_reward += reward
+                step_count += 1
 
-                # Track state rewards
-                state_reward_stats[state_key].append(reward)
+                # Track state rewards only in heavy stats mode
+                if collect_heavy_stats:
+                    state_reward_stats[state_key].append(reward)
+
+            if step_count >= max_steps_per_episode:
+                print(
+                    f"  [Eval] Episode {episode_idx + 1} exceeded max steps ({max_steps_per_episode}), forcing termination",
+                    flush=True,
+                )
 
             total_rewards_sum += episode_reward
             if collect_heavy_stats:
@@ -289,7 +312,7 @@ class MultiAgentStandardSystem:
                             state_win_stats[state_key]["wins"] += 1
 
             # Periodic progress logging during evaluation to avoid appearing stuck
-            if (episode_idx + 1) % log_every == 0:
+            if (episode_idx + 1) % log_every == 0 or episode_idx < 10:
                 avg_reward_so_far = (
                     (total_rewards_sum / (episode_idx + 1))
                     if (episode_idx + 1) > 0
