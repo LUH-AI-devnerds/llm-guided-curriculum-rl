@@ -97,7 +97,7 @@ class DQNAgent:
                 )
 
         if curriculum_stage and curriculum_stage.stage_id == 4:
-            print("  🔧 Initializing conservative Q-values for Split action")
+            print("  Initializing conservative Q-values for Split action")
             with torch.no_grad():
                 if hasattr(self.q_network, "fc5"):
                     self.q_network.fc5.bias[3] -= 0.5

@@ -60,14 +60,14 @@ def get_logs_from_summary(summary_data, log_dir):
         if os.path.exists(log_path):
             evaluation_logs.append(log_path)
         else:
-            print(f"⚠️  Warning: Evaluation log not found: {log_path}")
+            print(f"Warning: Evaluation log not found: {log_path}")
 
     for log_file in training_log_files:
         log_path = os.path.join(training_log_dir, log_file)
         if os.path.exists(log_path):
             training_logs.append(log_path)
         else:
-            print(f"⚠️  Warning: Training log not found: {log_path}")
+            print(f"Warning: Training log not found: {log_path}")
 
     # Look for curriculum training report
     if os.path.exists(reports_dir):
@@ -113,7 +113,7 @@ def group_logs_by_agent_and_stage(
             if "reward_type" not in agent_stage_data[agent_key]:
                 agent_stage_data[agent_key]["reward_type"] = reward_type
         except Exception as e:
-            print(f"❌ Error loading evaluation log {log_path}: {e}")
+            print(f"Error loading evaluation log {log_path}: {e}")
 
     # Process training logs
     for log_path in training_logs:
@@ -134,7 +134,7 @@ def group_logs_by_agent_and_stage(
             if "reward_type" not in agent_stage_data[agent_key]:
                 agent_stage_data[agent_key]["reward_type"] = reward_type
         except Exception as e:
-            print(f"❌ Error loading training log {log_path}: {e}")
+            print(f"Error loading training log {log_path}: {e}")
 
     # Extract training times from curriculum report
     if curriculum_report:
@@ -164,7 +164,7 @@ def group_logs_by_agent_and_stage(
                         ] = time_taken
 
         except Exception as e:
-            print(f"❌ Error loading curriculum report {curriculum_report}: {e}")
+            print(f"Error loading curriculum report {curriculum_report}: {e}")
 
     return agent_stage_data
 
@@ -174,11 +174,11 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info="", deck_type
     strategy_table = log_data["summary"]["strategy_table"]
 
     # Debug: Print some strategy table info
-    print(f"  📊 Strategy table has {len(strategy_table)} states")
+    print(f"Strategy table has {len(strategy_table)} states")
     if strategy_table:
         sample_state = list(strategy_table.keys())[0]
         sample_stats = strategy_table[sample_state]
-        print(f"  📊 Sample state {sample_state}: {sample_stats}")
+        print(f"Sample state {sample_state}: {sample_stats}")
 
     # Extract player sums and dealer cards
     player_sums = set()
@@ -290,7 +290,7 @@ def create_strategy_table_heatmap(log_data, output_dir, stage_info="", deck_type
     output_path = os.path.join(output_dir, "strategy_table_heatmap.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Strategy table heatmap saved to: {output_path}")
+    print(f"Strategy table heatmap saved to: {output_path}")
 
 
 def create_performance_summary(log_data, output_dir, stage_info="", deck_type=""):
@@ -393,7 +393,7 @@ def create_performance_summary(log_data, output_dir, stage_info="", deck_type=""
     output_path = os.path.join(output_dir, "performance_summary.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Performance summary saved to: {output_path}")
+    print(f"Performance summary saved to: {output_path}")
 
 
 def create_action_distribution_chart(log_data, output_dir, stage_info="", deck_type=""):
@@ -533,7 +533,7 @@ def create_action_distribution_chart(log_data, output_dir, stage_info="", deck_t
     output_path = os.path.join(output_dir, "action_distribution.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Action distribution chart saved to: {output_path}")
+    print(f"Action distribution chart saved to: {output_path}")
 
 
 def create_state_value_analysis(log_data, output_dir, stage_info="", deck_type=""):
@@ -541,7 +541,7 @@ def create_state_value_analysis(log_data, output_dir, stage_info="", deck_type="
     state_reward_stats = log_data["summary"].get("state_reward_stats", {})
 
     if not state_reward_stats:
-        print(f"  ⚠️  No state reward statistics available for state value analysis")
+        print(f"No state reward statistics available for state value analysis")
         return
 
     # Separate hard and soft totals
@@ -601,7 +601,7 @@ def create_state_value_analysis(log_data, output_dir, stage_info="", deck_type="
     output_path = os.path.join(output_dir, "state_value_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 State value analysis saved to: {output_path}")
+    print(f"State value analysis saved to: {output_path}")
 
 
 def create_insurance_analysis(log_data, output_dir, stage_info="", deck_type=""):
@@ -643,7 +643,7 @@ def create_insurance_analysis(log_data, output_dir, stage_info="", deck_type="")
             }
 
     if not insurance_data:
-        print(f"  ⚠️  No insurance opportunities found in strategy table")
+        print(f"No insurance opportunities found in strategy table")
         return
 
     # Create insurance analysis charts
@@ -785,7 +785,7 @@ def create_insurance_analysis(log_data, output_dir, stage_info="", deck_type="")
     output_path = os.path.join(output_dir, "insurance_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Insurance analysis saved to: {output_path}")
+    print(f"Insurance analysis saved to: {output_path}")
 
 
 def create_surrender_analysis(log_data, output_dir, stage_info="", deck_type=""):
@@ -793,12 +793,12 @@ def create_surrender_analysis(log_data, output_dir, stage_info="", deck_type="")
     strategy_table = log_data["summary"].get("strategy_table", {})
 
     if not strategy_table:
-        print(f"  ⚠️  No strategy table available for surrender analysis")
+        print(f"No strategy table available for surrender analysis")
         return
 
     # Check if surrender action is available in this stage
     stage_id = log_data.get("stage_id", "unknown")
-    print(f"  🔍 Analyzing surrender for Stage {stage_id}")
+    print(f"Analyzing surrender for Stage {stage_id}")
 
     # Extract surrender data from strategy table
     surrender_data = {}
@@ -827,7 +827,7 @@ def create_surrender_analysis(log_data, output_dir, stage_info="", deck_type="")
             }
 
     if not surrender_data:
-        print(f"  ⚠️  No surrender opportunities found in strategy table")
+        print(f"No surrender opportunities found in strategy table")
         return
 
     # Create surrender analysis charts
@@ -983,12 +983,12 @@ def create_surrender_analysis(log_data, output_dir, stage_info="", deck_type="")
     output_path = os.path.join(output_dir, "surrender_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Surrender analysis saved to: {output_path}")
+    print(f"Surrender analysis saved to: {output_path}")
 
 
 def create_strategic_value_analysis(agent_stage_data, output_dir):
     """Create analysis showing the strategic value of surrender and insurance actions."""
-    print(f"📊 Creating strategic value analysis...")
+    print(f"Creating strategic value analysis...")
 
     # Collect data from all stages
     all_surrender_data = []
@@ -1068,11 +1068,11 @@ def create_strategic_value_analysis(agent_stage_data, output_dir):
                         )
 
     print(
-        f"  📊 Found {len(all_surrender_data)} surrender actions and {len(all_insurance_data)} insurance actions"
+        f"Found {len(all_surrender_data)} surrender actions and {len(all_insurance_data)} insurance actions"
     )
 
     if not all_surrender_data and not all_insurance_data:
-        print(f"  ⚠️  No surrender or insurance data found for strategic analysis")
+        print(f"No surrender or insurance data found for strategic analysis")
         return
 
     # Create strategic value analysis charts
@@ -1110,7 +1110,7 @@ def create_strategic_value_analysis(agent_stage_data, output_dir):
         for result in game_results:
             result_counts[result] = result_counts.get(result, 0) + 1
 
-        print(f"  📊 Surrender Analysis: {total_surrenders} surrenders found")
+        print(f"  Surrender Analysis: {total_surrenders} surrenders found")
 
         summary_stats = [
             ["Metric", "Value"],
@@ -1181,7 +1181,7 @@ def create_strategic_value_analysis(agent_stage_data, output_dir):
         avg_insurance_reward = np.mean(insurance_rewards)
         dealer_blackjack_count = sum(dealer_blackjacks)
 
-        print(f"  📊 Insurance Analysis: {total_insurance} insurance bets found")
+        print(f"  Insurance Analysis: {total_insurance} insurance bets found")
 
         summary_text = f"""
 Insurance Summary:
@@ -1218,7 +1218,7 @@ Average Reward: {avg_insurance_reward:.3f}
     output_path = os.path.join(output_dir, "strategic_value_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Strategic value analysis saved to: {output_path}")
+    print(f"Strategic value analysis saved to: {output_path}")
 
 
 def create_stage_progression_charts(agent_stage_data, output_dir):
@@ -1264,7 +1264,7 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
 
             if stage_data is None:
                 print(
-                    f"⚠️  Warning: Could not find stage {stage_id} data for {agent_key}"
+                    f"Warning: Could not find stage {stage_id} data for {agent_key}"
                 )
                 continue
 
@@ -1409,7 +1409,7 @@ def create_stage_progression_charts(agent_stage_data, output_dir):
         output_path = os.path.join(output_dir, f"stage_progression_{agent_key}.png")
         plt.savefig(output_path, dpi=300, bbox_inches="tight")
         plt.close()
-        print(f"📊 Stage progression chart saved to: {output_path}")
+        print(f"Stage progression chart saved to: {output_path}")
 
 
 def create_comparative_analysis(agent_stage_data, output_dir):
@@ -1465,7 +1465,7 @@ def create_comparative_analysis(agent_stage_data, output_dir):
             )
 
     if not all_agent_stages:
-        print("❌ No valid agent-stage data found for comparative analysis")
+        print("No valid agent-stage data found for comparative analysis")
         return
 
     # Get deck type and reward type for title
@@ -1654,19 +1654,19 @@ def create_comparative_analysis(agent_stage_data, output_dir):
     output_path = os.path.join(output_dir, "comparative_analysis.png")
     plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.close()
-    print(f"📊 Comparative analysis saved to: {output_path}")
+    print(f"Comparative analysis saved to: {output_path}")
 
 
 def analyze_agent_stages(agent_key, agent_data, output_dir):
     """Analyze all stages for a single agent."""
-    print(f"📊 Analyzing agent: {agent_key}")
+    print(f"Analyzing agent: {agent_key}")
 
     evaluation_data = agent_data.get("evaluation", {})
     training_data = agent_data.get("training", {})
     deck_type = agent_data.get("deck_type", "")
 
     if not evaluation_data:
-        print(f"❌ No evaluation data found for {agent_key}")
+        print(f"No evaluation data found for {agent_key}")
         return
 
     # Create agent-specific output directory
@@ -1678,7 +1678,7 @@ def analyze_agent_stages(agent_key, agent_data, output_dir):
         if stage_id == "unknown":
             continue
 
-        print(f"  📊 Analyzing Stage {stage_id}")
+        print(f"  Analyzing Stage {stage_id}")
 
         # Get stage info
         stage_info = f"Stage {stage_id}"
@@ -1727,7 +1727,7 @@ def main():
     # Check if input is a run summary or single log
     if "run_summary" in args.input_path:
         # Analyze all logs from run summary
-        print(f"📊 Loading run summary: {args.input_path}")
+        print(f"Loading run summary: {args.input_path}")
 
         try:
             summary_data = load_run_summary(args.input_path)
@@ -1739,11 +1739,11 @@ def main():
             )
 
             if not evaluation_logs:
-                print("❌ No evaluation logs found in run summary!")
+                print("No evaluation logs found in run summary!")
                 return
 
             print(
-                f"📊 Found {len(evaluation_logs)} evaluation logs and {len(training_logs)} training logs to analyze"
+                f"Found {len(evaluation_logs)} evaluation logs and {len(training_logs)} training logs to analyze"
             )
 
             # Group logs by agent and stage
@@ -1769,17 +1769,17 @@ def main():
                 len(agent_data.get("evaluation", {})) > 1
                 for agent_data in agent_stage_data.values()
             ):
-                print(f"\n📊 Creating comparative analysis...")
+                print(f"\nCreating comparative analysis...")
                 create_comparative_analysis(agent_stage_data, output_dir)
 
             # Create strategic value analysis
-            print(f"\n📊 Creating strategic value analysis...")
+            print(f"\nCreating strategic value analysis...")
             create_strategic_value_analysis(agent_stage_data, output_dir)
 
             # Print run summary
-            print(f"\n✅ RUN ANALYSIS COMPLETE!")
-            print(f"📁 All analyses saved to: {output_dir}")
-            print(f"\n📋 RUN SUMMARY:")
+            print(f"\n RUN ANALYSIS COMPLETE!")
+            print(f"All analyses saved to: {output_dir}")
+            print(f"\nRUN SUMMARY:")
             print(f"Total Agents Analyzed: {len(agent_stage_data)}")
 
             for agent_key, agent_data in agent_stage_data.items():
@@ -1814,7 +1814,7 @@ def main():
                         )
 
         except Exception as e:
-            print(f"❌ Error processing run summary: {e}")
+            print(f"Error processing run summary: {e}")
             import traceback
 
             traceback.print_exc()
@@ -1823,9 +1823,9 @@ def main():
         # Analyze single log file (original functionality)
         try:
             log_data = load_evaluation_log(args.input_path)
-            print(f"📊 Loaded evaluation log: {args.input_path}")
+            print(f"Loaded evaluation log: {args.input_path}")
         except Exception as e:
-            print(f"❌ Error loading log file: {e}")
+            print(f"Error loading log file: {e}")
             return
 
         # Try to find corresponding curriculum report
@@ -1841,10 +1841,10 @@ def main():
             if report_files:
                 report_files.sort()
                 curriculum_report = os.path.join(reports_dir, report_files[-1])
-                print(f"📊 Found curriculum report: {curriculum_report}")
+                print(f"Found curriculum report: {curriculum_report}")
 
         # Generate visualizations
-        print(f"\n🎨 Generating visualizations...")
+        print(f"\nGenerating visualizations...")
 
         try:
             # Parse log filename to extract agent info
@@ -1882,47 +1882,47 @@ def main():
                 create_strategy_table_heatmap(
                     log_data, output_dir, stage_info, deck_type
                 )
-                print("  ✅ Strategy table heatmap created")
+                print("   Strategy table heatmap created")
             except Exception as e:
-                print(f"  ❌ Error creating strategy table heatmap: {e}")
+                print(f"  Error creating strategy table heatmap: {e}")
 
             try:
                 create_performance_summary(log_data, output_dir, stage_info, deck_type)
-                print("  ✅ Performance summary created")
+                print("   Performance summary created")
             except Exception as e:
-                print(f"  ❌ Error creating performance summary: {e}")
+                print(f"  Error creating performance summary: {e}")
 
             try:
                 create_action_distribution_chart(
                     log_data, output_dir, stage_info, deck_type
                 )
-                print("  ✅ Action distribution chart created")
+                print("   Action distribution chart created")
             except Exception as e:
-                print(f"  ❌ Error creating action distribution chart: {e}")
+                print(f"  Error creating action distribution chart: {e}")
 
             try:
                 create_state_value_analysis(log_data, output_dir, stage_info, deck_type)
-                print("  ✅ State value analysis created")
+                print("   State value analysis created")
             except Exception as e:
-                print(f"  ❌ Error creating state value analysis: {e}")
+                print(f"  Error creating state value analysis: {e}")
 
             try:
                 create_insurance_analysis(log_data, output_dir, stage_info, deck_type)
-                print("  ✅ Insurance analysis created")
+                print("   Insurance analysis created")
             except Exception as e:
-                print(f"  ❌ Error creating insurance analysis: {e}")
+                print(f"  Error creating insurance analysis: {e}")
 
             try:
                 create_surrender_analysis(log_data, output_dir, stage_info, deck_type)
-                print("  ✅ Surrender analysis created")
+                print("   Surrender analysis created")
             except Exception as e:
-                print(f"  ❌ Error creating surrender analysis: {e}")
+                print(f"  Error creating surrender analysis: {e}")
 
-            print(f"\n✅ Analysis complete! All visualizations saved to: {output_dir}")
+            print(f"\n Analysis complete! All visualizations saved to: {output_dir}")
 
             # Print summary
             summary = log_data["summary"]
-            print(f"\n📋 QUICK SUMMARY:")
+            print(f"\nQUICK SUMMARY:")
             print(f"Agent Type: {log_data['agent_type'].upper()}")
             if "stage_id" in log_data:
                 print(f"Stage: {log_data['stage_id']}")
@@ -1935,7 +1935,7 @@ def main():
             print(f"Bust Rate: {game_outcomes.get('bust_percent', 0):.2f}%")
 
         except Exception as e:
-            print(f"❌ Error generating visualizations: {e}")
+            print(f"Error generating visualizations: {e}")
             import traceback
 
             traceback.print_exc()

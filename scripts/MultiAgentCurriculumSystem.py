@@ -25,7 +25,7 @@ class CurriculumBlackjackEnv(BlackjackEnv):
     def step(self, action):
         if action not in self.stage.available_actions:
             print(
-                f"⚠️  Curriculum constraint: Action {action} not allowed in stage {self.stage.stage_id}. Forcing stand."
+                f"Curriculum constraint: Action {action} not allowed in stage {self.stage.stage_id}. Forcing stand."
             )
             action = 0
         elif not self._is_valid_action(action):
@@ -97,7 +97,7 @@ class MultiAgentCurriculumSystem:
             if not os.path.exists(subdir):
                 os.makedirs(subdir)
 
-        print(f"📁 Logging directory setup: {self.log_dir}")
+        print(f"Logging directory setup: {self.log_dir}")
         print(f"  - Evaluation logs: {self.eval_log_dir}")
         print(f"  - Training logs: {self.training_log_dir}")
         print(f"  - Report logs: {self.report_log_dir}")
@@ -105,7 +105,7 @@ class MultiAgentCurriculumSystem:
     def train_multi_agent_curriculum(
         self, total_episodes=50000, eval_episodes=1000, max_episodes_per_stage=20000
     ):
-        print(f"\n🎓 MULTI-AGENT CURRICULUM LEARNING")
+        print(f"\nMULTI-AGENT CURRICULUM LEARNING")
         print("=" * 60)
         print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
         print(f"Curriculum Stages: {len(self.curriculum_stages)}")
@@ -120,7 +120,7 @@ class MultiAgentCurriculumSystem:
 
         while stage_idx < len(self.curriculum_stages):
             stage = self.curriculum_stages[stage_idx]
-            print(f"\n📚 STAGE {stage.stage_id}: {stage.name}")
+            print(f"\nSTAGE {stage.stage_id}: {stage.name}")
             print(f"Available Actions: {stage.available_actions}")
             print(f"Description: {stage.description}")
             print(f"Success Threshold: {stage.success_threshold:.3f}")
@@ -135,13 +135,13 @@ class MultiAgentCurriculumSystem:
                     ]
                     if current_attempts >= max_episodes_per_stage:
                         print(
-                            f"⚠️  Agent {agent_idx} reached maximum training attempts ({max_episodes_per_stage}) for Stage {stage.stage_id}"
+                            f"Agent {agent_idx} reached maximum training attempts ({max_episodes_per_stage}) for Stage {stage.stage_id}"
                         )
-                        print(f"   📊 Forcing advancement to next stage...")
+                        print(f"   Forcing advancement to next stage...")
                         agent.current_stage += 1
                         continue
                     print(
-                        f"\n🤖 Training Agent {agent_idx} ({agent.agent_type.upper()})"
+                        f"\nTraining Agent {agent_idx} ({agent.agent_type.upper()})"
                     )
 
                     env = CurriculumBlackjackEnv(
@@ -156,10 +156,10 @@ class MultiAgentCurriculumSystem:
                         self._load_previous_stage_strategies(agent, stage)
 
                     print(
-                        f"  🔍 Agent {agent_idx} curriculum stage set to: {agent.curriculum_stage.stage_id if agent.curriculum_stage else 'None'}"
+                        f"Agent {agent_idx} curriculum stage set to: {agent.curriculum_stage.stage_id if agent.curriculum_stage else 'None'}"
                     )
                     print(
-                        f"  🔍 Available actions for agent: {agent.curriculum_stage.available_actions if agent.curriculum_stage else 'None'}"
+                        f"Available actions for agent: {agent.curriculum_stage.available_actions if agent.curriculum_stage else 'None'}"
                     )
 
                     base_episodes = total_episodes // len(self.curriculum_stages)
@@ -167,7 +167,7 @@ class MultiAgentCurriculumSystem:
                     stage_episodes = int(base_episodes * stage_multiplier)
 
                     print(
-                        f"  📊 Stage {stage.stage_id} allocated {stage_episodes} episodes (multiplier: {stage_multiplier:.1f})"
+                        f"Stage {stage.stage_id} allocated {stage_episodes} episodes (multiplier: {stage_multiplier:.1f})"
                     )
 
                     agent_performance = self._train_agent_on_stage(
@@ -202,42 +202,40 @@ class MultiAgentCurriculumSystem:
                     if should_advance:
                         agent.current_stage += 1
                         if threshold_met:
-                            print(f"✅ Agent {agent_idx} advanced to next stage!")
+                            print(f"Agent {agent_idx} advanced to next stage!")
                             print(
-                                f"   📊 Win Rate: {episode_win_rate:.3f} >= {stage.success_threshold}"
+                                f"Win Rate: {episode_win_rate:.3f} >= {stage.success_threshold}"
                             )
                         else:
                             print(
-                                f"⚠️  Agent {agent_idx} forced to advance (max attempts reached)"
+                                f"Agent {agent_idx} forced to advance (max attempts reached)"
                             )
                             print(
-                                f"   📊 Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
+                                f"Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
                             )
                         print(
-                            f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
+                            f"Total Attempts: {current_attempts}/{max_episodes_per_stage}"
                         )
 
                         self._preserve_learned_strategies(
                             agent, stage, agent_performance
                         )
                     else:
+                        print(f"Agent {agent_idx} needs more training on current stage")
                         print(
-                            f"🔄 Agent {agent_idx} needs more training on current stage"
+                            f"    Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
                         )
                         print(
-                            f"   📊 Win Rate: {episode_win_rate:.3f} < {stage.success_threshold}"
+                            f"    Total Attempts: {current_attempts}/{max_episodes_per_stage}"
                         )
-                        print(
-                            f"   📊 Total Attempts: {current_attempts}/{max_episodes_per_stage}"
-                        )
-                        print(f"   🎯 Success threshold not met")
+                        print(f"Success threshold not met")
 
                     stage_results[f"agent_{agent_idx}"] = agent_performance
                     agent.stage_performance.append(agent_performance)
 
                 else:
                     print(
-                        f"⏭️  Agent {agent_idx} ({agent.agent_type.upper()}) - Stage {agent.current_stage} not completed yet"
+                        f"Agent {agent_idx} ({agent.agent_type.upper()}) - Stage {agent.current_stage} not completed yet"
                     )
 
             self.global_performance_log.append(
@@ -254,12 +252,12 @@ class MultiAgentCurriculumSystem:
 
             if all_agents_completed:
                 print(
-                    f"\n🎉 All agents completed Stage {stage.stage_id}! Moving to next stage..."
+                    f"\nAll agents completed Stage {stage.stage_id}! Moving to next stage..."
                 )
                 stage_idx += 1
             else:
                 print(
-                    f"\n🔄 Some agents still need to complete Stage {stage.stage_id}. Continuing training..."
+                    f"\nSome agents still need to complete Stage {stage.stage_id}. Continuing training..."
                 )
 
         return self._generate_final_report()
@@ -269,7 +267,7 @@ class MultiAgentCurriculumSystem:
     ):
         if action not in stage.available_actions:
             print(
-                f"⚠️  {context.upper()}: Agent {agent.agent_id} ({agent.agent_type}) "
+                f"{context.upper()}: Agent {agent.agent_id} ({agent.agent_type}) "
                 f"tried action {action} in stage {stage.stage_id} '{stage.name}' "
                 f"(available: {stage.available_actions})"
             )
@@ -278,7 +276,7 @@ class MultiAgentCurriculumSystem:
 
     def _analyze_stage_performance(self, agent, stage, episode_rewards, wins, episodes):
         print(
-            f"\n📊 STAGE {stage.stage_id} ANALYSIS for Agent {agent.agent_id} ({agent.agent_type}):"
+            f"\n STAGE {stage.stage_id} ANALYSIS for Agent {agent.agent_id} ({agent.agent_type}):"
         )
         print(f"  Stage: {stage.name}")
         print(f"  Available Actions: {stage.available_actions}")
@@ -308,14 +306,14 @@ class MultiAgentCurriculumSystem:
 
         if stage.stage_id == 3:
             print(
-                f"  🔍 Stage 3 (Double Available): Agents should be learning double strategy"
+                f"Stage 3 (Double Available): Agents should be learning double strategy"
             )
         elif stage.stage_id == 4:
             print(
-                f"  🔍 Stage 4 (All Actions): Agents now have splits - may affect double usage patterns"
+                f"Stage 4 (All Actions): Agents now have splits - may affect double usage patterns"
             )
             print(
-                f"  🔍 Expected: Double usage might decrease as agents explore splits"
+                f"Expected: Double usage might decrease as agents explore splits"
             )
 
     def _train_agent_on_stage(self, agent, env, stage, episodes, eval_episodes):
@@ -489,7 +487,7 @@ class MultiAgentCurriculumSystem:
         with open(training_filename, "w") as f:
             json.dump(training_log, f, indent=2)
 
-        print(f"  📊 Training log saved to: {training_filename}")
+        print(f"  Training log saved to: {training_filename}")
 
         evaluation_results = self._evaluate_agent(agent, env, eval_episodes, stage)
         end_time = time.time()
@@ -580,11 +578,11 @@ class MultiAgentCurriculumSystem:
         for action in recommended_actions:
             agent.action_focus_weight[action] = 1.5
 
-        print(f"  🎯 Focusing on actions: {recommended_actions}")
+        print(f"   Focusing on actions: {recommended_actions}")
 
     def _preserve_learned_strategies(self, agent, stage, agent_performance):
         print(
-            f"  💾 Preserving learned strategies for Agent {agent.agent_id} (Stage {stage.stage_id})"
+            f"   Preserving learned strategies for Agent {agent.agent_id} (Stage {stage.stage_id})"
         )
 
         models_dir = os.path.join(self.log_dir, "models")
@@ -613,7 +611,7 @@ class MultiAgentCurriculumSystem:
 
     def _load_previous_stage_strategies(self, agent, stage):
         print(
-            f"  💾 Loading strategies from previous stages for Agent {agent.agent_id} (Stage {stage.stage_id})"
+            f"   Loading strategies from previous stages for Agent {agent.agent_id} (Stage {stage.stage_id})"
         )
         previous_stage_id = stage.stage_id - 1
         if previous_stage_id in agent.stage_models:
@@ -890,7 +888,7 @@ class MultiAgentCurriculumSystem:
         with open(filename, "w") as f:
             json.dump(evaluation_log, f, indent=2)
 
-        print(f"  📊 Evaluation log saved to: {filename}")
+        print(f"  Evaluation log saved to: {filename}")
 
         return {
             "win_rate": wins / episodes,
@@ -911,7 +909,7 @@ class MultiAgentCurriculumSystem:
         }
 
     def _generate_stage_comparison_summary(self):
-        print(f"\n📊 STAGE 3 vs STAGE 4 COMPARISON SUMMARY")
+        print(f"\n STAGE 3 vs STAGE 4 COMPARISON SUMMARY")
         print("=" * 60)
 
         stage3_results = None
@@ -924,7 +922,7 @@ class MultiAgentCurriculumSystem:
                 stage4_results = stage_log
 
         if stage3_results and stage4_results:
-            print(f"🔍 Stage 3: {stage3_results['stage']['name']}")
+            print(f"Stage 3: {stage3_results['stage']['name']}")
             print(
                 f"  Available Actions: {stage3_results['stage']['available_actions']}"
             )
@@ -932,7 +930,7 @@ class MultiAgentCurriculumSystem:
                 f"  Success Threshold: {stage3_results['stage']['success_threshold']}"
             )
 
-            print(f"\n🔍 Stage 4: {stage4_results['stage']['name']}")
+            print(f"\nStage 4: {stage4_results['stage']['name']}")
             print(
                 f"  Available Actions: {stage4_results['stage']['available_actions']}"
             )
@@ -940,7 +938,7 @@ class MultiAgentCurriculumSystem:
                 f"  Success Threshold: {stage4_results['stage']['success_threshold']}"
             )
 
-            print(f"\n📈 Performance Comparison:")
+            print(f"\nPerformance Comparison:")
             for agent_key in stage3_results["results"]:
                 if agent_key in stage4_results["results"]:
                     agent3 = stage3_results["results"][agent_key]
@@ -1004,9 +1002,9 @@ class MultiAgentCurriculumSystem:
         with open(report_filename, "w") as f:
             json.dump(report, f, indent=2)
 
-        print(f"📊 Final report saved to: {report_filename}")
+        print(f"Final report saved to: {report_filename}")
 
-        print(f"\n📊 FINAL TRAINING REPORT")
+        print(f"\n FINAL TRAINING REPORT")
         print("=" * 50)
         for i, agent_perf in enumerate(report["agent_performance"]):
             print(
@@ -1074,7 +1072,7 @@ class MultiAgentCurriculumSystem:
         with open(summary_filename, "w") as f:
             json.dump(summary, f, indent=2)
 
-        print(f"📋 Run summary saved to: {summary_filename}")
+        print(f"Run summary saved to: {summary_filename}")
 
         self._run_automatic_analysis(summary_filename)
 
@@ -1085,7 +1083,7 @@ class MultiAgentCurriculumSystem:
             import subprocess
             import sys
 
-            print(f"\n🔍 Running automatic analysis...")
+            print(f"\nRunning automatic analysis...")
 
             script_dir = os.path.dirname(os.path.abspath(__file__))
             analyze_script = os.path.join(script_dir, "analyze_logs.py")
@@ -1094,18 +1092,18 @@ class MultiAgentCurriculumSystem:
             result = subprocess.run(cmd, capture_output=True, text=True)
 
             if result.returncode == 0:
-                print(f"✅ Automatic analysis completed successfully!")
+                print(f"Automatic analysis completed successfully!")
                 if result.stdout:
                     print(result.stdout)
             else:
-                print(f"⚠️  Analysis completed with warnings:")
+                print(f"Analysis completed with warnings:")
                 if result.stderr:
                     print(result.stderr)
                 if result.stdout:
                     print(result.stdout)
 
         except Exception as e:
-            print(f"⚠️  Could not run automatic analysis: {e}")
+            print(f"Could not run automatic analysis: {e}")
             print(
                 f"   You can manually run: python scripts/analyze_logs.py {summary_filename}"
             )

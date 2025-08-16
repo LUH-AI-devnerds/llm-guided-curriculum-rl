@@ -62,7 +62,7 @@ class MultiAgentStandardSystem:
         for subdir in [self.eval_log_dir, self.training_log_dir, self.report_log_dir]:
             if not os.path.exists(subdir):
                 os.makedirs(subdir)
-        print(f"📁 Logging directory setup: {self.log_dir}")
+        print(f"Logging directory setup: {self.log_dir}")
 
     def _apply_action_masking(
         self, action, state, episode_actions, episode, total_episodes
@@ -162,7 +162,7 @@ class MultiAgentStandardSystem:
 
     def train(self, total_episodes=50000, eval_episodes=1000):
         start_time = time.time()
-        print(f"\n🤖 STANDARD MULTI-AGENT RL TRAINING")
+        print(f"\nSTANDARD MULTI-AGENT RL TRAINING")
         print("=" * 60)
         print(f"Agents: {self.num_agents} ({', '.join(self.agent_types)})")
         print(f"Total Episodes: {total_episodes}")
@@ -304,9 +304,9 @@ class MultiAgentStandardSystem:
             with open(filename, "w") as f:
                 json.dump(evaluation_log, f, indent=2)
 
-            print(f"  📊 Evaluation log saved to: {filename}")
-        print("\n✅ STANDARD TRAINING COMPLETE!")
-        print(f"📁 All logs and models saved to: {self.log_dir}")
+            print(f"  Evaluation log saved to: {filename}")
+        print("\n STANDARD TRAINING COMPLETE!")
+        print(f"All logs and models saved to: {self.log_dir}")
 
     def evaluate(self, agent, env, episodes, heavy_stats_threshold=20000):
         original_epsilon = agent.epsilon

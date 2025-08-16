@@ -60,7 +60,7 @@ if __name__ == "__main__":
     API_KEY = os.getenv("GOOGLE_AI_API_KEY")
 
     if args.no_curriculum:
-        print("\n🚀 STARTING STANDARD MULTI-AGENT RL TRAINING")
+        print("\nSTARTING STANDARD MULTI-AGENT RL TRAINING")
         system = MultiAgentStandardSystem(
             num_agents=args.num_agents,
             agent_types=args.agent_types,
@@ -75,7 +75,7 @@ if __name__ == "__main__":
             )
             print("You can get an API key from: https://ai.google.dev/")
             exit(1)
-        print("\n🚀 STARTING MULTI-AGENT CURRICULUM LEARNING")
+        print("\nSTARTING MULTI-AGENT CURRICULUM LEARNING")
         curriculum_system = MultiAgentCurriculumSystem(
             llm_api_key=API_KEY,
             num_agents=args.num_agents,
@@ -90,6 +90,6 @@ if __name__ == "__main__":
         )
         curriculum_system.save_agents()
         curriculum_system.create_run_summary()
-        print("\n✅ CURRICULUM LEARNING COMPLETE!")
-        print(f"📁 All logs and models saved to: {curriculum_system.log_dir}")
+        print("\nCURRICULUM LEARNING COMPLETE!")
+        print(f"All logs and models saved to: {curriculum_system.log_dir}")
         print("Check the generated JSON report for detailed results.")

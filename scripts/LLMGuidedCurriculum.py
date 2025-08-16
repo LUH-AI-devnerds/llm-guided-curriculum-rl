@@ -127,8 +127,8 @@ class LLMGuidedCurriculum:
 
             missing_actions = set([0, 1, 2, 3, 4, 5]) - all_actions_in_curriculum
             if missing_actions:
-                print(f"⚠️  WARNING: Curriculum is missing actions: {missing_actions}")
-                print(f"   Adding missing actions to final stage...")
+                print(f"WARNING: Curriculum is missing actions: {missing_actions}")
+                print(f"Adding missing actions to final stage...")
 
                 # Add missing actions to the final stage
                 if stages:
