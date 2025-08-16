@@ -288,44 +288,48 @@ class MultiSeedEvaluator:
         """Run all deck types with no-curriculum only."""
         if deck_types is None:
             deck_types = ["1-deck", "4-deck", "8-deck", "infinite"]
-        
-        print("\n" + "="*60)
+
+        print("\n" + "=" * 60)
         print("RUNNING NO-CURRICULUM EXPERIMENTS")
-        print("="*60)
-        
+        print("=" * 60)
+
         for deck_type in deck_types:
             self.run_configuration(deck_type, use_curriculum=False)
 
         # Generate report for no-curriculum only
         print("\nGenerating no-curriculum report...")
         self.generate_report()
-        print(f"✅ No-curriculum experiments completed! Check {self.output_dir}/ for results.")
+        print(
+            f"✅ No-curriculum experiments completed! Check {self.output_dir}/ for results."
+        )
 
     def run_curriculum_configurations(self, deck_types=None):
         """Run all deck types with curriculum only."""
         if deck_types is None:
             deck_types = ["1-deck", "4-deck", "8-deck", "infinite"]
-        
-        print("\n" + "="*60)
+
+        print("\n" + "=" * 60)
         print("RUNNING CURRICULUM EXPERIMENTS")
-        print("="*60)
-        
+        print("=" * 60)
+
         for deck_type in deck_types:
             self.run_configuration(deck_type, use_curriculum=True)
 
         # Generate report for curriculum only
         print("\nGenerating curriculum report...")
         self.generate_report()
-        print(f"✅ Curriculum experiments completed! Check {self.output_dir}/ for results.")
+        print(
+            f"✅ Curriculum experiments completed! Check {self.output_dir}/ for results."
+        )
 
     def run_all_configurations(self, deck_types=None):
         """Run all deck types with both curriculum and no-curriculum."""
         if deck_types is None:
             deck_types = ["1-deck", "4-deck", "8-deck", "infinite"]
 
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("RUNNING ALL EXPERIMENTS (NO-CURRICULUM + CURRICULUM)")
-        print("="*60)
+        print("=" * 60)
 
         # Run no-curriculum first (faster)
         print("\nPhase 1: No-Curriculum Experiments")
@@ -364,10 +368,10 @@ def main():
         "--test-run", action="store_true", help="Quick test with small parameters"
     )
     parser.add_argument(
-        "--mode", 
-        choices=["all", "no-curriculum", "curriculum"], 
+        "--mode",
+        choices=["all", "no-curriculum", "curriculum"],
         default="all",
-        help="Run mode: all (both), no-curriculum only, or curriculum only"
+        help="Run mode: all (both), no-curriculum only, or curriculum only",
     )
 
     args = parser.parse_args()

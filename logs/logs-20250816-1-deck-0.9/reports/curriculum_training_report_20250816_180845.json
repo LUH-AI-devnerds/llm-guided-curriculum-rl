@@ -1,0 +1,492 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 7,
+    "completion_time": "2025-08-16T18:08:45.092795"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit/Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn basic Blackjack strategy by only using Hit and Stand actions. The agent should learn when to hit and when to stand based on its hand and the dealer's upcard.  Focus on understanding hand values and basic probabilities.",
+      "difficulty": 1,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the Double Down action. The agent should learn when doubling down is advantageous (e.g., hard 11, or soft 16-18 vs. low dealer upcard).",
+      "difficulty": 2,
+      "success_threshold": 0.43
+    },
+    {
+      "stage_id": 3,
+      "name": "Split Decisions",
+      "available_actions": [
+        0,
+        1,
+        3
+      ],
+      "description": "Introduce the Split action. The agent must learn which pairs to split based on the dealer's upcard. Understanding the optimal split strategy is crucial. Double down action is removed to lower complexity.",
+      "difficulty": 2,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 4,
+      "name": "Advanced: Double Down and Split",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Integrate Double Down and Split actions together. The agent should now be able to make informed decisions using all the core actions. This stage requires mastering basic blackjack probabilities.",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    },
+    {
+      "stage_id": 5,
+      "name": "Early Surrender Strategy",
+      "available_actions": [
+        0,
+        1,
+        4
+      ],
+      "description": "Introduce the Early Surrender action. The agent will learn to evaluate whether the dealer up card gives them a significant disadvantage. Double down and Split actions are removed to lower complexity.",
+      "difficulty": 3,
+      "success_threshold": 0.48
+    },
+    {
+      "stage_id": 6,
+      "name": "Insurance Play",
+      "available_actions": [
+        0,
+        1,
+        5
+      ],
+      "description": "Introduce the Insurance action. This stage focuses on understanding when insurance is a potentially beneficial strategy. Double down and Split actions are removed to lower complexity.",
+      "difficulty": 3,
+      "success_threshold": 0.49
+    },
+    {
+      "stage_id": 7,
+      "name": "Master: All Actions",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "The agent now has access to all available actions and must learn to combine them effectively. This is the final stage and requires a complete understanding of Blackjack strategy.",
+      "difficulty": 3,
+      "success_threshold": 0.5
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 7,
+      "final_win_rate": 0.43728,
+      "stage_progression": 7
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 7,
+      "final_win_rate": 0.3672,
+      "stage_progression": 10
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic Blackjack strategy by only using Hit and Stand actions. The agent should learn when to hit and when to stand based on its hand and the dealer's upcard.  Focus on understanding hand values and basic probabilities.",
+        "difficulty": 1,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42847,
+          "avg_reward": -0.184005,
+          "total_wins": 29053,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 181.60141277313232
+        },
+        "agent_1": {
+          "win_rate": 0.3804,
+          "avg_reward": -0.55288,
+          "total_wins": 27046,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 6.127401828765869
+        }
+      },
+      "timestamp": "2025-08-16T17:22:35.300787"
+    },
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit/Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn basic Blackjack strategy by only using Hit and Stand actions. The agent should learn when to hit and when to stand based on its hand and the dealer's upcard.  Focus on understanding hand values and basic probabilities.",
+        "difficulty": 1,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38011,
+          "avg_reward": -0.55987,
+          "total_wins": 27125,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 6.146884918212891
+        }
+      },
+      "timestamp": "2025-08-16T17:22:42.788535"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the Double Down action. The agent should learn when doubling down is advantageous (e.g., hard 11, or soft 16-18 vs. low dealer upcard).",
+        "difficulty": 2,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43401,
+          "avg_reward": -0.175795,
+          "total_wins": 36972,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 258.362783908844
+        },
+        "agent_1": {
+          "win_rate": 0.38004,
+          "avg_reward": -0.56096,
+          "total_wins": 33517,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 6.479161739349365
+        }
+      },
+      "timestamp": "2025-08-16T17:27:10.979011"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the Double Down action. The agent should learn when doubling down is advantageous (e.g., hard 11, or soft 16-18 vs. low dealer upcard).",
+        "difficulty": 2,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.39048,
+          "avg_reward": -0.503745,
+          "total_wins": 32969,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 6.4403698444366455
+        }
+      },
+      "timestamp": "2025-08-16T17:27:19.682313"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Split Decisions",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Introduce the Split action. The agent must learn which pairs to split based on the dealer's upcard. Understanding the optimal split strategy is crucial. Double down action is removed to lower complexity.",
+        "difficulty": 2,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.46628,
+          "avg_reward": -0.272194,
+          "total_wins": 45279,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 346.4120030403137
+        },
+        "agent_1": {
+          "win_rate": 0.38778,
+          "avg_reward": -0.554701,
+          "total_wins": 38933,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 6.949610948562622
+        }
+      },
+      "timestamp": "2025-08-16T17:33:16.433455"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Split Decisions",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Introduce the Split action. The agent must learn which pairs to split based on the dealer's upcard. Understanding the optimal split strategy is crucial. Double down action is removed to lower complexity.",
+        "difficulty": 2,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.36969,
+          "avg_reward": -0.6574880000000001,
+          "total_wins": 38690,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 7.101789951324463
+        }
+      },
+      "timestamp": "2025-08-16T17:33:25.723211"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Advanced: Double Down and Split",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Integrate Double Down and Split actions together. The agent should now be able to make informed decisions using all the core actions. This stage requires mastering basic blackjack probabilities.",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.46142,
+          "avg_reward": -0.27082100000000003,
+          "total_wins": 53706,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 417.37036299705505
+        },
+        "agent_1": {
+          "win_rate": 0.38554,
+          "avg_reward": -0.5816575,
+          "total_wins": 44254,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 7.164240837097168
+        }
+      },
+      "timestamp": "2025-08-16T17:40:33.417527"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Early Surrender Strategy",
+        "available_actions": [
+          0,
+          1,
+          4
+        ],
+        "description": "Introduce the Early Surrender action. The agent will learn to evaluate whether the dealer up card gives them a significant disadvantage. Double down and Split actions are removed to lower complexity.",
+        "difficulty": 3,
+        "success_threshold": 0.48
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4007,
+          "avg_reward": -0.17745,
+          "total_wins": 51399,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 399.98871207237244
+        },
+        "agent_1": {
+          "win_rate": 0.3649,
+          "avg_reward": -0.559285,
+          "total_wins": 47200,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 7.309861898422241
+        }
+      },
+      "timestamp": "2025-08-16T17:47:24.340134"
+    },
+    {
+      "stage": {
+        "stage_id": 6,
+        "name": "Insurance Play",
+        "available_actions": [
+          0,
+          1,
+          5
+        ],
+        "description": "Introduce the Insurance action. This stage focuses on understanding when insurance is a potentially beneficial strategy. Double down and Split actions are removed to lower complexity.",
+        "difficulty": 3,
+        "success_threshold": 0.49
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.38856,
+          "avg_reward": -0.51712,
+          "total_wins": 57027,
+          "stage_id": 6,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            5
+          ],
+          "time_taken": 533.6687142848969
+        },
+        "agent_1": {
+          "win_rate": 0.35473,
+          "avg_reward": -0.654385,
+          "total_wins": 52584,
+          "stage_id": 6,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            5
+          ],
+          "time_taken": 8.751834869384766
+        }
+      },
+      "timestamp": "2025-08-16T17:56:30.576672"
+    },
+    {
+      "stage": {
+        "stage_id": 7,
+        "name": "Master: All Actions",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "The agent now has access to all available actions and must learn to combine them effectively. This is the final stage and requires a complete understanding of Blackjack strategy.",
+        "difficulty": 3,
+        "success_threshold": 0.5
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43728,
+          "avg_reward": -0.49159699999999995,
+          "total_wins": 68218,
+          "stage_id": 7,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 722.7794148921967
+        },
+        "agent_1": {
+          "win_rate": 0.3672,
+          "avg_reward": -0.606348,
+          "total_wins": 57707,
+          "stage_id": 7,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 7.63617205619812
+        }
+      },
+      "timestamp": "2025-08-16T18:08:45.092714"
+    }
+  ]
+}

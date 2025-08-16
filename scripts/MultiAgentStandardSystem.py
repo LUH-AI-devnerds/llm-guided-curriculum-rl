@@ -25,11 +25,11 @@ class MultiAgentStandardSystem:
             if agent_type == "dqn":
                 agent = DQNAgent(
                     action_space=[0, 1, 2, 3, 4, 5],
-                    learning_rate=0.001,
+                    learning_rate=0.0005,
                     exploration_rate=1.0,
-                    exploration_decay=0.9999,
-                    memory_size=50000,
-                    batch_size=64,
+                    exploration_decay=0.99995,
+                    memory_size=100000,
+                    batch_size=128,
                 )
             else:
                 agent = QLearningAgent(
@@ -42,6 +42,10 @@ class MultiAgentStandardSystem:
             agent.agent_type = agent_type
             self.agents.append(agent)
         self.global_performance_log = []
+
+        # Track action usage to detect degenerate behavior
+        self.action_usage_history = {i: [] for i in range(6)}
+        self.episode_count = 0
 
     def setup_logging_directory(self, deck_type, penetration):
         if not os.path.exists("logs"):
@@ -59,6 +63,102 @@ class MultiAgentStandardSystem:
             if not os.path.exists(subdir):
                 os.makedirs(subdir)
         print(f"📁 Logging directory setup: {self.log_dir}")
+
+    def _apply_action_masking(
+        self, action, state, episode_actions, episode, total_episodes
+    ):
+        """
+        Apply intelligent action masking to prevent degenerate behavior
+        """
+        player_sum, dealer_up, has_ace = state[0], state[1], state[2]
+
+        # Progressive action availability based on training progress
+        training_progress = episode / total_episodes
+
+        # Early training: restrict to basic actions
+        if training_progress < 0.3:
+            if action in [4, 5]:  # Surrender, Insurance
+                # Force to basic strategy action instead
+                if player_sum >= 17:
+                    return 0  # Stand
+                elif player_sum <= 11:
+                    return 1  # Hit
+                else:
+                    return 0 if player_sum >= 12 and dealer_up <= 6 else 1
+
+        # Mid training: gradually introduce advanced actions
+        elif training_progress < 0.6:
+            # Limit surrender usage
+            if action == 4:
+                surrender_count = episode_actions.count(4)
+                if surrender_count >= 1:  # Max 1 surrender per episode
+                    return 0  # Force stand instead
+                # Only allow surrender in truly bad situations
+                if not (player_sum >= 15 and dealer_up in [9, 10, 11]):
+                    return 0
+
+        # Late training: allow all actions but with constraints
+        else:
+            # Prevent excessive surrender usage
+            if action == 4:
+                recent_actions = (
+                    episode_actions[-5:]
+                    if len(episode_actions) >= 5
+                    else episode_actions
+                )
+                surrender_ratio = recent_actions.count(4) / max(len(recent_actions), 1)
+                if (
+                    surrender_ratio > 0.3
+                ):  # Don't surrender more than 30% of recent actions
+                    return 0
+
+        # Check for action loops
+        if len(episode_actions) >= 3:
+            if all(a == action for a in episode_actions[-3:]):
+                # Break the loop with a different action
+                if action == 4:  # If stuck on surrender
+                    return 0 if player_sum >= 17 else 1
+                elif action == 1:  # If stuck on hit
+                    return 0
+                elif action == 0:  # If stuck on stand
+                    return 1 if player_sum < 17 else 0
+
+        return action
+
+    def _apply_reward_shaping(
+        self, reward, action, state, episode_actions, episode, total_episodes
+    ):
+        """
+        Apply reward shaping to guide learning away from degenerate policies
+        """
+        shaped_reward = reward
+        player_sum = state[0]
+
+        # Penalty for excessive surrender
+        if action == 4:
+            surrender_count = episode_actions.count(4)
+            if surrender_count > 1:
+                shaped_reward -= 1.0  # Additional penalty for multiple surrenders
+
+            # Penalty for surrendering good hands
+            if player_sum <= 14:
+                shaped_reward -= 0.5
+
+        # Encourage exploration in early training
+        training_progress = episode / total_episodes
+        if training_progress < 0.5:
+            # Small bonus for using different actions
+            unique_actions = len(set(episode_actions))
+            if unique_actions >= 2:
+                shaped_reward += 0.1
+
+        # Penalty for action repetition
+        if len(episode_actions) >= 4:
+            recent_actions = episode_actions[-4:]
+            if len(set(recent_actions)) == 1:  # All same action
+                shaped_reward -= 0.5
+
+        return shaped_reward
 
     def train(self, total_episodes=50000, eval_episodes=1000):
         start_time = time.time()
@@ -81,14 +181,49 @@ class MultiAgentStandardSystem:
                 done = False
                 total_reward = 0
                 step_count = 0
-                max_steps_per_episode = 1000
+                max_steps_per_episode = 50
+                consecutive_same_action = 0
+                last_action = None
+                episode_actions = []
 
                 while not done and step_count < max_steps_per_episode:
                     action = agent.get_action(state)
+
+                    # Apply action masking to prevent degenerate behavior
+                    action = self._apply_action_masking(
+                        action, state, episode_actions, episode, total_episodes
+                    )
+
+                    episode_actions.append(action)
+
+                    # Track consecutive same actions to detect loops
+                    if action == last_action:
+                        consecutive_same_action += 1
+                    else:
+                        consecutive_same_action = 0
+                        last_action = action
+
+                    # Force termination if stuck in action loop
+                    if consecutive_same_action >= 5:
+                        reward = -10.0  # Heavy penalty for getting stuck
+                        done = True
+                        break
+
                     next_state, reward, done = env.step(action)
+
+                    # Apply reward shaping to discourage degenerate policies
+                    reward = self._apply_reward_shaping(
+                        reward, action, state, episode_actions, episode, total_episodes
+                    )
+
                     if hasattr(agent, "remember"):
                         agent.remember(state, action, reward, next_state, done)
-                        agent.replay()
+                        # Use same replay strategy as curriculum system
+                        if episode < total_episodes // 2:
+                            agent.replay()
+                        else:
+                            if episode % 3 == 0:
+                                agent.replay()
                     else:
                         agent.update(state, action, reward, next_state)
                     state = next_state
@@ -96,8 +231,9 @@ class MultiAgentStandardSystem:
                     step_count += 1
 
                 if step_count >= max_steps_per_episode:
+                    total_reward -= 5.0  # Penalty for exceeding max steps
                     print(
-                        f"  [Train] Episode {episode} exceeded max steps ({max_steps_per_episode}), forcing termination",
+                        f"  [Train] Episode {episode} exceeded max steps ({max_steps_per_episode}), forcing termination. Actions: {episode_actions[-10:]}",
                         flush=True,
                     )
                 episode_rewards.append(total_reward)
@@ -218,11 +354,32 @@ class MultiAgentStandardSystem:
             visited_states = set() if collect_heavy_stats else None
 
             step_count = 0
-            max_steps_per_episode = 1000
+            max_steps_per_episode = 50
+            consecutive_same_action = 0
+            last_action = None
 
             while not done and step_count < max_steps_per_episode:
                 action = agent.get_action(state)
+
+                # Apply same action masking for evaluation consistency
+                action = self._apply_action_masking(
+                    action, state, episode_actions, 1, 1
+                )  # Use dummy values for evaluation
+
                 episode_actions.append(action)
+
+                # Track consecutive same actions to detect loops
+                if action == last_action:
+                    consecutive_same_action += 1
+                else:
+                    consecutive_same_action = 0
+                    last_action = action
+
+                # Force termination if stuck in action loop
+                if consecutive_same_action >= 5:
+                    episode_reward -= 10.0  # Heavy penalty for getting stuck
+                    done = True
+                    break
 
                 # Create state key for statistics
                 player_sum = state[0]
@@ -259,8 +416,9 @@ class MultiAgentStandardSystem:
                     state_reward_stats[state_key].append(reward)
 
             if step_count >= max_steps_per_episode:
+                episode_reward -= 5.0  # Penalty for exceeding max steps
                 print(
-                    f"  [Eval] Episode {episode_idx + 1} exceeded max steps ({max_steps_per_episode}), forcing termination",
+                    f"  [Eval] Episode {episode_idx + 1} exceeded max steps ({max_steps_per_episode}), forcing termination. Actions: {episode_actions[-10:]}",
                     flush=True,
                 )
 

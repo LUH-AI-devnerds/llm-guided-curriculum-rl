@@ -300,7 +300,7 @@ class BlackjackEnv:
                 strategic_bonus += 0.5  # Successful insurance (2:1 payout)
             else:
                 strategic_bonus -= 1.5  # Failed insurance (lose half bet)
-        
+
         if self.surrendered_hands[hand_index]:
             strategic_bonus -= 0.5  # Surrender gives -0.5 reward, which is often better than playing out a bad hand
             if agent_total > 17 and agent_total < 21:
@@ -479,7 +479,27 @@ class BlackjackEnv:
                 and not self._dealer_has_blackjack()
                 and self._get_hand_sum(current_hand) < 21  # Can't surrender blackjack
             ):
-                return self._get_state(), -0.1, False
+                return (
+                    self._get_state(),
+                    -2.0,
+                    False,
+                )  # Higher penalty for invalid surrender
+
+            # Additional strategic validation for surrender
+            player_sum = self._get_hand_sum(current_hand)
+            dealer_up = self.dealer_hand[0]
+
+            # Discourage surrender on good hands
+            if player_sum <= 12:
+                return self._get_state(), -2.0, False  # Don't surrender good hands
+
+            # Only allow surrender in truly disadvantageous situations
+            if not (player_sum >= 15 and dealer_up in [9, 10, 11]):
+                return (
+                    self._get_state(),
+                    -1.0,
+                    False,
+                )  # Penalty for poor surrender timing
 
             self.surrendered_hands[self.current_hand_idx] = True
             return self._move_to_next_hand()

@@ -161,6 +161,37 @@ class DQNAgent:
                     and random.random() < 0.1
                 ):
                     return 5
+            else:
+                # No curriculum: apply smart exploration to prevent degenerate behavior
+                player_sum = state[0] if len(state) > 0 else 0
+                dealer_up = state[1] if len(state) > 1 else 0
+
+                # Strongly discourage surrender during exploration
+                if 4 in valid_actions:
+                    # Only consider surrender in truly bad situations and with low probability
+                    if (
+                        player_sum >= 16
+                        and dealer_up in [9, 10, 11]
+                        and random.random() < 0.05
+                    ):
+                        pass  # Allow consideration
+                    else:
+                        valid_actions = [a for a in valid_actions if a != 4]
+
+                # Encourage basic strategy during exploration
+                if player_sum <= 11 and 1 in valid_actions:
+                    return 1  # Always hit on 11 or less
+                elif player_sum >= 17 and 0 in valid_actions:
+                    return 0  # Always stand on 17 or more
+                elif (
+                    player_sum in [12, 13, 14, 15, 16]
+                    and dealer_up <= 6
+                    and 0 in valid_actions
+                ):
+                    return 0  # Stand on dealer's weak card
+                elif 2 in valid_actions and player_sum in [10, 11] and dealer_up <= 9:
+                    if random.random() < 0.3:  # Occasionally try doubling
+                        return 2
 
             return random.choice(valid_actions) if valid_actions else 0
 
@@ -389,6 +420,39 @@ class QLearningAgent:
     def get_action(self, state):
         if random.uniform(0, 1) < self.epsilon:
             valid_actions = self._get_valid_actions(state)
+
+            # Apply same smart exploration as DQN agent for no-curriculum training
+            if not self.curriculum_stage:
+                player_sum = state[0] if len(state) > 0 else 0
+                dealer_up = state[1] if len(state) > 1 else 0
+
+                # Strongly discourage surrender during exploration
+                if 4 in valid_actions:
+                    # Only consider surrender in truly bad situations and with low probability
+                    if (
+                        player_sum >= 16
+                        and dealer_up in [9, 10, 11]
+                        and random.random() < 0.05
+                    ):
+                        pass  # Allow consideration
+                    else:
+                        valid_actions = [a for a in valid_actions if a != 4]
+
+                # Encourage basic strategy during exploration
+                if player_sum <= 11 and 1 in valid_actions:
+                    return 1  # Always hit on 11 or less
+                elif player_sum >= 17 and 0 in valid_actions:
+                    return 0  # Always stand on 17 or more
+                elif (
+                    player_sum in [12, 13, 14, 15, 16]
+                    and dealer_up <= 6
+                    and 0 in valid_actions
+                ):
+                    return 0  # Stand on dealer's weak card
+                elif 2 in valid_actions and player_sum in [10, 11] and dealer_up <= 9:
+                    if random.random() < 0.3:  # Occasionally try doubling
+                        return 2
+
             return random.choice(valid_actions) if valid_actions else 0
 
         valid_actions = self._get_valid_actions(state)

@@ -1,0 +1,521 @@
+{
+  "training_summary": {
+    "total_agents": 2,
+    "agent_types": [
+      "dqn",
+      "tabular"
+    ],
+    "curriculum_stages": 8,
+    "completion_time": "2025-08-16T16:36:18.976463"
+  },
+  "curriculum_stages": [
+    {
+      "stage_id": 1,
+      "name": "Basic Hit or Stand",
+      "available_actions": [
+        0,
+        1
+      ],
+      "description": "Learn the fundamentals of Blackjack. The agent should learn when to hit (draw another card) and when to stand (stay with the current hand). This stage focuses on understanding hand values and the basic goal of the game.",
+      "difficulty": 1,
+      "success_threshold": 0.35
+    },
+    {
+      "stage_id": 2,
+      "name": "Introducing Double Down",
+      "available_actions": [
+        0,
+        1,
+        2
+      ],
+      "description": "Introduce the 'Double Down' action. The agent should learn to identify favorable situations to double their bet, such as having a hand value of 11, or a soft 17 (Ace + 6).",
+      "difficulty": 2,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 3,
+      "name": "Learning to Split Pairs",
+      "available_actions": [
+        0,
+        1,
+        3
+      ],
+      "description": "Introduce the 'Split' action. The agent needs to learn to split pairs like Aces and 8s to maximize their chances of winning, and avoid splitting pairs like 10s and 5s.",
+      "difficulty": 2,
+      "success_threshold": 0.42
+    },
+    {
+      "stage_id": 4,
+      "name": "Hit, Stand, Double Down, Split",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "description": "Combining Hit, Stand, Double Down and Split. The agent learns to use all four actions together and master the basic strategy.",
+      "difficulty": 2,
+      "success_threshold": 0.45
+    },
+    {
+      "stage_id": 5,
+      "name": "Understanding Early Surrender",
+      "available_actions": [
+        0,
+        1,
+        4
+      ],
+      "description": "Introduction of the 'Early Surrender' action. The agent must learn when to surrender a bad hand to cut losses, such as having a hard 16 against a dealer's 9, 10, or Ace. The game rules will be modified to allow surrender before the dealer checks for blackjack. This helps to determine when a hand is truly unfavorable. Make sure the reward reflects that player will receive 0.5x the initial bet.",
+      "difficulty": 3,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 6,
+      "name": "Advanced Strategy: Early Surrender, Split, Hit, Stand",
+      "available_actions": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "description": "Combines splitting pairs and early surrender decision making. Reinforces when to cut losses and when to capitalize on advantageous starting hands.",
+      "difficulty": 3,
+      "success_threshold": 0.43
+    },
+    {
+      "stage_id": 7,
+      "name": "Insurance Play",
+      "available_actions": [
+        0,
+        1,
+        5
+      ],
+      "description": "Introduce the 'Insurance' action. The agent needs to learn when taking insurance might be advantageous, understanding the odds and risks involved when the dealer is showing an Ace. Note that insurance is generally not a good bet, but understanding the conditions where it might be slightly favorable is important.",
+      "difficulty": 3,
+      "success_threshold": 0.4
+    },
+    {
+      "stage_id": 8,
+      "name": "Master Blackjack",
+      "available_actions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "description": "Master Blackjack with all available actions. The agent must make use of all learned strategies and actions to optimize its winning rate.",
+      "difficulty": 3,
+      "success_threshold": 0.47
+    }
+  ],
+  "agent_performance": [
+    {
+      "agent_id": 0,
+      "agent_type": "dqn",
+      "final_stage": 8,
+      "final_win_rate": 0.42611,
+      "stage_progression": 8
+    },
+    {
+      "agent_id": 1,
+      "agent_type": "tabular",
+      "final_stage": 8,
+      "final_win_rate": 0.36019,
+      "stage_progression": 10
+    }
+  ],
+  "global_performance_log": [
+    {
+      "stage": {
+        "stage_id": 1,
+        "name": "Basic Hit or Stand",
+        "available_actions": [
+          0,
+          1
+        ],
+        "description": "Learn the fundamentals of Blackjack. The agent should learn when to hit (draw another card) and when to stand (stay with the current hand). This stage focuses on understanding hand values and the basic goal of the game.",
+        "difficulty": 1,
+        "success_threshold": 0.35
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43164,
+          "avg_reward": -0.18329,
+          "total_wins": 25074,
+          "stage_id": 1,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 139.68911385536194
+        },
+        "agent_1": {
+          "win_rate": 0.38015,
+          "avg_reward": -0.562575,
+          "total_wins": 23801,
+          "stage_id": 1,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 5.653725862503052
+        }
+      },
+      "timestamp": "2025-08-16T15:50:50.637720"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn to identify favorable situations to double their bet, such as having a hand value of 11, or a soft 17 (Ace + 6).",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.43367,
+          "avg_reward": -0.18046,
+          "total_wins": 32551,
+          "stage_id": 2,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 197.24742484092712
+        },
+        "agent_1": {
+          "win_rate": 0.37868,
+          "avg_reward": -0.56824,
+          "total_wins": 28828,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 5.99974799156189
+        }
+      },
+      "timestamp": "2025-08-16T15:54:17.070584"
+    },
+    {
+      "stage": {
+        "stage_id": 2,
+        "name": "Introducing Double Down",
+        "available_actions": [
+          0,
+          1,
+          2
+        ],
+        "description": "Introduce the 'Double Down' action. The agent should learn to identify favorable situations to double their bet, such as having a hand value of 11, or a soft 17 (Ace + 6).",
+        "difficulty": 2,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.38195,
+          "avg_reward": -0.5505,
+          "total_wins": 28924,
+          "stage_id": 2,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1
+          ],
+          "time_taken": 5.944766044616699
+        }
+      },
+      "timestamp": "2025-08-16T15:54:24.824587"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Learning to Split Pairs",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Introduce the 'Split' action. The agent needs to learn to split pairs like Aces and 8s to maximize their chances of winning, and avoid splitting pairs like 10s and 5s.",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.45115,
+          "avg_reward": -0.25266,
+          "total_wins": 40406,
+          "stage_id": 3,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 281.05075311660767
+        },
+        "agent_1": {
+          "win_rate": 0.38613,
+          "avg_reward": -0.5873860000000001,
+          "total_wins": 34449,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 6.355507850646973
+        }
+      },
+      "timestamp": "2025-08-16T15:59:15.036068"
+    },
+    {
+      "stage": {
+        "stage_id": 3,
+        "name": "Learning to Split Pairs",
+        "available_actions": [
+          0,
+          1,
+          3
+        ],
+        "description": "Introduce the 'Split' action. The agent needs to learn to split pairs like Aces and 8s to maximize their chances of winning, and avoid splitting pairs like 10s and 5s.",
+        "difficulty": 2,
+        "success_threshold": 0.42
+      },
+      "results": {
+        "agent_1": {
+          "win_rate": 0.37645,
+          "avg_reward": -0.634715,
+          "total_wins": 33337,
+          "stage_id": 3,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 6.376887798309326
+        }
+      },
+      "timestamp": "2025-08-16T15:59:23.002812"
+    },
+    {
+      "stage": {
+        "stage_id": 4,
+        "name": "Hit, Stand, Double Down, Split",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "description": "Combining Hit, Stand, Double Down and Split. The agent learns to use all four actions together and master the basic strategy.",
+        "difficulty": 2,
+        "success_threshold": 0.45
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.48361,
+          "avg_reward": -0.3173,
+          "total_wins": 47691,
+          "stage_id": 4,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 357.185889005661
+        },
+        "agent_1": {
+          "win_rate": 0.38615,
+          "avg_reward": -0.601328,
+          "total_wins": 39467,
+          "stage_id": 4,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3
+          ],
+          "time_taken": 6.587835073471069
+        }
+      },
+      "timestamp": "2025-08-16T16:05:29.563286"
+    },
+    {
+      "stage": {
+        "stage_id": 5,
+        "name": "Understanding Early Surrender",
+        "available_actions": [
+          0,
+          1,
+          4
+        ],
+        "description": "Introduction of the 'Early Surrender' action. The agent must learn when to surrender a bad hand to cut losses, such as having a hard 16 against a dealer's 9, 10, or Ace. The game rules will be modified to allow surrender before the dealer checks for blackjack. This helps to determine when a hand is truly unfavorable. Make sure the reward reflects that player will receive 0.5x the initial bet.",
+        "difficulty": 3,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.39898,
+          "avg_reward": -0.19693,
+          "total_wins": 45187,
+          "stage_id": 5,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 317.3983118534088
+        },
+        "agent_1": {
+          "win_rate": 0.35917,
+          "avg_reward": -0.597035,
+          "total_wins": 41682,
+          "stage_id": 5,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            4
+          ],
+          "time_taken": 6.732026815414429
+        }
+      },
+      "timestamp": "2025-08-16T16:10:56.618159"
+    },
+    {
+      "stage": {
+        "stage_id": 6,
+        "name": "Advanced Strategy: Early Surrender, Split, Hit, Stand",
+        "available_actions": [
+          0,
+          1,
+          3,
+          4
+        ],
+        "description": "Combines splitting pairs and early surrender decision making. Reinforces when to cut losses and when to capitalize on advantageous starting hands.",
+        "difficulty": 3,
+        "success_threshold": 0.43
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.4324,
+          "avg_reward": -0.251048,
+          "total_wins": 54542,
+          "stage_id": 6,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 453.3535702228546
+        },
+        "agent_1": {
+          "win_rate": 0.35679,
+          "avg_reward": -0.641851,
+          "total_wins": 47046,
+          "stage_id": 6,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4
+          ],
+          "time_taken": 7.155120134353638
+        }
+      },
+      "timestamp": "2025-08-16T16:18:40.800496"
+    },
+    {
+      "stage": {
+        "stage_id": 7,
+        "name": "Insurance Play",
+        "available_actions": [
+          0,
+          1,
+          5
+        ],
+        "description": "Introduce the 'Insurance' action. The agent needs to learn when taking insurance might be advantageous, understanding the odds and risks involved when the dealer is showing an Ace. Note that insurance is generally not a good bet, but understanding the conditions where it might be slightly favorable is important.",
+        "difficulty": 3,
+        "success_threshold": 0.4
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.41762,
+          "avg_reward": -0.338495,
+          "total_wins": 57723,
+          "stage_id": 7,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            5
+          ],
+          "time_taken": 418.4809489250183
+        },
+        "agent_1": {
+          "win_rate": 0.36963,
+          "avg_reward": -0.595835,
+          "total_wins": 50645,
+          "stage_id": 7,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            5
+          ],
+          "time_taken": 7.174720048904419
+        }
+      },
+      "timestamp": "2025-08-16T16:25:49.956323"
+    },
+    {
+      "stage": {
+        "stage_id": 8,
+        "name": "Master Blackjack",
+        "available_actions": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "description": "Master Blackjack with all available actions. The agent must make use of all learned strategies and actions to optimize its winning rate.",
+        "difficulty": 3,
+        "success_threshold": 0.47
+      },
+      "results": {
+        "agent_0": {
+          "win_rate": 0.42611,
+          "avg_reward": -0.6334675,
+          "total_wins": 61150,
+          "stage_id": 8,
+          "agent_type": "dqn",
+          "poor_actions": [
+            1,
+            3,
+            5
+          ],
+          "time_taken": 618.2808709144592
+        },
+        "agent_1": {
+          "win_rate": 0.36019,
+          "avg_reward": -0.612851,
+          "total_wins": 55366,
+          "stage_id": 8,
+          "agent_type": "tabular",
+          "poor_actions": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "time_taken": 7.448433876037598
+        }
+      },
+      "timestamp": "2025-08-16T16:36:18.976377"
+    }
+  ]
+}
