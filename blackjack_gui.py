@@ -3,6 +3,7 @@
 Blackjack RL Agent GUI - Clean and Simple Version
 
 A straightforward GUI for visualizing trained reinforcement learning agents playing Blackjack.
+BETA VERSION NOT FULLY FUNCTIONAL.
 """
 
 import pygame
