@@ -100,19 +100,6 @@ llm-guided-curriculum-rl/
 - We publish: trained weights, per-stage evaluation JSONs, analysis figures
 - See `logs/` for date-stamped runs and reports
 
-## Citation
-
-If you use this repository, please cite the paper:
-
-```bibtex
-@article{LLMCurriculumRL2025,
-  title   = {LLM-Guided Curriculum Learning for Multi-Agent Reinforcement Learning},
-  author  = {Alasti, Amirreza and Erdal, Efe and Celik, Yücel},
-  journal = {arXiv preprint},
-  year    = {2025}
-}
-```
-
 ## License
 
 MIT License (see `LICENSE`).
