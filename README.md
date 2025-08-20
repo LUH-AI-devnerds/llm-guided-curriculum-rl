@@ -6,9 +6,6 @@
 
 A research framework for studying LLM-guided curriculum learning in multi-agent reinforcement learning (Blackjack). The system progressively unlocks actions and adjusts targets based on stage-wise performance, enabling efficient skill acquisition for DQN and Tabular Q-learning agents.
 
-- Paper: see `paper/paper.tex`
-- Code: https://github.com/LUH-AI-devnerds/llm-guided-curriculum-rl
-
 ## Overview
 
 - Curriculum stages introduce actions in increasing complexity: Stand/Hit → +Double → +Split → +Surrender/Insurance
