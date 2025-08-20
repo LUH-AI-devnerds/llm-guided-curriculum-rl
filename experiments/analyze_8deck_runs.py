@@ -522,12 +522,13 @@ class EightDeckAnalyzer:
             p["stages_completed"] for p in self.results["agent_progression"]["tabular"]
         ]
 
-        stage_bins = np.arange(1, 9)
+        # Fix: Use only 7 stages consistently
+        stage_bins = np.arange(1, 9)  # 1 to 8 for histogram bins
         dqn_hist, _ = np.histogram(dqn_stages, bins=stage_bins)
         tab_hist, _ = np.histogram(tab_stages, bins=stage_bins)
 
         width = 0.35
-        x = np.arange(1, 8)
+        x = np.arange(1, 8)  # Display stages 1-7
         ax2.bar(
             x - width / 2, dqn_hist, width, label="DQN", color=colors["dqn"], alpha=0.8
         )
@@ -543,6 +544,8 @@ class EightDeckAnalyzer:
         ax2.set_xlabel("Stages Completed")
         ax2.set_ylabel("Frequency")
         ax2.set_title("Stage Completion Distribution")
+        ax2.set_xticks(x)
+        ax2.set_xticklabels([f"{i}" for i in x])
         ax2.legend()
         ax2.grid(True, alpha=0.3)
 
@@ -556,7 +559,8 @@ class EightDeckAnalyzer:
             for p in self.results["best_performance_per_run"]["tabular"]
         ]
 
-        all_stages = sorted(set(dqn_best_stages + tab_best_stages))
+        # Fix: Use only stages 1-7 consistently
+        all_stages = list(range(1, 8))  # Always show stages 1-7
         dqn_stage_counts = [dqn_best_stages.count(s) for s in all_stages]
         tab_stage_counts = [tab_best_stages.count(s) for s in all_stages]
 
@@ -582,13 +586,14 @@ class EightDeckAnalyzer:
         ax3.set_ylabel("Frequency")
         ax3.set_title("Most Common Best Stages")
         ax3.set_xticks(x)
-        ax3.set_xticklabels(all_stages)
+        ax3.set_xticklabels([f"{s}" for s in all_stages])
         ax3.legend()
         ax3.grid(True, alpha=0.3)
 
         # 2.1: Stage-wise Performance Evolution with Confidence Intervals
         ax4 = fig.add_subplot(gs[1, :])
-        stages = sorted(self.results["summary_stats"]["stage_accuracies"].keys())
+        # Fix: Use only stages 1-7 consistently
+        stages = list(range(1, 8))  # Always use stages 1-7
 
         dqn_means = []
         dqn_stds = []
@@ -760,38 +765,46 @@ class EightDeckAnalyzer:
         ax6.legend()
         ax6.grid(True, alpha=0.3)
 
-        # 3.3: Statistical Summary Box
+        # 3.3: Clean Statistical Summary
         ax7 = fig.add_subplot(gs[2, 2])
         ax7.axis("off")
 
         stats = self.results["summary_stats"]
-        summary_text = f"""
-Statistical Summary
+
+        # Create clean, professional text summary
+        summary_text = f"""PERFORMANCE SUMMARY
 
 DQN Agent:
-• Best Win Rate: {stats['best_performance_analysis']['dqn']['mean_best_win_rate']:.3f} ± {stats['best_performance_analysis']['dqn']['std_best_win_rate']:.3f}
-• Peak Achieved: {stats['best_performance_analysis']['dqn']['max_best_win_rate']:.3f}
-• Completion Rate: {stats['stage_completion_rates']['dqn']['completion_rate_all_stages']:.1%}
+  Best Win Rate: {stats['best_performance_analysis']['dqn']['mean_best_win_rate']:.3f} ± {stats['best_performance_analysis']['dqn']['std_best_win_rate']:.3f}
+  Peak Performance: {stats['best_performance_analysis']['dqn']['max_best_win_rate']:.3f}
+  Completion Rate: {stats['stage_completion_rates']['dqn']['completion_rate_all_stages']:.0%}
+  Best Stage: Stage {stats['best_performance_analysis']['dqn']['most_common_best_stage']}
 
 Tabular Agent:
-• Best Win Rate: {stats['best_performance_analysis']['tabular']['mean_best_win_rate']:.3f} ± {stats['best_performance_analysis']['tabular']['std_best_win_rate']:.3f}
-• Peak Achieved: {stats['best_performance_analysis']['tabular']['max_best_win_rate']:.3f}
-• Completion Rate: {stats['stage_completion_rates']['tabular']['completion_rate_all_stages']:.1%}
+  Best Win Rate: {stats['best_performance_analysis']['tabular']['mean_best_win_rate']:.3f} ± {stats['best_performance_analysis']['tabular']['std_best_win_rate']:.3f}
+  Peak Performance: {stats['best_performance_analysis']['tabular']['max_best_win_rate']:.3f}
+  Completion Rate: {stats['stage_completion_rates']['tabular']['completion_rate_all_stages']:.0%}
+  Best Stage: Stage {stats['best_performance_analysis']['tabular']['most_common_best_stage']}
 
-Curriculum Analysis:
-• Runs Analyzed: {stats['runs_analyzed']}
-• Avg Curriculum Size: {stats['best_performance_analysis']['dqn']['mean_curriculum_size']:.1f} stages
-• Size Range: {stats['best_performance_analysis']['dqn']['curriculum_size_range'][0]}-{stats['best_performance_analysis']['dqn']['curriculum_size_range'][1]} stages
-        """
+STUDY PARAMETERS
+  Runs Analyzed: {stats['runs_analyzed']}
+  Curriculum Stages: 1-7
+  Sample Size: {stats['best_performance_analysis']['dqn']['sample_size']} per agent"""
 
         ax7.text(
             0.05,
-            0.95,
+            1.0,
             summary_text,
             transform=ax7.transAxes,
             fontsize=10,
             verticalalignment="top",
-            bbox=dict(boxstyle="round", facecolor="lightgray", alpha=0.8),
+            fontfamily="monospace",
+            bbox=dict(
+                boxstyle="round,pad=0.5",
+                facecolor="#F8F9FA",
+                alpha=0.9,
+                edgecolor="#DEE2E6",
+            ),
         )
 
         plt.suptitle(
@@ -1095,7 +1108,7 @@ Curriculum Analysis:
         print("-" * 30)
         for stage_id in sorted(stats["stage_accuracies"].keys()):
             stage_data = stats["stage_accuracies"][stage_id]
-            print(f"\nStage {stage_id} ({self._get_stage_name(stage_id)}):")
+            print(f"\S {stage_id} ({self._get_stage_name(stage_id)}):")
 
             for agent_type in ["dqn", "tabular"]:
                 if agent_type in stage_data:

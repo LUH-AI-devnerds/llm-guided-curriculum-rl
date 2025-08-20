@@ -27,9 +27,6 @@ PACKAGE_NAME = "llm-guided-curriculum-rl"
 PACKAGE_VERSION = "1.0.0"
 PACKAGE_DESCRIPTION = "LLM-Guided Curriculum Learning for Reinforcement Learning"
 PACKAGE_LONG_DESCRIPTION = read_readme()
-PACKAGE_AUTHOR = "Amirreza Alasti, Efe Erdal, Yücel Celik"
-PACKAGE_AUTHOR_EMAIL = "amirreza.alasti@example.com"
-PACKAGE_URL = "https://github.com/amirrezaalasti/llm-guided-curriculum-rl"
 PACKAGE_LICENSE = "MIT"
 PACKAGE_CLASSIFIERS = [
     "Development Status :: 4 - Beta",
@@ -68,12 +65,6 @@ PACKAGE_KEYWORDS = [
     "gaming",
 ]
 
-PROJECT_URLS = {
-    "Bug Reports": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/issues",
-    "Source": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl",
-    "Documentation": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/blob/main/README.md",
-    "Changelog": "https://github.com/amirrezaalasti/llm-guided-curriculum-rl/blob/main/CHANGELOG.md",
-}
 
 PYTHON_REQUIRES = ">=3.8"
 
