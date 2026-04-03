@@ -1,6 +1,11 @@
 # LLM-Guided Curriculum Learning for Multi-Agent Reinforcement Learning
 
 <div align="center">
+
+[![arXiv](https://img.shields.io/badge/arXiv-2604.00076-B31B1B?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2604.00076)
+[![PDF](https://img.shields.io/badge/PDF-arXiv-EC1C24?logo=arxiv&logoColor=white)](https://arxiv.org/pdf/2604.00076)
+[![Hugging Face Papers](https://img.shields.io/badge/HF_Papers-2604.00076-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/papers/2604.00076)
+
   <img src="logo.png" alt="AI and Blackjack" width="260"/>
 </div>
 
@@ -13,6 +18,15 @@ A research framework for studying LLM-guided curriculum learning in multi-agent 
 - Multi-agent training: DQN with replay/target network; Tabular Q-learning baseline
 - Environment: full casino rules; finite and infinite shoe; card-count features (running/true count)
 - Logging: per-stage JSON; analysis scripts produce tables/plots and summaries
+
+## Publication
+
+**Learning to Play Blackjack: A Curriculum Learning Perspective** — Amirreza Alasti, Efe Erdal, Yücel Celik, Theresa Eimer. [arXiv:2604.00076](https://arxiv.org/abs/2604.00076) (31 Mar 2026).
+
+- PDF: [arXiv PDF](https://arxiv.org/pdf/2604.00076)
+- Citation: [`paper/CITATION.bib`](paper/CITATION.bib)
+
+Badges above link to the abstract, PDF, and the [Hugging Face paper page](https://huggingface.co/papers/2604.00076) for this arXiv ID (create or claim the page from your HF account if it is not live yet). To surface on [Trending Papers](https://huggingface.co/papers/trending), the paper needs to be indexed on the hub and receive upvotes from the community.
 
 ## Installation
 
@@ -83,7 +97,7 @@ llm-guided-curriculum-rl/
 │   ├── LLMGuidedCurriculum.py           # LLM-driven stage generation
 │   └── analyze_logs.py                  # analysis and plots
 ├── logs/                                # run outputs (evaluation/training/reports/analysis)
-├── paper/                               # LaTeX source
+├── paper/                               # citation (arXiv 2604.00076)
 ├── environment.yml / requirements.txt   # dependencies
 └── README.md
 ```
